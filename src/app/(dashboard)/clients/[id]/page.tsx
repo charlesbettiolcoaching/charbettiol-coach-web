@@ -1,0 +1,1417 @@
+'use client'
+
+import { useEffect, useState, useCallback } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import {
+  Profile, CheckIn, CoachNote, WeightLog, WorkoutProgram,
+  WorkoutDay, MacroTargets, FoodLog, ProgressPhoto, PersonalRecord, MealPlan,
+} from '@/lib/types'
+import { format, differenceInDays, addDays, startOfWeek } from 'date-fns'
+import { ArrowLeft, Pin, Plus, Save, ChevronDown, ChevronUp, Edit2, Check, X, Dumbbell, UtensilsCrossed, Sparkles, ChevronLeft, ChevronRight, Bot } from 'lucide-react'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import clsx from 'clsx'
+import { useIsDemo } from '@/lib/demo/useDemoMode'
+import ClientProgressTab from '@/components/training/ClientProgressTab'
+import {
+  DEMO_CLIENTS,
+  DEMO_CHECK_INS,
+  DEMO_NOTES,
+  DEMO_WEIGHT_LOGS,
+  DEMO_PROGRAMS,
+  DEMO_MACRO_TARGETS,
+  DEMO_MEAL_PLANS,
+} from '@/lib/demo/mockData'
+
+type Tab = 'overview' | 'checkins' | 'training' | 'progress' | 'nutrition' | 'photos' | 'metrics' | 'notes' | 'settings'
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'overview',  label: 'Overview' },
+  { id: 'checkins',  label: 'Check Ins' },
+  { id: 'training',  label: 'Training' },
+  { id: 'progress',  label: 'Progress' },
+  { id: 'nutrition', label: 'Nutrition' },
+  { id: 'photos',    label: 'Photos' },
+  { id: 'metrics',   label: 'Metrics' },
+  { id: 'notes',     label: 'Notes' },
+  { id: 'settings',  label: 'Settings' },
+]
+
+const FEATURE_TOGGLES = [
+  { key: 'log_activities', label: 'Log Activities', description: 'Let your client add extra workouts or unassigned activities', icon: '🏃' },
+  { key: 'tasks', label: 'Tasks', description: 'Schedule to-dos and deliver education material', icon: '📋' },
+  { key: 'food_journal', label: 'Food Journal', description: 'Monitor client food intake and easily provide feedback', icon: '🥗' },
+  { key: 'macros', label: 'Macros', description: 'Track client nutrition using macros and daily calories', icon: '📊' },
+  { key: 'meal_plan', label: 'Meal Plan', description: 'Create personalized dietary plans for your clients', icon: '🍽️' },
+  { key: 'messages', label: 'Messages', description: 'Message your client directly through the platform', icon: '💬' },
+  { key: 'progress_photo', label: 'Progress Photo', description: 'Visualize improvement with before and after photos', icon: '📷' },
+  { key: 'body_metrics', label: 'Body Metrics', description: 'Track client progress using various body metrics', icon: '📈' },
+]
+
+function ScoreBadge({ value, label }: { value: number | null; label: string }) {
+  if (value === null) return <span className="text-cb-muted text-xs">—</span>
+  const color =
+    value >= 8 ? 'bg-cb-success/15 text-cb-success' :
+    value >= 5 ? 'bg-cb-warning/15 text-cb-warning' :
+    'bg-cb-danger/15 text-cb-danger'
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <span className={clsx('px-2 py-0.5 rounded text-xs font-semibold', color)}>{value}</span>
+      <span className="text-[10px] text-cb-muted">{label}</span>
+    </div>
+  )
+}
+
+export default function ClientDetailPage() {
+  const params = useParams()
+  const clientId = params.id as string
+  const isDemo = useIsDemo()
+
+  const [activeTab, setActiveTab] = useState<Tab>('overview')
+  const [client, setClient] = useState<Profile | null>(null)
+  const [checkIns, setCheckIns] = useState<CheckIn[]>([])
+  const [notes, setNotes] = useState<CoachNote[]>([])
+  const [weightLogs, setWeightLogs] = useState<WeightLog[]>([])
+  const [programs, setPrograms] = useState<WorkoutProgram[]>([])
+  const [programDays, setProgramDays] = useState<WorkoutDay[]>([])
+  const [macroTargets, setMacroTargets] = useState<MacroTargets | null>(null)
+  const [foodLogs, setFoodLogs] = useState<FoodLog[]>([])
+  const [photos, setPhotos] = useState<ProgressPhoto[]>([])
+  const [prs, setPrs] = useState<PersonalRecord[]>([])
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const [newNote, setNewNote] = useState('')
+  const [savingNote, setSavingNote] = useState(false)
+
+  const [editingMacros, setEditingMacros] = useState(false)
+  const [macroForm, setMacroForm] = useState({ calories: 0, protein_g: 0, carbs_g: 0, fats_g: 0, fibre_g: 0 })
+  const [savingMacros, setSavingMacros] = useState(false)
+
+  const [commentDraft, setCommentDraft] = useState<Record<string, string>>({})
+  const [savingComment, setSavingComment] = useState<string | null>(null)
+  const [expandedCheckIn, setExpandedCheckIn] = useState<string | null>(null)
+
+  // Training calendar state
+  const [calendarView, setCalendarView] = useState<1 | 2 | 4>(4)
+  const [calendarMode, setCalendarMode] = useState<'assignment' | 'history'>('assignment')
+  const [calendarStartDate, setCalendarStartDate] = useState<Date>(() => startOfWeek(new Date(), { weekStartsOn: 1 }))
+  const [programsAccordionOpen, setProgramsAccordionOpen] = useState(false)
+
+  // Settings feature toggles
+  const [featureToggles, setFeatureToggles] = useState<Record<string, boolean>>({
+    log_activities: true,
+    tasks: true,
+    food_journal: false,
+    macros: false,
+    meal_plan: false,
+    messages: true,
+    progress_photo: true,
+    body_metrics: true,
+  })
+  const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg')
+
+  // AI Mode state
+  const [aiModeActive, setAiModeActive] = useState(false)
+  const [aiSession, setAiSession] = useState<{ id: string; ends_at: string; started_at: string } | null>(null)
+  const [aiDurationDays, setAiDurationDays] = useState(7)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
+
+  const loadData = useCallback(async () => {
+    setLoading(true)
+
+    if (isDemo) {
+      const demoClient = DEMO_CLIENTS.find((c) => c.id === clientId) ?? DEMO_CLIENTS[0]
+      const demoCheckIns = DEMO_CHECK_INS.filter((c) => c.client_id === demoClient.id)
+      const demoNotes = DEMO_NOTES.filter((n) => n.client_id === demoClient.id)
+      const demoWeightLogs = DEMO_WEIGHT_LOGS.filter((w) => w.client_id === demoClient.id)
+      const demoProg = DEMO_PROGRAMS.filter((p) => p.client_id === demoClient.id)
+      const demoMacro = DEMO_MACRO_TARGETS.find((m) => m.client_id === demoClient.id) ?? null
+      const demoMealPlans = DEMO_MEAL_PLANS.filter((mp) => mp.client_id === demoClient.id)
+
+      setClient(demoClient as unknown as Profile)
+      setCheckIns(demoCheckIns as unknown as CheckIn[])
+      setNotes(demoNotes as unknown as CoachNote[])
+      setWeightLogs(demoWeightLogs as unknown as WeightLog[])
+      setPrograms(demoProg as unknown as WorkoutProgram[])
+      setMacroTargets(demoMacro as unknown as MacroTargets | null)
+      setMealPlans(demoMealPlans as unknown as MealPlan[])
+      setFoodLogs([])
+      setPhotos([])
+      setPrs([])
+      setProgramDays([])
+
+      if (demoMacro) {
+        setMacroForm({
+          calories: demoMacro.calories,
+          protein_g: demoMacro.protein_g,
+          carbs_g: demoMacro.carbs_g,
+          fats_g: demoMacro.fats_g,
+          fibre_g: demoMacro.fibre_g ?? 0,
+        })
+      }
+
+      const drafts: Record<string, string> = {}
+      demoCheckIns.forEach((c) => { drafts[c.id] = c.coach_comment ?? '' })
+      setCommentDraft(drafts)
+
+      setLoading(false)
+      return
+    }
+
+    const supabase = createClient()
+
+    const [
+      { data: clientData },
+      { data: checkInData },
+      { data: notesData },
+      { data: weightData },
+      { data: programData },
+      { data: macroData },
+      { data: foodData },
+      { data: photoData },
+      { data: prData },
+      { data: mealPlanData },
+    ] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', clientId).single(),
+      supabase.from('check_ins').select('*').eq('client_id', clientId).order('date', { ascending: false }),
+      supabase.from('coach_notes').select('*').eq('client_id', clientId).order('is_pinned', { ascending: false }).order('created_at', { ascending: false }),
+      supabase.from('weight_logs').select('*').eq('client_id', clientId).order('date', { ascending: false }),
+      supabase.from('workout_programs').select('*').eq('client_id', clientId).order('created_at', { ascending: false }),
+      supabase.from('macro_targets').select('*').eq('client_id', clientId).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      supabase.from('food_logs').select('*').eq('client_id', clientId).order('date', { ascending: false }).limit(50),
+      supabase.from('progress_photos').select('*').eq('client_id', clientId).eq('visible_to_coach', true).order('date', { ascending: false }),
+      supabase.from('personal_records').select('*').eq('client_id', clientId).order('date', { ascending: false }),
+      supabase.from('meal_plans').select('*').eq('client_id', clientId).order('created_at', { ascending: false }),
+    ])
+
+    setClient(clientData)
+    setCheckIns(checkInData ?? [])
+    setNotes(notesData ?? [])
+    setWeightLogs(weightData ?? [])
+    setPrograms(programData ?? [])
+    setMacroTargets(macroData ?? null)
+    setFoodLogs(foodData ?? [])
+    setPhotos(photoData ?? [])
+    setPrs(prData ?? [])
+    setMealPlans(mealPlanData ?? [])
+
+    if (macroData) {
+      setMacroForm({
+        calories: macroData.calories,
+        protein_g: macroData.protein_g,
+        carbs_g: macroData.carbs_g,
+        fats_g: macroData.fats_g,
+        fibre_g: macroData.fibre_g ?? 0,
+      })
+    }
+
+    if (programData && programData.length > 0) {
+      const activeProgram = programData.find((p) => p.is_active) ?? programData[0]
+      const { data: daysData } = await supabase
+        .from('workout_days')
+        .select('*')
+        .eq('program_id', activeProgram.id)
+        .order('day_number')
+      setProgramDays(daysData ?? [])
+    }
+
+    const drafts: Record<string, string> = {}
+    ;(checkInData ?? []).forEach((c: CheckIn) => {
+      drafts[c.id] = c.coach_comment ?? ''
+    })
+    setCommentDraft(drafts)
+
+    // Load active AI Mode session
+    const { data: aiSessionData } = await supabase
+      .from('ai_mode_sessions')
+      .select('*')
+      .eq('client_id', clientId)
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle()
+    if (aiSessionData) {
+      setAiSession(aiSessionData)
+      setAiModeActive(true)
+    }
+
+    setLoading(false)
+  }, [clientId, isDemo])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  async function addNote() {
+    if (!newNote.trim()) return
+    if (isDemo) { setNewNote(''); return }
+    setSavingNote(true)
+    try {
+      // BUG FIX: wrapped in try-catch-finally so setSavingNote(false) always runs,
+      // preventing the UI from getting stuck in a "saving" state on network errors.
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { error } = await supabase.from('coach_notes').insert({
+        coach_id: user.id, client_id: clientId,
+        content: newNote.trim(), is_pinned: false,
+      })
+      if (error) throw error
+      setNewNote('')
+      loadData()
+    } catch {
+      // Surface error non-intrusively — could be wired to a toast system
+      console.error('Failed to save note')
+    } finally {
+      setSavingNote(false)
+    }
+  }
+
+  async function saveMacros() {
+    if (isDemo) { setEditingMacros(false); return }
+    setSavingMacros(true)
+    try {
+      // BUG FIX: wrapped in try-catch-finally so saving state always resets,
+      // even if the Supabase call throws (e.g. RLS policy rejection).
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      let error
+      if (macroTargets) {
+        ({ error } = await supabase.from('macro_targets').update({
+          ...macroForm, set_by_coach: true, updated_at: new Date().toISOString(),
+        }).eq('id', macroTargets.id))
+      } else {
+        ({ error } = await supabase.from('macro_targets').insert({
+          client_id: clientId, ...macroForm, set_by_coach: true,
+        }))
+      }
+      if (error) throw error
+      setEditingMacros(false)
+      loadData()
+    } catch {
+      console.error('Failed to save macros')
+    } finally {
+      setSavingMacros(false)
+    }
+  }
+
+  async function saveComment(checkInId: string) {
+    if (isDemo) return
+    setSavingComment(checkInId)
+    try {
+      // BUG FIX: try-finally ensures setSavingComment(null) always runs,
+      // preventing the save button from staying in a perpetual loading state.
+      const supabase = createClient()
+      const { error } = await supabase.from('check_ins')
+        .update({ coach_comment: commentDraft[checkInId] })
+        .eq('id', checkInId)
+      if (error) throw error
+      loadData()
+    } catch {
+      console.error('Failed to save comment')
+    } finally {
+      setSavingComment(null)
+    }
+  }
+
+  async function togglePin(noteId: string, currentPinned: boolean) {
+    if (isDemo) return
+    try {
+      // BUG FIX: added try-catch so a failed pin toggle doesn't leave UI
+      // in an inconsistent state without any feedback.
+      const supabase = createClient()
+      const { error } = await supabase.from('coach_notes')
+        .update({ is_pinned: !currentPinned })
+        .eq('id', noteId)
+      if (error) throw error
+      loadData()
+    } catch {
+      console.error('Failed to toggle pin')
+    }
+  }
+
+  async function handleActivateAI() {
+    setAiLoading(true); setAiError(null)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const endsAt = new Date(Date.now() + aiDurationDays * 86400000).toISOString()
+    // First deactivate any existing sessions
+    await supabase.from('ai_mode_sessions').update({ is_active: false }).eq('client_id', clientId).eq('coach_id', user.id)
+    // Auto-pull sample messages for AI profile
+    const { data: recentMsgs } = await supabase.from('messages').select('content').eq('coach_id', user.id).eq('sender_role', 'coach').order('created_at', { ascending: false }).limit(50)
+    if (recentMsgs && recentMsgs.length > 0) {
+      await supabase.from('coach_ai_profiles').upsert({ coach_id: user.id, sample_messages: recentMsgs.map((m: { content: string }) => ({ role: 'assistant', content: m.content })) }, { onConflict: 'coach_id' })
+    }
+    const { data: session, error } = await supabase.from('ai_mode_sessions').insert({ coach_id: user.id, client_id: clientId, duration_days: aiDurationDays, ends_at: endsAt, is_active: true }).select().single()
+    if (error) { setAiError(error.message); setAiLoading(false); return }
+    setAiSession(session)
+    setAiModeActive(true)
+    setAiLoading(false)
+  }
+
+  async function handleEndAISession() {
+    if (!aiSession) return
+    setAiLoading(true)
+    // Call summarise endpoint
+    await fetch('/api/ai-coach/summarise', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-webhook-secret': '' }, body: JSON.stringify({ sessionId: aiSession.id }) })
+    const supabase = createClient()
+    await supabase.from('ai_mode_sessions').update({ is_active: false }).eq('id', aiSession.id)
+    setAiSession(null); setAiModeActive(false); setAiLoading(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="w-6 h-6 border-2 border-cb-teal border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!client) {
+    return <div className="p-6 text-center text-cb-muted">Client not found.</div>
+  }
+
+  const weightChange = client.current_weight_kg && client.starting_weight_kg
+    ? client.current_weight_kg - client.starting_weight_kg
+    : null
+
+  const daysSinceStart = client.created_at
+    ? differenceInDays(new Date(), new Date(client.created_at))
+    : null
+
+  const latestCheckIn = checkIns[0] ?? null
+  const latestWeight = weightLogs[0] ?? null
+  const programAdherence = programs.length > 0
+    ? Math.round((programs.filter((p) => p.is_active).length / programs.length) * 100)
+    : 0
+
+  // Group food logs by date
+  const foodByDate: Record<string, FoodLog[]> = {}
+  foodLogs.forEach((log) => {
+    if (!foodByDate[log.date]) foodByDate[log.date] = []
+    foodByDate[log.date].push(log)
+  })
+
+  // Weight chart data (last 8 entries, reversed to chronological)
+  const chartData = [...weightLogs].reverse().slice(-8)
+  const maxWeight = Math.max(...chartData.map((w) => w.weight_kg), 1)
+  const minWeight = Math.min(...chartData.map((w) => w.weight_kg), 0)
+  const chartRange = maxWeight - minWeight || 10
+
+  const startingWeight = weightLogs[weightLogs.length - 1]?.weight_kg ?? client.starting_weight_kg
+  const currentWeight = weightLogs[0]?.weight_kg ?? client.current_weight_kg
+  const totalChange = startingWeight && currentWeight ? currentWeight - startingWeight : null
+  const pctChange = startingWeight && totalChange ? (totalChange / startingWeight) * 100 : null
+
+  // Calendar helpers
+  const calendarRangeLabel = (() => {
+    const end = addDays(calendarStartDate, calendarView * 7 - 1)
+    return `${format(calendarStartDate, 'MMM d')} – ${format(end, 'MMM d')}`
+  })()
+
+  // For demo: figure out which cell indices should show a workout (active programs on Mondays)
+  const activeProgram = programs.find((p) => p.is_active)
+  const workoutCellIndices: Set<number> = new Set()
+  if (activeProgram) {
+    for (let week = 0; week < calendarView; week++) {
+      workoutCellIndices.add(week * 7) // Monday of each week
+    }
+  }
+
+  return (
+    <div className="p-6 max-w-6xl mx-auto">
+      {/* Back + Header */}
+      <div className="mb-6">
+        <Link href="/clients" className="flex items-center gap-1 text-sm text-cb-muted hover:text-cb-secondary mb-4">
+          <ArrowLeft size={14} />
+          Back to Clients
+        </Link>
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-cb-teal/10 flex items-center justify-center flex-shrink-0">
+            <span className="text-base font-bold text-cb-teal">
+              {(client.name ?? '?').split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+            </span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-cb-text">{client.name ?? 'Unnamed Client'}</h1>
+            <p className="text-sm text-cb-muted">{client.email} {client.phone ? `· ${client.phone}` : ''}</p>
+          </div>
+          <div className="ml-auto">
+            {client.onboarding_completed ? (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cb-success/15 text-cb-success border border-cb-success/30">Active</span>
+            ) : (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cb-warning/15 text-cb-warning border border-cb-warning/30">Onboarding</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="border-b border-cb-border mb-6">
+        <nav className="flex gap-0.5">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={clsx(
+                'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px',
+                activeTab === tab.id
+                  ? 'border-cb-teal text-cb-teal'
+                  : 'border-transparent text-cb-secondary hover:text-cb-text'
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* ─── OVERVIEW TAB ─── */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* Quick stats row */}
+          <div className="grid grid-cols-4 gap-4">
+            {[
+              { label: 'Current Weight', value: latestWeight ? `${latestWeight.weight_kg} kg` : '—', sub: client.target_weight_kg ? `Target: ${client.target_weight_kg} kg` : null },
+              { label: 'Weekly Check-ins', value: checkIns.length.toString(), sub: latestCheckIn ? `Last: ${format(new Date(latestCheckIn.date), 'd MMM')}` : null },
+              { label: 'Program Adherence', value: programs.length > 0 ? `${programAdherence}%` : '—', sub: `${programs.filter((p) => p.is_active).length} active program${programs.filter((p) => p.is_active).length !== 1 ? 's' : ''}` },
+              { label: 'Days Since Started', value: daysSinceStart !== null ? daysSinceStart.toString() : '—', sub: `Joined ${format(new Date(client.created_at), 'd MMM yyyy')}` },
+            ].map(({ label, value, sub }) => (
+              <div key={label} className="bg-surface border border-cb-border rounded-xl p-4">
+                <p className="text-xs text-cb-muted mb-1">{label}</p>
+                <p className="text-2xl font-bold text-cb-text">{value}</p>
+                {sub && <p className="text-xs text-cb-muted mt-1">{sub}</p>}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 gap-6">
+            {/* Left (2/3) */}
+            <div className="col-span-2 space-y-6">
+              {/* Client Details */}
+              <div className="bg-surface border border-cb-border rounded-xl p-5">
+                <h2 className="text-sm font-semibold text-cb-text mb-4">Client Details</h2>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  {[
+                    ['Goal', client.goal],
+                    ['Goal Timeline', client.goal_timeline],
+                    ['Training Days/Week', client.training_days_per_week?.toString()],
+                    ['Height', client.height_cm ? `${client.height_cm} cm` : null],
+                    ['Starting Weight', client.starting_weight_kg ? `${client.starting_weight_kg} kg` : null],
+                    ['Current Weight', client.current_weight_kg ? `${client.current_weight_kg} kg` : null],
+                    ['Target Weight', client.target_weight_kg ? `${client.target_weight_kg} kg` : null],
+                    ['Gender', client.gender],
+                    ['Date of Birth', client.date_of_birth ? format(new Date(client.date_of_birth), 'd MMM yyyy') : null],
+                    ['Training History', client.training_history],
+                    ['Injuries / Limitations', client.injuries],
+                  ].map(([label, value]) => (
+                    <div key={label as string}>
+                      <p className="text-xs text-cb-muted mb-0.5">{label}</p>
+                      <p className="text-cb-text">{value ?? '—'}</p>
+                    </div>
+                  ))}
+                  <div className="col-span-2">
+                    <p className="text-xs text-cb-muted mb-0.5">Dietary Preferences</p>
+                    <p className="text-cb-text">{client.dietary_preferences?.join(', ') ?? '—'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Latest check-in summary */}
+              {latestCheckIn && (
+                <div className="bg-surface border border-cb-border rounded-xl p-5">
+                  <h2 className="text-sm font-semibold text-cb-text mb-3">Latest Check-in</h2>
+                  <p className="text-xs text-cb-muted mb-3">{format(new Date(latestCheckIn.date), 'EEEE, d MMMM yyyy')}</p>
+                  <div className="flex items-center gap-6 mb-4">
+                    <ScoreBadge value={latestCheckIn.energy} label="Energy" />
+                    <ScoreBadge value={latestCheckIn.stress} label="Stress" />
+                    <ScoreBadge value={latestCheckIn.sleep_quality} label="Sleep" />
+                    <ScoreBadge value={latestCheckIn.training_difficulty} label="Training" />
+                    {latestCheckIn.bodyweight_kg && (
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className="px-2 py-0.5 rounded text-xs font-semibold bg-cb-teal/10 text-cb-teal">{latestCheckIn.bodyweight_kg}kg</span>
+                        <span className="text-[10px] text-cb-muted">Weight</span>
+                      </div>
+                    )}
+                  </div>
+                  {latestCheckIn.wins && (
+                    <div className="mb-2">
+                      <p className="text-[10px] text-cb-muted uppercase font-semibold tracking-wide mb-1">Wins</p>
+                      <p className="text-sm text-cb-secondary">{latestCheckIn.wins}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Weight trend mini chart */}
+              {chartData.length >= 2 && (
+                <div className="bg-surface border border-cb-border rounded-xl p-5">
+                  <h2 className="text-sm font-semibold text-cb-text mb-4">Weight Trend</h2>
+                  <div className="relative h-24">
+                    <div className="flex items-end justify-between h-full gap-1">
+                      {chartData.map((entry, i) => {
+                        const heightPct = ((entry.weight_kg - minWeight) / chartRange) * 100
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                            <span className="text-[9px] text-cb-muted">{entry.weight_kg}</span>
+                            <div
+                              className="w-full bg-cb-teal rounded-t"
+                              style={{ height: `${Math.max(heightPct, 8)}%` }}
+                            />
+                            <span className="text-[9px] text-cb-muted hidden sm:block">
+                              {format(new Date(entry.date), 'd/M')}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Recent Workout Activity */}
+              <div className="bg-surface border border-cb-border rounded-xl p-5">
+                <h2 className="text-sm font-semibold text-cb-text mb-4">Workout Activity</h2>
+                {programDays.filter((d) => d.completed).length === 0 ? (
+                  <p className="text-sm text-cb-muted">No completed workouts yet.</p>
+                ) : (
+                  <ul className="divide-y divide-cb-border">
+                    {programDays.filter((d) => d.completed).slice(0, 8).map((day) => (
+                      <li key={day.id} className="py-2.5 flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-cb-success" />
+                          <span className="text-cb-secondary">{day.name}</span>
+                        </div>
+                        {day.completed_at && (
+                          <span className="text-cb-muted text-xs">{format(new Date(day.completed_at), 'd MMM yyyy')}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            {/* Right (1/3) */}
+            <div className="space-y-6">
+              {/* Goal & Countdown */}
+              <div className="bg-surface border border-cb-border rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-base">🎯</span>
+                  <h2 className="text-sm font-semibold text-cb-text">Goal & Countdown</h2>
+                </div>
+                <p className="text-sm text-cb-secondary mb-3">{client.goal ?? 'No goal set'}</p>
+                {client.goal_timeline && (
+                  <div className="bg-brand/10 rounded-xl px-3 py-2 text-center">
+                    <p className="text-xs text-cb-secondary">Timeline</p>
+                    <p className="font-semibold text-brand">{client.goal_timeline}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Weight Metrics */}
+              <div className="bg-surface border border-cb-border rounded-xl p-5">
+                <h2 className="text-sm font-semibold text-cb-text mb-4">Weight Metrics</h2>
+                <div className="space-y-3 text-sm">
+                  {[
+                    ['Starting', startingWeight ? `${startingWeight} kg` : '—'],
+                    ['Current', currentWeight ? `${currentWeight} kg` : '—'],
+                    ['Target', client.target_weight_kg ? `${client.target_weight_kg} kg` : '—'],
+                  ].map(([label, value]) => (
+                    <div key={label as string} className="flex justify-between">
+                      <span className="text-cb-muted">{label}</span>
+                      <span className="font-medium text-cb-text">{value}</span>
+                    </div>
+                  ))}
+                  {totalChange !== null && (
+                    <div className="flex justify-between pt-2 border-t border-cb-border">
+                      <span className="text-cb-muted">Total Change</span>
+                      <div className="flex items-center gap-1">
+                        <span className={clsx('font-semibold', totalChange < 0 ? 'text-cb-success' : 'text-cb-danger')}>
+                          {totalChange > 0 ? '+' : ''}{totalChange.toFixed(1)} kg
+                        </span>
+                        {pctChange !== null && (
+                          <span className="text-xs text-cb-muted">({pctChange > 0 ? '+' : ''}{pctChange.toFixed(1)}%)</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Macro Targets */}
+              <div className="bg-surface border border-cb-border rounded-xl p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-sm font-semibold text-cb-text">Macro Targets</h2>
+                  <button onClick={() => setEditingMacros(!editingMacros)} className="text-xs text-cb-teal hover:text-cb-teal/80 flex items-center gap-1">
+                    <Edit2 size={12} />
+                    {editingMacros ? 'Cancel' : 'Edit'}
+                  </button>
+                </div>
+                {editingMacros ? (
+                  <div className="space-y-3">
+                    {(['calories', 'protein_g', 'carbs_g', 'fats_g', 'fibre_g'] as const).map((field) => (
+                      <div key={field}>
+                        <label className="block text-xs text-cb-muted mb-0.5 capitalize">{field.replace('_g', ' (g)').replace('calories', 'Calories (kcal)')}</label>
+                        <input type="number" value={macroForm[field]} onChange={(e) => setMacroForm({ ...macroForm, [field]: Number(e.target.value) })}
+                          className="w-full px-2.5 py-1.5 border border-cb-border rounded text-sm text-cb-text bg-surface-light focus:outline-none focus:ring-2 focus:ring-cb-teal" />
+                      </div>
+                    ))}
+                    <button onClick={saveMacros} disabled={savingMacros}
+                      className="w-full bg-cb-teal hover:bg-cb-teal/90 text-white text-sm py-2 rounded-md flex items-center justify-center gap-2">
+                      {savingMacros ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Save size={14} /> Save Macros</>}
+                    </button>
+                  </div>
+                ) : macroTargets ? (
+                  <div className="space-y-2 text-sm">
+                    {[
+                      ['Calories', `${macroTargets.calories} kcal`],
+                      ['Protein', `${macroTargets.protein_g}g`],
+                      ['Carbs', `${macroTargets.carbs_g}g`],
+                      ['Fats', `${macroTargets.fats_g}g`],
+                      ['Fibre', macroTargets.fibre_g ? `${macroTargets.fibre_g}g` : '—'],
+                    ].map(([label, value]) => (
+                      <div key={label} className="flex justify-between">
+                        <span className="text-cb-muted">{label}</span>
+                        <span className="font-medium text-cb-text">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-cb-muted">No macro targets set.</p>
+                )}
+              </div>
+
+              {/* Limitations / Injuries */}
+              <div className="bg-surface border border-cb-border rounded-xl p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🩹</span>
+                    <h2 className="text-sm font-semibold text-cb-text">Limitations / Injuries</h2>
+                  </div>
+                </div>
+                <p className="text-sm text-cb-secondary leading-relaxed">
+                  {client.injuries ?? 'No limitations or injuries noted.'}
+                </p>
+              </div>
+
+              {/* Quick Notes */}
+              <div className="bg-surface border border-cb-border rounded-xl p-5">
+                <h2 className="text-sm font-semibold text-cb-text mb-4">Coach Notes</h2>
+                {notes.slice(0, 3).map((note) => (
+                  <div key={note.id} className="mb-3 pb-3 border-b border-cb-border last:border-0 last:mb-0 last:pb-0">
+                    <p className="text-xs text-cb-secondary leading-relaxed">{note.content}</p>
+                    <p className="text-[10px] text-cb-muted mt-1">{format(new Date(note.created_at), 'd MMM yyyy')}</p>
+                  </div>
+                ))}
+                <div className="mt-3 flex gap-2">
+                  <input type="text" placeholder="Add a note…" value={newNote} onChange={(e) => setNewNote(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addNote()}
+                    className="flex-1 px-2.5 py-1.5 border border-cb-border rounded text-xs text-cb-text placeholder-cb-muted bg-surface-light focus:outline-none focus:ring-2 focus:ring-cb-teal" />
+                  <button onClick={addNote} disabled={savingNote || !newNote.trim()}
+                    className="px-2.5 py-1.5 bg-cb-teal hover:bg-cb-teal/90 disabled:bg-surface-light text-white rounded flex items-center">
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── CHECK INS TAB ─── */}
+      {activeTab === 'checkins' && (
+        <div className="space-y-3">
+          {checkIns.length === 0 ? (
+            <div className="bg-surface border border-cb-border rounded-xl p-12 text-center text-cb-muted">No check-ins yet.</div>
+          ) : checkIns.map((ci) => (
+            <div key={ci.id} className={clsx('bg-surface border rounded-xl overflow-hidden', ci.submitted ? 'border-cb-success/30' : 'border-cb-border')}>
+              <button
+                className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-surface-light transition-colors"
+                onClick={() => setExpandedCheckIn(expandedCheckIn === ci.id ? null : ci.id)}
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-sm font-semibold text-cb-text">{format(new Date(ci.date), 'd MMMM yyyy')}</span>
+                    {ci.bodyweight_kg && <span className="text-sm text-cb-secondary">{ci.bodyweight_kg} kg</span>}
+                    <span className={clsx('ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
+                      ci.submitted ? 'bg-cb-success/15 text-cb-success' : 'bg-surface-light text-cb-muted'
+                    )}>
+                      {ci.submitted ? 'Submitted' : 'Draft'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <ScoreBadge value={ci.energy} label="Energy" />
+                    <ScoreBadge value={ci.stress} label="Stress" />
+                    <ScoreBadge value={ci.sleep_quality} label="Sleep" />
+                    <ScoreBadge value={ci.training_difficulty} label="Training" />
+                  </div>
+                </div>
+                {expandedCheckIn === ci.id ? <ChevronUp size={16} className="text-cb-muted" /> : <ChevronDown size={16} className="text-cb-muted" />}
+              </button>
+
+              {expandedCheckIn === ci.id && (
+                <div className="px-5 pb-5 border-t border-cb-border space-y-4">
+                  {/* Score grid */}
+                  <div className="grid grid-cols-4 gap-3 pt-4">
+                    {[
+                      { label: 'Energy', value: ci.energy },
+                      { label: 'Stress', value: ci.stress },
+                      { label: 'Sleep Quality', value: ci.sleep_quality },
+                      { label: 'Training Difficulty', value: ci.training_difficulty },
+                    ].map(({ label, value }) => {
+                      const color = value === null ? 'bg-surface-light text-cb-muted' :
+                        value >= 8 ? 'bg-cb-success/15 text-cb-success border border-cb-success/30' :
+                        value >= 5 ? 'bg-cb-warning/15 text-cb-warning border border-cb-warning/30' :
+                        'bg-cb-danger/15 text-cb-danger border border-cb-danger/30'
+                      return (
+                        <div key={label} className={clsx('rounded-xl p-3 text-center', color)}>
+                          <p className="text-xl font-bold">{value ?? '—'}</p>
+                          <p className="text-[10px] mt-0.5 opacity-80">{label}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs font-semibold text-cb-muted mb-1 uppercase tracking-wide">Wins</p>
+                      <p className="text-sm text-cb-secondary">{ci.wins || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-cb-muted mb-1 uppercase tracking-wide">Struggles</p>
+                      <p className="text-sm text-cb-secondary">{ci.struggles || '—'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-cb-muted mb-2 uppercase tracking-wide">Coach Comment</p>
+                    <div className="flex gap-2">
+                      <textarea rows={3} value={commentDraft[ci.id] ?? ''} onChange={(e) => setCommentDraft({ ...commentDraft, [ci.id]: e.target.value })}
+                        placeholder="Add your feedback…"
+                        className="flex-1 px-3 py-2 border border-cb-border rounded-xl text-sm text-cb-text placeholder-cb-muted bg-surface-light focus:outline-none focus:ring-2 focus:ring-cb-teal resize-none" />
+                      <button onClick={() => saveComment(ci.id)} disabled={savingComment === ci.id}
+                        className="px-3 py-2 bg-cb-teal hover:bg-cb-teal/90 disabled:bg-cb-teal/50 text-white rounded-xl flex items-center gap-1 text-sm self-start">
+                        {savingComment === ci.id ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Check size={14} /> Save</>}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ─── TRAINING TAB ─── */}
+      {activeTab === 'training' && (
+        <div className="space-y-4">
+          {/* Calendar header */}
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <button
+              onClick={() => setCalendarStartDate(startOfWeek(new Date(), { weekStartsOn: 1 }))}
+              className="px-3 py-1.5 text-xs font-medium border border-cb-border rounded-xl text-cb-secondary hover:bg-surface-light"
+            >
+              TODAY
+            </button>
+            <button
+              onClick={() => setCalendarStartDate(d => addDays(d, -calendarView * 7))}
+              className="p-1.5 rounded-xl border border-cb-border text-cb-secondary hover:bg-surface-light"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <span className="text-sm font-semibold text-cb-text min-w-[120px] text-center">{calendarRangeLabel}</span>
+            <button
+              onClick={() => setCalendarStartDate(d => addDays(d, calendarView * 7))}
+              className="p-1.5 rounded-xl border border-cb-border text-cb-secondary hover:bg-surface-light"
+            >
+              <ChevronRight size={14} />
+            </button>
+            <div className="flex rounded-xl border border-cb-border overflow-hidden ml-2">
+              {(['Assignment', 'History'] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setCalendarMode(m.toLowerCase() as 'assignment' | 'history')}
+                  className={clsx(
+                    'px-3 py-1.5 text-xs font-medium transition-colors',
+                    calendarMode === m.toLowerCase()
+                      ? 'bg-cb-teal text-white'
+                      : 'text-cb-secondary hover:bg-surface-light'
+                  )}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <button className="px-3 py-1.5 text-xs border border-cb-border rounded-xl text-cb-secondary hover:bg-surface-light flex items-center gap-1">
+                <Save size={12} /> Save as Program
+              </button>
+              <div className="flex items-center gap-2">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 border border-cb-teal/50 text-cb-teal hover:bg-cb-teal/10 rounded-xl text-xs font-medium transition-colors">
+                  <Sparkles size={12} /> AI Generate
+                </button>
+                <Link href="/training" className="flex items-center gap-1.5 px-3 py-1.5 bg-cb-teal hover:bg-cb-teal/90 text-white rounded-xl text-xs font-medium transition-colors">
+                  <Plus size={12} /> Create Program
+                </Link>
+              </div>
+              <div className="flex rounded-xl border border-cb-border overflow-hidden">
+                {([1, 2, 4] as const).map((w) => (
+                  <button
+                    key={w}
+                    onClick={() => setCalendarView(w)}
+                    className={clsx(
+                      'px-3 py-1.5 text-xs font-medium transition-colors',
+                      calendarView === w
+                        ? 'bg-cb-teal text-white'
+                        : 'text-cb-secondary hover:bg-surface-light'
+                    )}
+                  >
+                    {w}W
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7 gap-0 border border-cb-border rounded-xl overflow-hidden">
+            {/* Header row */}
+            {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((d) => (
+              <div key={d} className="bg-surface-light border-b border-cb-border px-3 py-2 text-xs font-semibold text-cb-secondary text-center">{d}</div>
+            ))}
+            {/* Date cells */}
+            {Array.from({ length: calendarView * 7 }, (_, i) => {
+              const date = addDays(calendarStartDate, i)
+              const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+              const colIndex = i % 7
+              const isWeekend = colIndex >= 5
+              const hasWorkout = workoutCellIndices.has(i)
+              return (
+                <div
+                  key={i}
+                  className={clsx(
+                    'min-h-[90px] border-b border-r border-cb-border p-2 relative',
+                    isWeekend ? 'bg-surface-light/50' : 'bg-surface',
+                    colIndex === 6 ? 'border-r-0' : ''
+                  )}
+                >
+                  <span className={clsx(
+                    'text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full',
+                    isToday ? 'bg-cb-teal text-white' : 'text-cb-secondary'
+                  )}>
+                    {format(date, 'd')}
+                  </span>
+                  {hasWorkout && activeProgram && (
+                    <div className="mt-1 px-2 py-1 rounded-md bg-cb-teal/15 border border-cb-teal/30 text-[10px] font-medium text-cb-teal truncate">
+                      {activeProgram.name}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Assigned Programs accordion */}
+          <div className="bg-surface border border-cb-border rounded-xl overflow-hidden">
+            <button
+              className="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-surface-light transition-colors"
+              onClick={() => setProgramsAccordionOpen(!programsAccordionOpen)}
+            >
+              <span className="text-sm font-semibold text-cb-text">Assigned Programs</span>
+              {programsAccordionOpen ? <ChevronUp size={16} className="text-cb-muted" /> : <ChevronDown size={16} className="text-cb-muted" />}
+            </button>
+            {programsAccordionOpen && (
+              <div className="border-t border-cb-border p-4 space-y-3">
+                {programs.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <Dumbbell size={28} className="mx-auto text-cb-muted mb-2" />
+                    <p className="text-sm text-cb-muted">No workout programs assigned yet.</p>
+                  </div>
+                ) : programs.map((program) => (
+                  <div key={program.id} className={clsx('bg-surface border rounded-xl p-4', program.is_active ? 'border-cb-teal/30' : 'border-cb-border')}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-semibold text-cb-text">{program.name}</h3>
+                          {program.is_active && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cb-teal/10 text-cb-teal">Active</span>
+                          )}
+                          {program.ai_generated && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-light text-cb-muted">AI</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-cb-muted mt-0.5">
+                          Week {program.current_week} of {program.weeks} · {program.days_per_week} days/week
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 h-1.5 bg-surface-light rounded-full overflow-hidden">
+                          <div className="h-full bg-cb-teal rounded-full" style={{ width: `${Math.min((program.current_week / program.weeks) * 100, 100)}%` }} />
+                        </div>
+                        <span className="text-xs text-cb-muted">{Math.round((program.current_week / program.weeks) * 100)}%</span>
+                      </div>
+                    </div>
+                    {program.description && <p className="text-xs text-cb-muted mb-2">{program.description}</p>}
+                    {program.is_active && programDays.length > 0 && (
+                      <div className="grid grid-cols-4 gap-2 mt-2">
+                        {programDays.map((day) => (
+                          <div key={day.id} className={clsx('rounded-xl px-3 py-2 text-xs font-medium',
+                            day.completed ? 'bg-cb-success/15 text-cb-success border border-cb-success/30' : 'bg-surface-light text-cb-secondary border border-cb-border'
+                          )}>
+                            <p>Day {day.day_number}</p>
+                            <p className="truncate mt-0.5">{day.name}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── PROGRESS TAB ─── */}
+      {activeTab === 'progress' && (
+        <ClientProgressTab
+          clientId={params.id as string}
+          clientName={client?.name ?? 'Client'}
+        />
+      )}
+
+      {/* ─── NUTRITION TAB ─── */}
+      {activeTab === 'nutrition' && (
+        <div className="space-y-6">
+          {/* Macro Targets */}
+          <div className="bg-surface border border-cb-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-cb-text">Macro Targets</h2>
+              <button onClick={() => setEditingMacros(!editingMacros)} className="text-xs text-cb-teal hover:text-cb-teal/80 flex items-center gap-1">
+                <Edit2 size={12} />
+                {editingMacros ? 'Cancel' : 'Edit'}
+              </button>
+            </div>
+            {editingMacros ? (
+              <div className="grid grid-cols-5 gap-3">
+                {(['calories', 'protein_g', 'carbs_g', 'fats_g', 'fibre_g'] as const).map((field) => (
+                  <div key={field}>
+                    <label className="block text-xs text-cb-muted mb-1 capitalize">{field.replace('_g', '').replace('calories', 'Cals')}</label>
+                    <input type="number" value={macroForm[field]} onChange={(e) => setMacroForm({ ...macroForm, [field]: Number(e.target.value) })}
+                      className="w-full px-2.5 py-1.5 border border-cb-border rounded text-sm text-cb-text bg-surface-light focus:outline-none focus:ring-2 focus:ring-cb-teal" />
+                  </div>
+                ))}
+                <div className="col-span-5 flex gap-2">
+                  <button onClick={() => setEditingMacros(false)} className="px-4 py-1.5 border border-cb-border rounded text-sm text-cb-secondary hover:bg-surface-light">Cancel</button>
+                  <button onClick={saveMacros} disabled={savingMacros} className="px-4 py-1.5 bg-cb-teal hover:bg-cb-teal/90 text-white rounded text-sm flex items-center gap-1">
+                    {savingMacros ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Save'}
+                  </button>
+                </div>
+              </div>
+            ) : macroTargets ? (
+              <div className="grid grid-cols-5 gap-4">
+                {[
+                  { label: 'Calories', value: `${macroTargets.calories}`, unit: 'kcal', color: 'text-cb-text' },
+                  { label: 'Protein', value: `${macroTargets.protein_g}`, unit: 'g', color: 'text-cb-warning' },
+                  { label: 'Carbs', value: `${macroTargets.carbs_g}`, unit: 'g', color: 'text-cb-teal' },
+                  { label: 'Fats', value: `${macroTargets.fats_g}`, unit: 'g', color: 'text-cb-danger' },
+                  { label: 'Fibre', value: macroTargets.fibre_g ? `${macroTargets.fibre_g}` : '—', unit: 'g', color: 'text-cb-secondary' },
+                ].map(({ label, value, unit, color }) => (
+                  <div key={label} className="text-center bg-surface-light rounded-xl p-3">
+                    <p className={clsx('text-xl font-bold', color)}>{value}</p>
+                    <p className="text-xs text-cb-muted">{unit}</p>
+                    <p className="text-xs font-medium text-cb-secondary mt-1">{label}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-cb-muted">No macro targets set. Click Edit to add them.</p>
+            )}
+          </div>
+
+          {/* Macro compliance bars (if food logs today) */}
+          {macroTargets && (
+            <div className="bg-surface border border-cb-border rounded-xl p-5">
+              <h2 className="text-sm font-semibold text-cb-text mb-4">Today&apos;s Compliance</h2>
+              {Object.values(foodByDate)[0] ? (() => {
+                const todayLogs = Object.values(foodByDate)[0]
+                const totals = todayLogs.reduce((acc, l) => ({
+                  calories: acc.calories + l.calories,
+                  protein: acc.protein + l.protein_g,
+                  carbs: acc.carbs + l.carbs_g,
+                  fats: acc.fats + l.fats_g,
+                }), { calories: 0, protein: 0, carbs: 0, fats: 0 })
+                return (
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Calories', current: totals.calories, target: macroTargets.calories, unit: 'kcal', color: 'bg-cb-teal' },
+                      { label: 'Protein', current: totals.protein, target: macroTargets.protein_g, unit: 'g', color: 'bg-cb-warning' },
+                      { label: 'Carbs', current: totals.carbs, target: macroTargets.carbs_g, unit: 'g', color: 'bg-cb-teal' },
+                      { label: 'Fats', current: totals.fats, target: macroTargets.fats_g, unit: 'g', color: 'bg-cb-danger' },
+                    ].map(({ label, current, target, unit, color }) => {
+                      const pct = Math.min((current / target) * 100, 100)
+                      return (
+                        <div key={label}>
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className="text-cb-secondary">{label}</span>
+                            <span className="text-cb-muted">{current} / {target} {unit}</span>
+                          </div>
+                          <div className="h-2 bg-surface-light rounded-full overflow-hidden">
+                            <div className={clsx('h-full rounded-full transition-all', color)} style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })() : (
+                <p className="text-sm text-cb-muted">No food logs for today.</p>
+              )}
+            </div>
+          )}
+
+          {/* Meal Plans */}
+          <div className="bg-surface border border-cb-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-cb-text">Meal Plans</h2>
+              <div className="flex items-center gap-2">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 border border-cb-teal/50 text-cb-teal hover:bg-cb-teal/10 rounded-xl text-xs font-medium transition-colors">
+                  <Sparkles size={12} /> AI Generate
+                </button>
+                <Link href="/nutrition" className="flex items-center gap-1.5 px-3 py-1.5 bg-cb-teal hover:bg-cb-teal/90 text-white rounded-xl text-xs font-medium transition-colors">
+                  <Plus size={12} /> Create Plan
+                </Link>
+              </div>
+            </div>
+            {mealPlans.length === 0 ? (
+              <div className="py-8 text-center">
+                <UtensilsCrossed size={28} className="mx-auto text-cb-muted mb-2" />
+                <p className="text-sm text-cb-muted">No meal plans assigned yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {mealPlans.map((mp) => (
+                  <div key={mp.id} className="flex items-center justify-between px-4 py-3 bg-surface-light rounded-xl">
+                    <div>
+                      <p className="text-sm font-medium text-cb-text">{mp.name}</p>
+                      <p className="text-xs text-cb-muted">{mp.plan_type === 'meal' ? 'Meal Plan' : 'Macros Plan'} · Created {format(new Date(mp.created_at), 'd MMM yyyy')}</p>
+                    </div>
+                    <Link href="/nutrition" className="text-xs text-cb-teal hover:text-cb-teal/80 font-medium">Edit</Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Recent Food Logs */}
+          <div className="bg-surface border border-cb-border rounded-xl p-5">
+            <h2 className="text-sm font-semibold text-cb-text mb-4">Recent Food Logs</h2>
+            {Object.keys(foodByDate).length === 0 ? (
+              <p className="text-sm text-cb-muted">No food logs recorded.</p>
+            ) : (
+              <div className="space-y-4">
+                {Object.entries(foodByDate).slice(0, 3).map(([date, logs]) => {
+                  const totals = logs.reduce((acc, l) => ({
+                    calories: acc.calories + l.calories,
+                    protein: acc.protein + l.protein_g,
+                    carbs: acc.carbs + l.carbs_g,
+                    fats: acc.fats + l.fats_g,
+                  }), { calories: 0, protein: 0, carbs: 0, fats: 0 })
+                  return (
+                    <div key={date}>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-semibold text-cb-secondary">{format(new Date(date), 'EEEE, d MMM yyyy')}</p>
+                        <p className="text-xs text-cb-muted">{totals.calories} kcal · P:{totals.protein}g C:{totals.carbs}g F:{totals.fats}g</p>
+                      </div>
+                      <div className="space-y-1">
+                        {logs.map((log) => (
+                          <div key={log.id} className="flex items-center justify-between text-xs py-1 border-b border-cb-border last:border-0">
+                            <div className="flex items-center gap-2">
+                              <span className={clsx('px-1.5 py-0.5 rounded text-[10px] font-medium capitalize',
+                                log.meal === 'breakfast' ? 'bg-cb-warning/15 text-cb-warning' :
+                                log.meal === 'lunch' ? 'bg-cb-teal/10 text-cb-teal' :
+                                log.meal === 'dinner' ? 'bg-cb-teal-dark/20 text-cb-teal' :
+                                'bg-surface-light text-cb-muted'
+                              )}>
+                                {log.meal}
+                              </span>
+                              <span className="text-cb-secondary">{log.name}</span>
+                            </div>
+                            <span className="text-cb-muted">{log.calories} kcal</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── PHOTOS TAB ─── */}
+      {activeTab === 'photos' && (
+        <div className="bg-surface border border-cb-border rounded-xl p-5">
+          <h2 className="text-sm font-semibold text-cb-text mb-4">Progress Photos</h2>
+          {photos.length === 0 ? (
+            <p className="text-sm text-cb-muted">No progress photos shared.</p>
+          ) : (
+            <div className="grid grid-cols-4 gap-4">
+              {photos.map((photo) => (
+                <div key={photo.id} className="space-y-1">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-surface-light">
+                    {photo.public_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={photo.public_url} alt={photo.angle ?? 'Progress photo'} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-cb-muted text-xs">No image</div>
+                    )}
+                  </div>
+                  <p className="text-xs text-cb-secondary">{format(new Date(photo.date), 'd MMM yyyy')}</p>
+                  {photo.angle && <p className="text-xs text-cb-muted capitalize">{photo.angle}</p>}
+                  {photo.weight_kg && <p className="text-xs text-cb-muted">{photo.weight_kg} kg</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── METRICS TAB ─── */}
+      {activeTab === 'metrics' && (
+        <div className="space-y-6">
+          {/* Weight summary */}
+          <div className="grid grid-cols-4 gap-4">
+            {[
+              { label: 'Starting Weight', value: startingWeight ? `${startingWeight} kg` : '—' },
+              { label: 'Current Weight', value: currentWeight ? `${currentWeight} kg` : '—' },
+              { label: 'Total Change', value: totalChange !== null ? `${totalChange > 0 ? '+' : ''}${totalChange.toFixed(1)} kg` : '—', color: totalChange !== null && totalChange < 0 ? 'text-cb-success' : totalChange !== null ? 'text-cb-danger' : undefined },
+              { label: '% Change', value: pctChange !== null ? `${pctChange > 0 ? '+' : ''}${pctChange.toFixed(1)}%` : '—', color: pctChange !== null && pctChange < 0 ? 'text-cb-success' : pctChange !== null ? 'text-cb-danger' : undefined },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="bg-surface border border-cb-border rounded-xl p-4">
+                <p className="text-xs text-cb-muted mb-1">{label}</p>
+                <p className={clsx('text-xl font-bold', color ?? 'text-cb-text')}>{value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Weight Chart */}
+          <div className="bg-surface border border-cb-border rounded-xl p-5">
+            <h2 className="text-sm font-semibold text-cb-text mb-4">Weight Over Time</h2>
+            {chartData.length < 2 ? (
+              <p className="text-sm text-cb-muted">Not enough weight data to display chart.</p>
+            ) : (
+              <div className="relative h-48">
+                <div className="flex items-end justify-between h-full gap-1.5">
+                  {chartData.map((entry, i) => {
+                    const heightPct = ((entry.weight_kg - minWeight) / chartRange) * 100
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                        <span className="text-[10px] text-cb-muted">{entry.weight_kg}</span>
+                        <div className="w-full bg-cb-teal rounded-t" style={{ height: `${Math.max(heightPct, 5)}%` }} />
+                        <span className="text-[10px] text-cb-muted rotate-45 origin-left whitespace-nowrap">
+                          {format(new Date(entry.date), 'd/M')}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Personal Records */}
+          <div className="bg-surface border border-cb-border rounded-xl p-5">
+            <h2 className="text-sm font-semibold text-cb-text mb-4">Personal Records</h2>
+            {prs.length === 0 ? (
+              <p className="text-sm text-cb-muted">No personal records logged.</p>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-cb-border">
+                    <th className="text-left text-xs font-semibold text-cb-muted uppercase pb-2">Exercise</th>
+                    <th className="text-left text-xs font-semibold text-cb-muted uppercase pb-2">Weight</th>
+                    <th className="text-left text-xs font-semibold text-cb-muted uppercase pb-2">Reps</th>
+                    <th className="text-left text-xs font-semibold text-cb-muted uppercase pb-2">Est. 1RM</th>
+                    <th className="text-left text-xs font-semibold text-cb-muted uppercase pb-2">Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-cb-border">
+                  {prs.map((pr) => (
+                    <tr key={pr.id}>
+                      <td className="py-2.5 text-sm font-medium text-cb-text">{pr.exercise_name}</td>
+                      <td className="py-2.5 text-sm text-cb-secondary">{pr.weight_kg} kg</td>
+                      <td className="py-2.5 text-sm text-cb-secondary">{pr.reps}</td>
+                      <td className="py-2.5 text-sm text-cb-secondary">{pr.estimated_1rm ? `${pr.estimated_1rm.toFixed(1)} kg` : '—'}</td>
+                      <td className="py-2.5 text-sm text-cb-muted">{format(new Date(pr.date), 'd MMM yyyy')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── NOTES TAB ─── */}
+      {activeTab === 'notes' && (
+        <div className="space-y-4">
+          <div className="bg-surface border border-cb-border rounded-xl p-5">
+            <h2 className="text-sm font-semibold text-cb-text mb-3">Add Note</h2>
+            <div className="flex gap-3">
+              <textarea rows={3} placeholder="Write a note about this client…" value={newNote} onChange={(e) => setNewNote(e.target.value)}
+                className="flex-1 px-3 py-2 border border-cb-border rounded-xl text-sm text-cb-text placeholder-cb-muted bg-surface-light focus:outline-none focus:ring-2 focus:ring-cb-teal resize-none" />
+              <button onClick={addNote} disabled={savingNote || !newNote.trim()}
+                className="px-4 py-2 bg-cb-teal hover:bg-cb-teal/90 disabled:bg-surface-light text-white rounded-xl text-sm font-medium self-start flex items-center gap-1">
+                <Plus size={14} /> Add
+              </button>
+            </div>
+          </div>
+
+          {notes.length === 0 ? (
+            <div className="bg-surface border border-cb-border rounded-xl p-12 text-center text-cb-muted">No notes yet.</div>
+          ) : (
+            notes.map((note) => (
+              <div key={note.id} className={clsx('bg-surface border rounded-xl p-4', note.is_pinned ? 'border-cb-warning/30 bg-cb-warning/5' : 'border-cb-border')}>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-sm text-cb-secondary leading-relaxed flex-1">{note.content}</p>
+                  <button onClick={() => togglePin(note.id, note.is_pinned)} className={clsx('flex-shrink-0 mt-0.5', note.is_pinned ? 'text-cb-warning' : 'text-cb-muted hover:text-cb-secondary')} title={note.is_pinned ? 'Unpin' : 'Pin'}>
+                    <Pin size={16} />
+                  </button>
+                </div>
+                <p className="text-xs text-cb-muted mt-2">{format(new Date(note.created_at), 'd MMM yyyy · h:mm a')}</p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* ─── SETTINGS TAB ─── */}
+      {activeTab === 'settings' && (
+        <div className="max-w-2xl space-y-6">
+          {/* AI Mode */}
+          <div className="bg-surface border border-cb-border rounded-xl p-5">
+            <div className="mb-6 pb-6 border-b border-cb-border">
+              <div className="flex items-center gap-2 mb-1">
+                <Bot size={16} className="text-purple-500" />
+                <h3 className="text-sm font-semibold text-cb-text">AI Mode</h3>
+                {aiModeActive && (
+                  <span className="px-2 py-0.5 text-xs bg-purple-500/15 text-purple-400 rounded-full font-medium">Active</span>
+                )}
+              </div>
+              <p className="text-xs text-cb-muted mb-4">Enable AI to handle client messages in your voice for a set period.</p>
+
+              {aiModeActive && aiSession ? (
+                <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 mb-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-purple-400">🤖 AI Mode Active</p>
+                      <p className="text-xs text-cb-muted mt-1">
+                        {Math.max(0, Math.ceil((new Date(aiSession.ends_at).getTime() - Date.now()) / 86400000))} days remaining · Ends {new Date(aiSession.ends_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
+                    <button onClick={handleEndAISession} disabled={aiLoading} className="text-xs text-cb-danger border border-cb-danger/30 px-3 py-1.5 rounded-md hover:bg-cb-danger/10 transition-colors">
+                      End Early
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <label className="text-xs text-cb-secondary font-medium">Duration</label>
+                    <input type="number" min={1} max={30} value={aiDurationDays} onChange={(e) => setAiDurationDays(Number(e.target.value))} className="w-16 px-2 py-1.5 border border-cb-border rounded-md text-sm text-cb-text bg-surface-light text-center" />
+                    <span className="text-xs text-cb-muted">days</span>
+                  </div>
+                  {aiError && <p className="text-xs text-cb-danger">{aiError}</p>}
+                  <button onClick={handleActivateAI} disabled={aiLoading || isDemo} className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors">
+                    {aiLoading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Bot size={14} />}
+                    Activate AI Mode
+                  </button>
+                  {isDemo && <p className="text-xs text-cb-muted">Not available in demo mode</p>}
+                </div>
+              )}
+            </div>
+
+            {/* Features */}
+            <div>
+              <h2 className="font-semibold text-cb-text mb-1">Features</h2>
+              <p className="text-xs text-cb-secondary mt-0.5 mb-4">Control which features are visible to this client</p>
+              <div className="divide-y divide-cb-border border border-cb-border rounded-xl overflow-hidden">
+                {FEATURE_TOGGLES.map((f) => (
+                <div key={f.key} className="flex items-center gap-4 px-5 py-4">
+                  <div className="w-9 h-9 rounded-full bg-surface-light flex items-center justify-center flex-shrink-0 text-base">
+                    {f.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-cb-text">{f.label}</p>
+                    <p className="text-xs text-cb-secondary mt-0.5">{f.description}</p>
+                  </div>
+                  <button
+                    onClick={() => setFeatureToggles(prev => ({ ...prev, [f.key]: !prev[f.key] }))}
+                    className={clsx(
+                      'relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0',
+                      featureToggles[f.key] ? 'bg-cb-teal' : 'bg-surface-light border border-cb-border'
+                    )}
+                  >
+                    <span className={clsx(
+                      'absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200',
+                      featureToggles[f.key] ? 'translate-x-5' : 'translate-x-0'
+                    )} />
+                  </button>
+                </div>
+              ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Workout Settings */}
+          <div className="bg-surface border border-cb-border rounded-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-cb-border">
+              <h2 className="font-semibold text-cb-text">Workout Settings</h2>
+            </div>
+            <div className="p-5 space-y-4 text-sm text-cb-secondary">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-cb-text">Weight Unit</p>
+                  <p className="text-xs text-cb-secondary mt-0.5">Unit used for exercises and body weight</p>
+                </div>
+                <div className="flex rounded-xl border border-cb-border overflow-hidden">
+                  {(['kg', 'lbs'] as const).map((unit) => (
+                    <button
+                      key={unit}
+                      onClick={() => setWeightUnit(unit)}
+                      className={clsx(
+                        'px-4 py-1.5 text-xs font-medium transition-colors',
+                        weightUnit === unit
+                          ? 'bg-cb-teal text-white'
+                          : 'text-cb-secondary hover:bg-surface-light'
+                      )}
+                    >
+                      {unit}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-cb-border">
+                <div>
+                  <p className="text-sm font-medium text-cb-text">Timezone</p>
+                  <p className="text-xs text-cb-secondary mt-0.5">Used for scheduling and notifications</p>
+                </div>
+                <select className="px-3 py-1.5 border border-cb-border rounded-xl text-xs text-cb-text bg-surface-light focus:outline-none focus:ring-2 focus:ring-cb-teal">
+                  <option>Australia/Sydney</option>
+                  <option>America/New_York</option>
+                  <option>America/Los_Angeles</option>
+                  <option>Europe/London</option>
+                  <option>Asia/Singapore</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

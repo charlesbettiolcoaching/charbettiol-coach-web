@@ -1,0 +1,128 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    const supabase = createClient()
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (authError) {
+      setError(authError.message)
+      setLoading(false)
+      return
+    }
+
+    router.push('/clients')
+    router.refresh()
+  }
+
+  return (
+    <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        <div className="bg-surface rounded-xl border border-cb-border shadow-lg p-8">
+          {/* Logo */}
+          <div className="mb-6 flex justify-center">
+            <div className="bg-[#2B2B2B] rounded-xl p-6 flex justify-center">
+              <img
+                src="/logo/full-dark.png"
+                alt="BC Coaching"
+                style={{ width: 180, height: 'auto' }}
+              />
+            </div>
+          </div>
+
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-bold text-cb-text">Coach Portal</h1>
+            <p className="text-sm text-cb-muted mt-1">Sign in to your dashboard</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-cb-secondary mb-1">
+                Email address
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-cb-border rounded-md text-sm text-cb-text placeholder-cb-muted bg-surface-light focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+                placeholder="coach@example.com"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-cb-secondary mb-1">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-cb-border rounded-md text-sm text-cb-text placeholder-cb-muted bg-surface-light focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-cb-danger/15 border border-cb-danger/30 rounded-md px-3 py-2">
+                <p className="text-sm text-cb-danger">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-brand hover:bg-brand-light disabled:opacity-50 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign in'
+              )}
+            </button>
+          </form>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-cb-border" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="px-2 bg-surface text-cb-muted">or</span>
+            </div>
+          </div>
+
+          <a
+            href="/api/demo"
+            className="block w-full text-center py-2 px-4 rounded-md border border-cb-border text-cb-secondary text-sm font-medium hover:bg-surface-light transition-colors"
+          >
+            Try Demo
+          </a>
+        </div>
+
+        <p className="text-center text-xs text-cb-muted mt-4">
+          Charles Bettiol Coaching &copy; {new Date().getFullYear()}
+        </p>
+      </div>
+    </div>
+  )
+}
