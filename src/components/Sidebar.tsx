@@ -21,6 +21,7 @@ import {
   HeartPulse,
   BookOpen,
   ListTodo,
+  CreditCard,
 } from 'lucide-react'
 
 type NavSection = {
@@ -55,6 +56,7 @@ const NAV_SECTIONS: NavSection[] = [
   {
     label: 'BUSINESS',
     items: [
+      { href: '/payments', label: 'Payments', icon: CreditCard },
       { href: '/notifications', label: 'Notifications', icon: Bell },
       { href: '/settings', label: 'Settings', icon: Settings },
     ],
