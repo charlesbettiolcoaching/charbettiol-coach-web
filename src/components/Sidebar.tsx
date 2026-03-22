@@ -16,11 +16,15 @@ import {
   Sun,
   Moon,
   Bell,
+  MessageSquare,
+  ClipboardCheck,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
   { href: '/dashboard',       label: 'Dashboard',      icon: LayoutDashboard },
   { href: '/clients',         label: 'Clients',        icon: Users },
+  { href: '/messages',        label: 'Messages',       icon: MessageSquare },
+  { href: '/check-ins',       label: 'Check-ins',      icon: ClipboardCheck },
   { href: '/training',        label: 'Programs',       icon: Dumbbell },
   { href: '/nutrition',       label: 'Nutrition',      icon: UtensilsCrossed },
   { href: '/notifications',   label: 'Notifications',  icon: Bell },

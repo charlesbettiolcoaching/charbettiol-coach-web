@@ -117,6 +117,13 @@ export default function LoginPage() {
           >
             Try Demo
           </a>
+
+          <p className="text-center text-sm text-cb-muted mt-5">
+            Don&apos;t have an account?{' '}
+            <a href="/register" className="text-brand hover:underline font-medium">
+              Create one
+            </a>
+          </p>
         </div>
 
         <p className="text-center text-xs text-cb-muted mt-4">
