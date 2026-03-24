@@ -96,30 +96,131 @@ export default function LandingPage() {
       </header>
 
       {/* ── Hero ────────────────────────────── */}
-      <section className="pt-32 pb-20 px-6 text-center">
-        <div className="max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-[#0F7B8C]/10 text-[#0F7B8C] text-xs font-semibold px-4 py-2 rounded-full mb-8">
-            <Zap size={12} /> Built for health &amp; fitness professionals
-          </div>
-          <h1 className="text-5xl md:text-6xl font-black text-gray-900 leading-tight tracking-tight mb-6">
-            The platform that<br />
-            <span className="text-[#0F7B8C]">propels your practice</span>
-          </h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            One platform for personal trainers, dietitians, exercise physiologists and more. Manage clients, programs, nutrition, check-ins, payments and an AI coaching assistant — all in one place.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-8 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#0F7B8C]/20">
-              Start for free <ArrowRight size={18} />
-            </Link>
-            <a href="#how-it-works" className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-8 py-4 rounded-2xl text-base transition-colors">
-              See how it works
-            </a>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-400">
-            <div className="flex items-center gap-2"><Users size={16} className="text-[#0F7B8C]" /><span><strong className="text-gray-600">500+</strong> coaches</span></div>
-            <div className="flex items-center gap-2"><Shield size={16} className="text-[#0F7B8C]" /><span><strong className="text-gray-600">No lock-in</strong> — cancel anytime</span></div>
-            <div className="flex items-center gap-2"><Smartphone size={16} className="text-[#0F7B8C]" /><span><strong className="text-gray-600">iOS &amp; Android</strong> client app</span></div>
+      <section className="pt-28 pb-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left: copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 bg-[#0F7B8C]/10 text-[#0F7B8C] text-xs font-semibold px-4 py-2 rounded-full mb-8">
+                <Zap size={12} /> Built for health &amp; fitness professionals
+              </div>
+              <h1 className="text-5xl md:text-6xl font-black text-gray-900 leading-tight tracking-tight mb-6">
+                The platform that<br />
+                <span className="text-[#0F7B8C]">propels your practice</span>
+              </h1>
+              <p className="text-xl text-gray-500 mb-10 leading-relaxed">
+                One platform for personal trainers, dietitians, and exercise physiologists. Programs, nutrition, check-ins, AI coaching and payments — all in one place.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-8 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#0F7B8C]/20">
+                  Start for free <ArrowRight size={18} />
+                </Link>
+                <a href="#how-it-works" className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-8 py-4 rounded-2xl text-base transition-colors">
+                  See how it works
+                </a>
+              </div>
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-400">
+                <div className="flex items-center gap-2"><Users size={16} className="text-[#0F7B8C]" /><span><strong className="text-gray-600">500+</strong> coaches</span></div>
+                <div className="flex items-center gap-2"><Shield size={16} className="text-[#0F7B8C]" /><span><strong className="text-gray-600">No lock-in</strong></span></div>
+                <div className="flex items-center gap-2"><Smartphone size={16} className="text-[#0F7B8C]" /><span><strong className="text-gray-600">iOS &amp; Android</strong></span></div>
+              </div>
+            </div>
+
+            {/* Right: phone mockups */}
+            <div className="relative flex justify-center items-end gap-4 h-[540px]">
+              {/* Back phone (nutrition screen) */}
+              <div className="absolute left-0 bottom-0 w-[200px] translate-y-4 opacity-80" style={{ zIndex: 1 }}>
+                <div className="bg-gray-900 rounded-[32px] p-1.5 shadow-2xl">
+                  <div className="bg-white rounded-[26px] overflow-hidden">
+                    <div className="bg-white px-4 pt-4 pb-2">
+                      <div className="text-xs font-black text-gray-900">Nutrition</div>
+                    </div>
+                    <div className="bg-gray-50 px-4 py-3">
+                      <div className="text-3xl font-black text-gray-900">1,220</div>
+                      <div className="text-[10px] text-gray-400 mb-2">kcal · 980 remaining</div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-3">
+                        <div className="h-full bg-[#0F7B8C] rounded-full" style={{ width: '55%' }} />
+                      </div>
+                      {[
+                        { label: 'Protein', val: '133/180g', color: '#0F7B8C', pct: '74%' },
+                        { label: 'Carbs',   val: '118/220g', color: '#F59E0B', pct: '54%' },
+                        { label: 'Fat',     val: '24/70g',   color: '#EF4444', pct: '34%' },
+                      ].map(m => (
+                        <div key={m.label} className="flex items-center gap-2 mb-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: m.color }} />
+                          <div className="text-[9px] text-gray-500 w-10 flex-shrink-0">{m.label}</div>
+                          <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: m.pct, background: m.color }} />
+                          </div>
+                          <div className="text-[9px] text-gray-600 w-12 text-right">{m.val}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-white px-4 py-3 space-y-2">
+                      {['🥣 Breakfast', '🍛 Lunch', '🍽️ Dinner'].map(m => (
+                        <div key={m} className="flex items-center justify-between">
+                          <span className="text-[10px] font-medium text-gray-700">{m}</span>
+                          <div className="w-12 h-1.5 bg-gray-100 rounded-full" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Center phone (real screenshot) */}
+              <div className="relative w-[220px]" style={{ zIndex: 3 }}>
+                <div className="bg-gray-900 rounded-[36px] p-1.5 shadow-2xl shadow-black/30">
+                  <div className="rounded-[30px] overflow-hidden bg-gray-100" style={{ height: '480px' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/screenshots/app-home.jpg"
+                      alt="Propel client app"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                </div>
+                {/* Notch */}
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-3 bg-gray-900 rounded-full" style={{ zIndex: 4 }} />
+              </div>
+
+              {/* Right phone (training screen) */}
+              <div className="absolute right-0 bottom-0 w-[200px] translate-y-4 opacity-80" style={{ zIndex: 2 }}>
+                <div className="bg-gray-900 rounded-[32px] p-1.5 shadow-2xl">
+                  <div className="bg-white rounded-[26px] overflow-hidden">
+                    <div className="bg-white px-4 pt-4 pb-2">
+                      <div className="text-xs font-black text-gray-900">Training</div>
+                    </div>
+                    <div className="bg-white px-4 py-3 border-b border-gray-100">
+                      <div className="text-[11px] font-bold text-gray-900 mb-0.5">My Program</div>
+                      <div className="text-[9px] text-gray-400 mb-2">1/4 sessions this week</div>
+                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#0F7B8C] rounded-full" style={{ width: '25%' }} />
+                      </div>
+                    </div>
+                    <div className="bg-white px-4 py-2">
+                      <div className="flex gap-1 mb-2">
+                        {['M','T','W','T','F','S','S'].map((d, i) => (
+                          <div key={i} className={`flex-1 flex flex-col items-center gap-0.5`}>
+                            <div className="text-[8px] text-gray-400">{d}</div>
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold ${i === 1 ? 'bg-[#0F7B8C] text-white' : 'text-gray-600'}`}>{20+i}</div>
+                            <div className={`w-1 h-1 rounded-full ${[0,1,3,4].includes(i) ? 'bg-[#0F7B8C]/40' : 'bg-transparent'}`} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 mx-3 mb-3 rounded-xl p-3 border-l-4 border-[#0F7B8C]">
+                      <div className="text-[8px] font-bold text-[#0F7B8C] mb-1">TODAY</div>
+                      <div className="text-[11px] font-bold text-gray-900 mb-1">Upper Body Push</div>
+                      <div className="text-[9px] text-gray-400">~55 min · 5 exercises</div>
+                      <div className="mt-2 bg-[#0F7B8C] rounded-lg py-1.5 text-center">
+                        <span className="text-[9px] font-bold text-white">▶ Start Workout</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -135,6 +236,124 @@ export default function LandingPage() {
                 <span className="text-sm font-semibold text-gray-700">{p.title}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Coach Portal Showcase ───────────── */}
+      <section className="py-24 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black text-gray-900 mb-4">Your coaching HQ, in the browser</h2>
+            <p className="text-lg text-gray-500 max-w-xl mx-auto">Build programs, create meal plans with AI, track check-ins and message clients — all from your coach portal.</p>
+          </div>
+
+          {/* Browser mockup */}
+          <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-2xl shadow-gray-200/60">
+            {/* Browser chrome */}
+            <div className="bg-gray-100 border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                <div className="w-3 h-3 rounded-full bg-green-400" />
+              </div>
+              <div className="flex-1 bg-white rounded-md px-3 py-1.5 text-xs text-gray-400 font-mono">app.propelcoaches.com</div>
+            </div>
+
+            {/* Portal UI */}
+            <div className="bg-white flex" style={{ height: '480px' }}>
+              {/* Sidebar */}
+              <div className="w-56 bg-gray-50 border-r border-gray-100 flex flex-col">
+                <div className="px-4 py-5 border-b border-gray-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-[#0F7B8C] flex items-center justify-center">
+                      <Zap size={14} className="text-white" />
+                    </div>
+                    <span className="font-bold text-gray-900 text-sm">CB Coaching</span>
+                  </div>
+                </div>
+                <nav className="flex-1 px-3 py-4 space-y-1">
+                  {[
+                    { icon: TrendingUp, label: 'Dashboard' },
+                    { icon: Users,      label: 'Clients', active: true },
+                    { icon: MessageSquare, label: 'Messages' },
+                    { icon: ClipboardCheck, label: 'Check-ins' },
+                  ].map(({ icon: Icon, label, active }) => (
+                    <div key={label} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium ${active ? 'bg-[#0F7B8C] text-white' : 'text-gray-500 hover:bg-gray-100'}`}>
+                      <Icon size={15} />
+                      {label}
+                    </div>
+                  ))}
+                  <div className="pt-3 pb-1 px-3">
+                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Coaching</p>
+                  </div>
+                  {[
+                    { icon: Dumbbell,        label: 'Programs' },
+                    { icon: UtensilsCrossed, label: 'Nutrition' },
+                    { icon: HeartPulse,      label: 'Habits' },
+                    { icon: CreditCard,      label: 'Payments' },
+                  ].map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100">
+                      <Icon size={15} />
+                      {label}
+                    </div>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Main content */}
+              <div className="flex-1 overflow-hidden">
+                {/* Top bar */}
+                <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-gray-900">Clients</h3>
+                    <p className="text-xs text-gray-400">Manage your coaching clients</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2 text-sm text-gray-400">
+                      <span>🔍</span> Search clients...
+                    </div>
+                    <div className="bg-[#0F7B8C] text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-2">
+                      <Users size={14} /> Add Client
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-4 px-6 py-4">
+                  {[
+                    { label: 'Total Clients', val: '12' },
+                    { label: 'Active (Onboarded)', val: '9' },
+                    { label: 'Pending Invitations', val: '3' },
+                  ].map(s => (
+                    <div key={s.label} className="bg-gray-50 rounded-xl p-4">
+                      <div className="text-2xl font-black text-gray-900 mb-0.5">{s.val}</div>
+                      <div className="text-xs text-gray-400">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Client list */}
+                <div className="px-6 space-y-2">
+                  {[
+                    { name: 'Emma Wilson',    goal: 'Fat Loss',     status: 'Active',   avatar: 'EW', days: '3 days ago' },
+                    { name: 'James Khoury',   goal: 'Muscle Gain',  status: 'Active',   avatar: 'JK', days: 'Today' },
+                    { name: 'Mia Torres',     goal: 'Performance',  status: 'Active',   avatar: 'MT', days: 'Yesterday' },
+                    { name: 'Liam Chen',      goal: 'Recomp',       status: 'Pending',  avatar: 'LC', days: 'Invite sent' },
+                  ].map(c => (
+                    <div key={c.name} className="flex items-center gap-4 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:border-[#0F7B8C]/30 transition-colors">
+                      <div className="w-9 h-9 rounded-full bg-[#0F7B8C]/10 flex items-center justify-center text-xs font-bold text-[#0F7B8C] flex-shrink-0">{c.avatar}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-gray-900 text-sm">{c.name}</div>
+                        <div className="text-xs text-gray-400">{c.goal}</div>
+                      </div>
+                      <div className={`text-xs font-semibold px-2.5 py-1 rounded-full ${c.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>{c.status}</div>
+                      <div className="text-xs text-gray-400 hidden lg:block">{c.days}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
