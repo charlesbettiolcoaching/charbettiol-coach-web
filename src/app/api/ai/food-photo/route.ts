@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { jwtDecode } from 'jwt-decode';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || 'sk-placeholder' || 'sk-placeholder',
 });
 
 const supabase = createClient(

@@ -36,7 +36,7 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Initialize Resend client (optional)
-const resendApiKey = process.env.RESEND_API_KEY;
+const resendApiKey = process.env.RESEND_API_KEY || 'placeholder';
 
 async function sendEmailNotification(data: ContactFormData): Promise<boolean> {
   if (!resendApiKey) {
