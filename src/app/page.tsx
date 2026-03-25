@@ -21,14 +21,11 @@ export default function LandingPage() {
             <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-              Sign in
-            </Link>
-            <Link href="/login?role=coach" className="text-sm font-medium text-[#0F7B8C] hover:text-[#0d6b7a] transition-colors border border-[#0F7B8C]/30 px-3 py-1.5 rounded-lg hover:bg-[#0F7B8C]/5">
+            <Link href="/login" className="text-sm font-medium text-[#0F7B8C] hover:text-[#0d6b7a] transition-colors">
               Coach login
             </Link>
             <Link href="/register" className="bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
-              Get started free
+              Sign up free
             </Link>
           </div>
         </div>
@@ -72,40 +69,47 @@ export default function LandingPage() {
             </div>
 
             {/* Right — Phone Mockups */}
-            <div className="relative h-[520px] hidden md:block">
+            <div className="relative h-[580px] hidden md:block">
               {/* Left phone — Nutrition */}
-              <div className="absolute left-0 top-8 w-[200px] z-10 transform -rotate-6">
-                <div className="bg-gray-900 rounded-[32px] p-1.5 shadow-2xl">
-                  <div className="bg-white rounded-[26px] overflow-hidden">
-                    <div className="bg-[#0F7B8C] px-4 py-3">
-                      <p className="text-white text-xs font-semibold">Nutrition</p>
+              <div className="absolute left-4 top-12 w-[180px] z-10 transform -rotate-3">
+                <div className="bg-gray-900 rounded-[28px] p-[5px] shadow-2xl" style={{aspectRatio: '9/19'}}>
+                  <div className="bg-white rounded-[24px] overflow-hidden h-full flex flex-col">
+                    <div className="bg-[#0F7B8C] px-4 py-3 flex-shrink-0">
+                      <p className="text-white text-[11px] font-semibold">Nutrition</p>
                     </div>
-                    <div className="p-3 space-y-2">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-gray-900">1,220</p>
-                        <p className="text-[10px] text-gray-400">kcal · 980 remaining</p>
+                    <div className="p-3 space-y-2.5 flex-1">
+                      <div className="text-center py-1">
+                        <p className="text-xl font-bold text-gray-900">1,220</p>
+                        <p className="text-[9px] text-gray-400">kcal · 980 remaining</p>
                       </div>
-                      <div className="space-y-1.5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] text-gray-500">Protein</span>
-                          <span className="text-[10px] font-semibold text-gray-700">133/180g</span>
+                      <div className="space-y-2">
+                        <div>
+                          <div className="flex justify-between items-center mb-0.5">
+                            <span className="text-[9px] text-gray-500">Protein</span>
+                            <span className="text-[9px] font-semibold text-gray-700">133/180g</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-[#0F7B8C] rounded-full" style={{width: '74%'}} /></div>
                         </div>
-                        <div className="w-full h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-[#0F7B8C] rounded-full" style={{width: '74%'}} /></div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] text-gray-500">Carbs</span>
-                          <span className="text-[10px] font-semibold text-gray-700">118/220g</span>
+                        <div>
+                          <div className="flex justify-between items-center mb-0.5">
+                            <span className="text-[9px] text-gray-500">Carbs</span>
+                            <span className="text-[9px] font-semibold text-gray-700">118/220g</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-amber-400 rounded-full" style={{width: '54%'}} /></div>
                         </div>
-                        <div className="w-full h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-amber-400 rounded-full" style={{width: '54%'}} /></div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] text-gray-500">Fat</span>
-                          <span className="text-[10px] font-semibold text-gray-700">24/70g</span>
+                        <div>
+                          <div className="flex justify-between items-center mb-0.5">
+                            <span className="text-[9px] text-gray-500">Fat</span>
+                            <span className="text-[9px] font-semibold text-gray-700">24/70g</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-rose-400 rounded-full" style={{width: '34%'}} /></div>
                         </div>
-                        <div className="w-full h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-rose-400 rounded-full" style={{width: '34%'}} /></div>
                       </div>
-                      <div className="mt-2 space-y-1">
-                        <div className="bg-gray-50 rounded-lg px-2 py-1.5 text-[10px] text-gray-600">🥣 Breakfast</div>
-                        <div className="bg-gray-50 rounded-lg px-2 py-1.5 text-[10px] text-gray-600">🍛 Lunch</div>
-                        <div className="bg-gray-50 rounded-lg px-2 py-1.5 text-[10px] text-gray-600">🍽️ Dinner</div>
+                      <div className="space-y-1 pt-1">
+                        <div className="bg-gray-50 rounded-lg px-2.5 py-2 text-[9px] text-gray-600">🥣 Breakfast · 420 kcal</div>
+                        <div className="bg-gray-50 rounded-lg px-2.5 py-2 text-[9px] text-gray-600">🍛 Lunch · 510 kcal</div>
+                        <div className="bg-gray-50 rounded-lg px-2.5 py-2 text-[9px] text-gray-600">🍽️ Dinner · 290 kcal</div>
+                        <div className="bg-gray-50 rounded-lg px-2.5 py-2 text-[9px] text-gray-400">🍫 Snacks · Log food</div>
                       </div>
                     </div>
                   </div>
@@ -113,48 +117,62 @@ export default function LandingPage() {
               </div>
 
               {/* Center phone — Home / Dashboard */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[230px] z-20">
-                <div className="bg-gray-900 rounded-[36px] p-1.5 shadow-2xl shadow-black/30">
-                  <div className="rounded-[30px] overflow-hidden bg-white">
-                    {/* Notch */}
-                    <div className="relative">
-                      <div className="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-3 bg-gray-900 rounded-full z-10" />
+              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[210px] z-20">
+                <div className="bg-gray-900 rounded-[30px] p-[5px] shadow-2xl shadow-black/30" style={{aspectRatio: '9/19'}}>
+                  <div className="rounded-[26px] overflow-hidden bg-white h-full flex flex-col">
+                    {/* Status bar + Notch */}
+                    <div className="relative bg-white pt-2 pb-1 flex-shrink-0">
+                      <div className="absolute top-2 left-1/2 -translate-x-1/2 w-14 h-[5px] bg-gray-900 rounded-full z-10" />
+                      <div className="flex justify-between px-4 pt-3">
+                        <span className="text-[8px] text-gray-400">9:41</span>
+                        <div className="flex gap-1 items-center">
+                          <div className="w-3 h-1.5 border border-gray-400 rounded-sm"><div className="w-2 h-full bg-gray-400 rounded-sm" /></div>
+                        </div>
+                      </div>
                     </div>
                     {/* Screen Content — Client Home */}
-                    <div className="pt-8 pb-4 px-4">
-                      <p className="text-[10px] text-gray-400 mb-1">Good morning</p>
-                      <p className="text-sm font-bold text-gray-900">Emma Wilson</p>
-                      <div className="mt-3 bg-[#0F7B8C]/5 rounded-xl p-3 border border-[#0F7B8C]/10">
-                        <p className="text-[10px] font-semibold text-[#0F7B8C] mb-1">Today&apos;s Workout</p>
-                        <p className="text-xs font-bold text-gray-900">Upper Body Push</p>
-                        <p className="text-[10px] text-gray-400">5 exercises · ~55 min</p>
-                        <div className="mt-2 bg-[#0F7B8C] rounded-lg py-1.5 text-center">
-                          <span className="text-[10px] font-semibold text-white">▶ Start Workout</span>
+                    <div className="px-3.5 pb-4 flex-1">
+                      <p className="text-[9px] text-gray-400 mb-0.5">Good morning</p>
+                      <p className="text-[13px] font-bold text-gray-900 mb-3">Emma Wilson</p>
+                      <div className="bg-[#0F7B8C]/5 rounded-xl p-2.5 border border-[#0F7B8C]/10">
+                        <p className="text-[9px] font-semibold text-[#0F7B8C] mb-0.5">Today&apos;s Workout</p>
+                        <p className="text-[11px] font-bold text-gray-900">Upper Body Push</p>
+                        <p className="text-[9px] text-gray-400">5 exercises · ~55 min</p>
+                        <div className="mt-1.5 bg-[#0F7B8C] rounded-lg py-1.5 text-center">
+                          <span className="text-[9px] font-semibold text-white">Start Workout</span>
                         </div>
                       </div>
-                      <div className="mt-3 grid grid-cols-2 gap-2">
-                        <div className="bg-gray-50 rounded-xl p-2.5 text-center">
-                          <p className="text-lg font-bold text-gray-900">1,220</p>
-                          <p className="text-[9px] text-gray-400">kcal today</p>
+                      <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+                        <div className="bg-gray-50 rounded-lg p-2 text-center">
+                          <p className="text-[15px] font-bold text-gray-900">1,220</p>
+                          <p className="text-[8px] text-gray-400">kcal today</p>
                         </div>
-                        <div className="bg-gray-50 rounded-xl p-2.5 text-center">
-                          <p className="text-lg font-bold text-gray-900">8,432</p>
-                          <p className="text-[9px] text-gray-400">steps</p>
+                        <div className="bg-gray-50 rounded-lg p-2 text-center">
+                          <p className="text-[15px] font-bold text-gray-900">8,432</p>
+                          <p className="text-[8px] text-gray-400">steps</p>
                         </div>
                       </div>
-                      <div className="mt-3 space-y-1.5">
-                        <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-2.5 py-2">
-                          <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-[10px]">✓</div>
-                          <span className="text-[10px] text-gray-600">Drink 3L water</span>
+                      <p className="text-[9px] font-semibold text-gray-500 mt-2.5 mb-1">Daily Habits</p>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 bg-gray-50 rounded-lg px-2 py-1.5">
+                          <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center text-[8px]">✓</div>
+                          <span className="text-[9px] text-gray-600">Drink 3L water</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-2.5 py-2">
-                          <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] text-gray-300">○</div>
-                          <span className="text-[10px] text-gray-600">10,000 steps</span>
+                        <div className="flex items-center gap-1.5 bg-gray-50 rounded-lg px-2 py-1.5">
+                          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-[8px] text-gray-300">○</div>
+                          <span className="text-[9px] text-gray-600">10,000 steps</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-2.5 py-2">
-                          <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-[10px]">✓</div>
-                          <span className="text-[10px] text-gray-600">8hrs sleep</span>
+                        <div className="flex items-center gap-1.5 bg-gray-50 rounded-lg px-2 py-1.5">
+                          <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center text-[8px]">✓</div>
+                          <span className="text-[9px] text-gray-600">8hrs sleep</span>
                         </div>
+                      </div>
+                      {/* Bottom nav bar */}
+                      <div className="mt-3 flex justify-around border-t border-gray-100 pt-2">
+                        <div className="text-center"><div className="text-[10px]">🏠</div><p className="text-[7px] text-[#0F7B8C] font-semibold">Home</p></div>
+                        <div className="text-center"><div className="text-[10px]">🏋️</div><p className="text-[7px] text-gray-400">Train</p></div>
+                        <div className="text-center"><div className="text-[10px]">🍎</div><p className="text-[7px] text-gray-400">Nutrition</p></div>
+                        <div className="text-center"><div className="text-[10px]">💬</div><p className="text-[7px] text-gray-400">Chat</p></div>
                       </div>
                     </div>
                   </div>
@@ -162,35 +180,38 @@ export default function LandingPage() {
               </div>
 
               {/* Right phone — Training */}
-              <div className="absolute right-0 top-8 w-[200px] z-10 transform rotate-6">
-                <div className="bg-gray-900 rounded-[32px] p-1.5 shadow-2xl">
-                  <div className="bg-white rounded-[26px] overflow-hidden">
-                    <div className="bg-[#0F7B8C] px-4 py-3">
-                      <p className="text-white text-xs font-semibold">Training</p>
+              <div className="absolute right-4 top-12 w-[180px] z-10 transform rotate-3">
+                <div className="bg-gray-900 rounded-[28px] p-[5px] shadow-2xl" style={{aspectRatio: '9/19'}}>
+                  <div className="bg-white rounded-[24px] overflow-hidden h-full flex flex-col">
+                    <div className="bg-[#0F7B8C] px-4 py-3 flex-shrink-0">
+                      <p className="text-white text-[11px] font-semibold">Training</p>
                     </div>
-                    <div className="p-3 space-y-2">
-                      <p className="text-xs font-bold text-gray-900">My Program</p>
-                      <p className="text-[10px] text-gray-400">1/4 sessions this week</p>
+                    <div className="p-3 space-y-2 flex-1">
+                      <p className="text-[11px] font-bold text-gray-900">My Program</p>
+                      <p className="text-[9px] text-gray-400">1/4 sessions this week</p>
                       <div className="flex gap-1 mt-1">
                         {['M','T','W','T','F','S','S'].map((d, i) => (
-                          <div key={i} className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium ${i === 2 ? 'bg-[#0F7B8C] text-white' : 'bg-gray-100 text-gray-400'}`}>
+                          <div key={i} className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-medium ${i === 2 ? 'bg-[#0F7B8C] text-white' : 'bg-gray-100 text-gray-400'}`}>
                             {d}
                           </div>
                         ))}
                       </div>
-                      <div className="mt-2 bg-gray-50 rounded-xl p-2.5">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] font-semibold text-gray-900">TODAY</span>
-                        </div>
-                        <p className="text-[11px] font-bold text-gray-900">Upper Body Push</p>
-                        <p className="text-[9px] text-gray-400">~55 min · 5 exercises</p>
+                      <div className="mt-1.5 bg-gray-50 rounded-xl p-2.5">
+                        <span className="text-[9px] font-semibold text-[#0F7B8C]">TODAY</span>
+                        <p className="text-[10px] font-bold text-gray-900 mt-0.5">Upper Body Push</p>
+                        <p className="text-[8px] text-gray-400">~55 min · 5 exercises</p>
                       </div>
-                      <div className="bg-gray-50 mx-0 rounded-xl p-2.5 border-l-4 border-[#0F7B8C]">
-                        <p className="text-[10px] font-semibold text-gray-800">Coach Note</p>
-                        <p className="text-[9px] text-gray-500 mt-0.5">Focus on controlled tempo today. 3-1-2 on all presses.</p>
+                      <div className="bg-gray-50 rounded-xl p-2.5">
+                        <span className="text-[9px] font-semibold text-gray-400">TOMORROW</span>
+                        <p className="text-[10px] font-bold text-gray-900 mt-0.5">Lower Body</p>
+                        <p className="text-[8px] text-gray-400">~50 min · 6 exercises</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-2.5 border-l-4 border-[#0F7B8C]">
+                        <p className="text-[9px] font-semibold text-gray-800">Coach Note</p>
+                        <p className="text-[8px] text-gray-500 mt-0.5">Focus on controlled tempo today. 3-1-2 on all presses.</p>
                       </div>
                       <div className="bg-[#0F7B8C] rounded-xl py-2 text-center">
-                        <span className="text-[10px] font-semibold text-white">▶ Start Workout</span>
+                        <span className="text-[9px] font-semibold text-white">▶ Start Workout</span>
                       </div>
                     </div>
                   </div>
@@ -311,15 +332,22 @@ export default function LandingPage() {
               Choose which features your clients can access. A dietitian doesn&apos;t need the workout section, and a PT might not need meal plans.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {title:'Training Programs',desc:'Build and assign workout programs with sets, reps, tempo, and coach notes. Clients log sessions live in the app.',icon:'🏋️'},
-              {title:'Nutrition Planning',desc:'Create personalised meal plans and macro targets. Clients log food and track progress against their goals.',icon:'🍎'},
-              {title:'Client Messaging',desc:'Chat directly with clients in real time. Your AI coach handles messages when you\'re offline.',icon:'💬'},
-              {title:'Check-ins',desc:'Weekly progress check-ins with custom questions. Stay on top of how every client is really doing.',icon:'📋'},
+              {title:'Nutrition & Meal Plans',desc:'Create AI-generated meal plans, set macro targets, and let clients log food with a barcode scanner or photo.',icon:'🍎'},
+              {title:'Client Messaging',desc:'Chat directly with clients in real time. Send voice notes, use canned templates, and let AI handle after-hours.',icon:'💬'},
+              {title:'Check-ins & Forms',desc:'Weekly progress check-ins with custom questions. Stay on top of how every client is really doing.',icon:'📋'},
               {title:'Habit Tracking',desc:'Set daily habits and let clients track them in the app. Build consistency one day at a time.',icon:'✅'},
               {title:'Progress & Metrics',desc:'Weight, measurements, progress photos, and personal bests — every metric in one place.',icon:'📊'},
-              {title:'AI Coach Assistant',desc:'Your AI coach responds to clients 24/7 in your tone and style — motivational, supportive, or professional.',icon:'🤖'},
+              {title:'AI Coach Assistant',desc:'Your AI coach responds to clients 24/7 in your tone and style. It can also generate meal plans and workout programs.',icon:'🤖'},
+              {title:'White Label & Branding',desc:'Make Propel your own. Custom colours, logo, and branding so clients see your brand — not ours.',icon:'🎨'},
+              {title:'Video Exercise Library',desc:'Upload exercise demo videos and attach them to workouts. Clients see exactly how to perform each movement.',icon:'🎬'},
+              {title:'Group Chats',desc:'Create group coaching channels for challenges, accountability groups, or team communication.',icon:'👥'},
+              {title:'Wearable Integration',desc:'Connect Apple Watch, Fitbit, and Garmin. Pull in steps, heart rate, sleep, and activity data automatically.',icon:'⌚'},
+              {title:'AI Form Check',desc:'Clients upload exercise videos and get instant AI-powered form analysis with technique feedback.',icon:'📹'},
+              {title:'Packages & Subscriptions',desc:'Create coaching packages with different tiers. Clients subscribe and get auto-billed through Stripe.',icon:'📦'},
+              {title:'Marketplace',desc:'List your programs and templates on the Propel marketplace. Earn passive income from your expertise.',icon:'🛒'},
               {title:'Payments & Invoicing',desc:'Send invoices, manage subscriptions, and track revenue — all powered by Stripe.',icon:'💳'},
             ].map((f, i) => (
               <div key={i} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-[#0F7B8C]/20 hover:bg-[#0F7B8C]/[0.02] transition-colors">
@@ -510,8 +538,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-4 text-xs text-gray-400">
             <a href="#" className="hover:text-gray-600 transition-colors">Privacy</a>
             <a href="#" className="hover:text-gray-600 transition-colors">Terms</a>
-            <Link href="/login" className="hover:text-gray-600 transition-colors">Client sign in</Link>
-            <Link href="/login?role=coach" className="hover:text-gray-600 transition-colors text-[#0F7B8C]">Coach login</Link>
+            <Link href="/login" className="hover:text-gray-600 transition-colors text-[#0F7B8C]">Coach login</Link>
           </div>
         </div>
       </footer>
