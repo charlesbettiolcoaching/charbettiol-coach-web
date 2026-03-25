@@ -16,100 +16,113 @@ export interface PricingPlan {
 
 export default function PricingClient({ plans }: { plans: PricingPlan[] }) {
   const [loading, setLoading] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   const handleCheckout = async (planSlug: string) => {
     setLoading(planSlug)
+    setCheckoutError(null)
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan: planSlug,
-          billing: 'monthly',
-          email: '',
-          coachId: '',
-        }),
+        body: JSON.stringify({ plan: planSlug, billing: 'monthly', email: '', coachId: '' }),
       })
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
       } else {
-        console.error('Failed to create checkout session:', data.error)
+        setCheckoutError('Could not start checkout. Please try again or contact support.')
       }
-    } catch (e) {
-      console.error('Checkout error:', e)
+    } catch {
+      setCheckoutError('Something went wrong. Please try again.')
     } finally {
       setLoading(null)
     }
   }
 
   return (
-    <div className="grid md:grid-cols-3 gap-8 items-start">
-      {plans.map(plan => (
-        <div
-          key={plan.slug}
-          className={`rounded-2xl border transition-all ${
-            plan.highlight
-              ? 'bg-[#0F7B8C] text-white border-[#0F7B8C] shadow-2xl shadow-[#0F7B8C]/25 md:scale-105'
-              : 'bg-white border-gray-100 shadow-sm hover:shadow-md'
-          }`}
-        >
-          <div className="p-8">
+    <>
+      <div className="grid md:grid-cols-3 gap-6 items-start">
+        {plans.map(plan => (
+          <div key={plan.slug} className="relative">
+            {/* Most Popular badge — sits on the top border */}
             {plan.highlight && (
-              <div className="inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">
-                ⭐ Most Popular
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                <span className="whitespace-nowrap bg-[#0F7B8C] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
+                  Most Popular
+                </span>
               </div>
             )}
 
-            <h3 className={`text-2xl font-black mb-2 ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>
-              {plan.name}
-            </h3>
-            <p className={`text-sm mb-6 ${plan.highlight ? 'text-white/70' : 'text-gray-500'}`}>
-              {plan.description}
-            </p>
-
-            <div className="flex items-end gap-1 mb-8">
-              <span className={`text-5xl font-black ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>
-                £{plan.price}
-              </span>
-              <span className={`text-sm mb-2 ${plan.highlight ? 'text-white/70' : 'text-gray-500'}`}>
-                {plan.period}
-              </span>
-            </div>
-
-            <button
-              onClick={() => handleCheckout(plan.slug)}
-              disabled={loading === plan.slug}
-              className={`block w-full text-center font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-8 ${
+            <div
+              className={`rounded-2xl border-2 transition-all h-full ${
                 plan.highlight
-                  ? 'bg-white text-[#0F7B8C] hover:bg-gray-50 disabled:opacity-70'
-                  : 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a] disabled:opacity-70'
+                  ? 'border-[#0F7B8C] shadow-xl shadow-[#0F7B8C]/15'
+                  : 'border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300'
               }`}
             >
-              {loading === plan.slug ? 'Processing...' : 'Start free trial'}
-            </button>
+              <div className="p-8">
+                {/* Plan name + description */}
+                <h3 className="text-2xl font-black text-gray-900 mb-1">{plan.name}</h3>
+                <p className="text-sm text-gray-500 mb-6">{plan.description}</p>
 
-            <ul className="space-y-4">
-              {plan.features.map(feature => (
-                <li
-                  key={feature}
-                  className={`flex items-start gap-3 text-sm ${
-                    plan.highlight ? 'text-white/90' : 'text-gray-700'
-                  }`}
-                >
-                  <Check
-                    size={18}
-                    className={`flex-shrink-0 mt-0.5 ${
-                      plan.highlight ? 'text-white' : 'text-[#0F7B8C]'
+                {/* Price */}
+                <div className="flex items-end gap-1 mb-6">
+                  <span className="text-5xl font-black text-gray-900">
+                    {plan.price === '0' ? 'Free' : `£${plan.price}`}
+                  </span>
+                  {plan.price !== '0' && (
+                    <span className="text-sm text-gray-500 mb-2">{plan.period}</span>
+                  )}
+                </div>
+
+                {/* CTA */}
+                {plan.slug === 'starter' ? (
+                  <Link
+                    href="/trial/setup?plan=starter"
+                    className={`block w-full text-center font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-8 ${
+                      plan.highlight
+                        ? 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a]'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                     }`}
-                  />
-                  {feature}
-                </li>
-              ))}
-            </ul>
+                  >
+                    Get started free
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => handleCheckout(plan.slug)}
+                    disabled={loading === plan.slug}
+                    className={`block w-full text-center font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-8 disabled:opacity-70 disabled:cursor-not-allowed ${
+                      plan.highlight
+                        ? 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a]'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    {loading === plan.slug ? 'Starting…' : 'Start free trial'}
+                  </button>
+                )}
+
+                {/* Features */}
+                <ul className="space-y-3">
+                  {plan.features.map(feature => (
+                    <li key={feature} className="flex items-start gap-3 text-sm text-gray-700">
+                      <Check
+                        size={17}
+                        className="flex-shrink-0 mt-0.5 text-[#0F7B8C]"
+                      />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+
+      {checkoutError && (
+        <p className="text-center text-sm text-red-600 mt-6">{checkoutError}</p>
+      )}
+    </>
   )
 }

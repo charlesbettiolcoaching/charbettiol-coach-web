@@ -79,6 +79,7 @@ function TrialSetupContent() {
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [signupError, setSignupError] = useState('')
+  const [emailConfirmationSent, setEmailConfirmationSent] = useState(false)
 
   const plan = PLAN_DETAILS[planParam as keyof typeof PLAN_DETAILS] || PLAN_DETAILS.pro
 
@@ -113,16 +114,54 @@ function TrialSetupContent() {
     if (data.user) {
       await supabase.from('profiles').upsert({
         id: data.user.id,
+        name,
         full_name: name,
         email,
+        role: 'coach',
         profession,
-        plan: planParam,
+        subscription_tier: planParam,
         subscription_status: 'trialing',
         onboarding_completed: false,
       })
     }
 
+    // If email confirmation is required, session will be null — show confirmation screen
+    if (!data.session) {
+      setEmailConfirmationSent(true)
+      setIsLoading(false)
+      return
+    }
+
     router.push('/onboarding')
+  }
+
+  if (emailConfirmationSent) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center px-6" style={{ fontFamily: 'var(--font-inter, system-ui, sans-serif)' }}>
+        <div className="max-w-md w-full text-center">
+          <div className="w-16 h-16 rounded-full bg-[#0F7B8C]/10 flex items-center justify-center mx-auto mb-6">
+            <Check size={32} className="text-[#0F7B8C]" />
+          </div>
+          <h2 className="text-3xl font-black text-gray-900 mb-3">Check your email</h2>
+          <p className="text-gray-500 mb-2">
+            We&apos;ve sent a confirmation link to <strong className="text-gray-900">{email}</strong>.
+          </p>
+          <p className="text-gray-500 mb-8">
+            Click the link in the email to activate your account and get started.
+          </p>
+          <p className="text-sm text-gray-400">
+            Didn&apos;t receive it? Check your spam folder or{' '}
+            <button
+              onClick={() => setEmailConfirmationSent(false)}
+              className="text-[#0F7B8C] hover:underline font-medium"
+            >
+              try again
+            </button>
+            .
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
