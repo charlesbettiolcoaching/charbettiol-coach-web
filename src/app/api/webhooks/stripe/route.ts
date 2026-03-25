@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
             stripe_subscription_id: subscriptionId,
             subscription_status: 'active',
             subscription_tier: tier,
-            subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
+            subscription_end_date: new Date((subscription as any).current_period_end * 1000).toISOString(),
           }).eq('stripe_customer_id', customerId)
           await logBillingEvent(customerId, 'subscription_started', session.amount_total || 0)
         }
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         await supabase.from('profiles').update({
           subscription_status: sub.status === 'active' ? 'active' : sub.status,
           subscription_tier: tier,
-          subscription_end_date: new Date(sub.current_period_end * 1000).toISOString(),
+          subscription_end_date: new Date((sub as any).current_period_end * 1000).toISOString(),
         }).eq('stripe_customer_id', sub.customer as string)
         break
       }
@@ -66,11 +66,11 @@ export async function POST(req: NextRequest) {
       }
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice
-        if (invoice.subscription) {
-          const sub = await stripe.subscriptions.retrieve(invoice.subscription as string)
+        if ((invoice as any).subscription) {
+          const sub = await stripe.subscriptions.retrieve((invoice as any).subscription as string)
           await supabase.from('profiles').update({
             subscription_status: 'active',
-            subscription_end_date: new Date(sub.current_period_end * 1000).toISOString(),
+            subscription_end_date: new Date((sub as any).current_period_end * 1000).toISOString(),
           }).eq('stripe_customer_id', invoice.customer as string)
         }
         await logBillingEvent(invoice.customer as string, 'payment_succeeded', invoice.amount_paid || 0)

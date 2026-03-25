@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Propel — Coaching Platform',
     description: 'Programs, check-ins, nutrition, AI coaching and payments — all in one place.',
-    url: 'https://propelcoach.app',
+    url: 'https://propelcoaches.com',
     siteName: 'Propel',
     type: 'website',
   },
