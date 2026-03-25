@@ -4,9 +4,7 @@ import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import { jwtDecode } from 'jwt-decode';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'sk-placeholder', //
-  apiKey: process.env.OPENAI_API_KEY || 'sk-placeholder' || 'sk-placeholder',
-});
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'sk-placeholder' });
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
