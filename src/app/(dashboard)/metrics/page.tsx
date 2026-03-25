@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { TrendingDown, TrendingUp, Minus } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { TrendingDown, TrendingUp, Minus, Loader2 } from 'lucide-react'
 import { useIsDemo } from '@/lib/demo/useDemoMode'
 import { DEMO_CLIENTS, DEMO_WEIGHT_LOGS, DEMO_CHECK_INS } from '@/lib/demo/mockData'
 import clsx from 'clsx'
+import { createClient } from '@/lib/supabase/client'
 
 const DEMO_MEASUREMENTS: Record<string, { date: string; chest: number; waist: number; hips: number; arms: number; thighs: number }[]> = {
   'demo-client-1': [
@@ -49,17 +50,92 @@ const DEMO_PRS: Record<string, { exercise: string; weight: number; reps: number;
 export default function MetricsPage() {
   const isDemo = useIsDemo()
   const [selectedClient, setSelectedClient] = useState<string>(isDemo ? 'demo-client-1' : '')
+  const [realClients, setRealClients] = useState<{ id: string; name: string; full_name: string }[]>([])
+  const [realWeightLogs, setRealWeightLogs] = useState<any[]>([])
+  const [realCheckIns, setRealCheckIns] = useState<any[]>([])
+  const [realPRs, setRealPRs] = useState<any[]>([])
+  const [macroInputs, setMacroInputs] = useState({ calories: '2000', protein: '150', carbs: '200', fat: '70' })
+  const [savingMacros, setSavingMacros] = useState(false)
+  const [macroSaved, setMacroSaved] = useState(false)
+  const [loadingClients, setLoadingClients] = useState(!isDemo)
+  const [loadingMetrics, setLoadingMetrics] = useState(false)
 
-  const clients = isDemo ? DEMO_CLIENTS : []
+  // Fetch clients list for the dropdown
+  useEffect(() => {
+    if (isDemo) return
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('coach_id', user.id)
+        .eq('role', 'client')
+        .order('full_name')
+      setRealClients((data || []).map(c => ({ id: c.id, name: c.full_name, full_name: c.full_name })))
+      setLoadingClients(false)
+    })
+  }, [isDemo])
 
-  const clientWeightLogs = DEMO_WEIGHT_LOGS.filter(w => w.client_id === selectedClient)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  // Fetch metrics when selectedClient changes
+  useEffect(() => {
+    if (isDemo || !selectedClient) return
+    const supabase = createClient()
+    setLoadingMetrics(true)
+    Promise.all([
+      supabase.from('weight_logs').select('*').eq('client_id', selectedClient).order('date', { ascending: true }).limit(24),
+      supabase.from('check_ins').select('energy, sleep_quality, stress, date').eq('client_id', selectedClient).order('date', { ascending: false }).limit(20),
+      supabase.from('personal_records').select('*').eq('client_id', selectedClient).order('date', { ascending: false }),
+      supabase.from('macro_targets').select('*').eq('client_id', selectedClient).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+    ]).then(([wl, ci, pr, mt]) => {
+      setRealWeightLogs(wl.data || [])
+      setRealCheckIns(ci.data || [])
+      setRealPRs(pr.data || [])
+      if (mt.data) {
+        setMacroInputs({
+          calories: String(mt.data.calories || 2000),
+          protein: String(mt.data.protein_g || 150),
+          carbs: String(mt.data.carbs_g || 200),
+          fat: String(mt.data.fats_g || 70),
+        })
+      }
+    }).finally(() => setLoadingMetrics(false))
+  }, [isDemo, selectedClient])
+
+  const handleSaveMacros = async () => {
+    if (!selectedClient || isDemo) return
+    setSavingMacros(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    await supabase.from('macro_targets').upsert({
+      client_id: selectedClient,
+      coach_id: user?.id,
+      calories: parseInt(macroInputs.calories) || 0,
+      protein_g: parseInt(macroInputs.protein) || 0,
+      carbs_g: parseInt(macroInputs.carbs) || 0,
+      fats_g: parseInt(macroInputs.fat) || 0,
+      set_by_coach: true,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'client_id' })
+    setSavingMacros(false)
+    setMacroSaved(true)
+    setTimeout(() => setMacroSaved(false), 2500)
+  }
+
+  const clients = isDemo ? DEMO_CLIENTS : realClients
+  const clientWeightLogsRaw = isDemo
+    ? DEMO_WEIGHT_LOGS.filter(w => w.client_id === selectedClient)
+    : realWeightLogs
+  const clientWeightLogs = clientWeightLogsRaw
+    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-12)
 
-  const clientCheckIns = DEMO_CHECK_INS.filter(c => c.client_id === selectedClient)
-  const clientProfile = clients.find(c => c.id === selectedClient)
+  const clientCheckIns = isDemo
+    ? DEMO_CHECK_INS.filter(c => c.client_id === selectedClient)
+    : realCheckIns
+  const clientProfile = clients.find((c: any) => c.id === selectedClient)
   const measurements = DEMO_MEASUREMENTS[selectedClient] ?? []
-  const prs = DEMO_PRS[selectedClient] ?? []
+  const prs = isDemo ? (DEMO_PRS[selectedClient] ?? []) : realPRs
 
   const latestWeight = clientWeightLogs[clientWeightLogs.length - 1]?.weight_kg
   const prevWeight = clientWeightLogs[clientWeightLogs.length - 2]?.weight_kg
@@ -91,7 +167,10 @@ export default function MetricsPage() {
         <select value={selectedClient} onChange={e => setSelectedClient(e.target.value)}
           className="px-3 py-2 bg-surface border border-cb-border rounded-lg text-sm text-cb-secondary focus:outline-none focus:ring-2 focus:ring-brand">
           {!selectedClient && <option value="">Select client...</option>}
-          {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {loadingClients
+            ? <option disabled>Loading clients...</option>
+            : (clients as any[]).map((c: any) => <option key={c.id} value={c.id}>{c.full_name || c.name}</option>)
+          }
         </select>
       </div>
 
@@ -110,23 +189,28 @@ export default function MetricsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-medium text-cb-muted">Calories</label>
-                <input type="number" placeholder="2000" defaultValue="2000" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
+                <input type="number" value={macroInputs.calories} onChange={e => setMacroInputs(p => ({ ...p, calories: e.target.value }))} placeholder="2000" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-medium text-cb-muted">Protein (g)</label>
-                <input type="number" placeholder="150" defaultValue="150" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
+                <input type="number" value={macroInputs.protein} onChange={e => setMacroInputs(p => ({ ...p, protein: e.target.value }))} placeholder="150" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-medium text-cb-muted">Carbs (g)</label>
-                <input type="number" placeholder="200" defaultValue="200" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
+                <input type="number" value={macroInputs.carbs} onChange={e => setMacroInputs(p => ({ ...p, carbs: e.target.value }))} placeholder="200" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-medium text-cb-muted">Fat (g)</label>
-                <input type="number" placeholder="70" defaultValue="70" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
+                <input type="number" value={macroInputs.fat} onChange={e => setMacroInputs(p => ({ ...p, fat: e.target.value }))} placeholder="70" className="w-full px-3 py-2 bg-surface-light border border-cb-border rounded-lg text-sm text-cb-text focus:outline-none focus:ring-2 focus:ring-brand" />
               </div>
             </div>
-            <button className="mt-4 w-full px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity">
-              Save Targets
+            <button
+              onClick={handleSaveMacros}
+              disabled={savingMacros || !selectedClient || isDemo}
+              className="mt-4 w-full px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {savingMacros && <Loader2 size={14} className="animate-spin" />}
+              {macroSaved ? '✓ Saved!' : 'Save Targets'}
             </button>
             <p className="text-xs text-cb-muted mt-3">These targets will be visible to the client in their nutrition tracking.</p>
           </div>

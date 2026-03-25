@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useIsDemo } from '@/lib/demo/useDemoMode'
-import { Plus, Dumbbell } from 'lucide-react'
+import { Plus, Dumbbell, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
 
 const DEMO_PROGRAMS = [
@@ -69,13 +69,90 @@ const DEMO_CLIENTS_BRIEF = [
 
 type FilterTab = 'all' | 'templates' | 'assigned'
 
+type RealProgram = {
+  id: string
+  name: string
+  description: string | null
+  duration_weeks: number | null
+  days_per_week: number | null
+  goal: string | null
+  difficulty: string | null
+  is_public: boolean
+  coach_id: string
+  created_at: string
+  updated_at: string
+}
+
 export default function ProgramsPage() {
   const isDemo = useIsDemo()
   const [filterTab, setFilterTab] = useState<FilterTab>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [expandedProgram, setExpandedProgram] = useState<string | null>(null)
+  const [loading, setLoading] = useState(!isDemo)
+  const [realPrograms, setRealPrograms] = useState<RealProgram[]>([])
+  const [showNewProgramModal, setShowNewProgramModal] = useState(false)
+  const [newProgramName, setNewProgramName] = useState('')
+  const [newProgramWeeks, setNewProgramWeeks] = useState('8')
+  const [newProgramDays, setNewProgramDays] = useState('4')
+  const [saving, setSaving] = useState(false)
 
-  const programs = isDemo ? DEMO_PROGRAMS : []
+  const fetchPrograms = useCallback(async () => {
+    if (isDemo) return
+    setLoading(true)
+    try {
+      const res = await fetch('/api/program-templates')
+      const json = await res.json()
+      setRealPrograms(json.templates || [])
+    } catch (e) {
+      console.error('Failed to fetch programs', e)
+    } finally {
+      setLoading(false)
+    }
+  }, [isDemo])
+
+  useEffect(() => { fetchPrograms() }, [fetchPrograms])
+
+  const handleCreateProgram = async () => {
+    if (!newProgramName.trim()) return
+    setSaving(true)
+    try {
+      const res = await fetch('/api/program-templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newProgramName.trim(),
+          duration_weeks: parseInt(newProgramWeeks) || 8,
+          days_per_week: parseInt(newProgramDays) || 4,
+        }),
+      })
+      if (res.ok) {
+        setShowNewProgramModal(false)
+        setNewProgramName('')
+        fetchPrograms()
+      }
+    } catch (e) {
+      console.error('Failed to create program', e)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // Normalise real programs to the same shape as demo for rendering
+  const normalizedRealPrograms = realPrograms.map(p => ({
+    id: p.id,
+    name: p.name,
+    weeks: p.duration_weeks ?? 8,
+    daysPerWeek: p.days_per_week ?? 3,
+    totalExercises: 0,
+    assignedClients: [] as string[],
+    isTemplate: p.is_public,
+    description: p.description ?? '',
+    tags: [p.goal, p.difficulty].filter(Boolean) as string[],
+    lastModified: p.updated_at?.slice(0, 10) ?? '',
+    createdAt: p.created_at?.slice(0, 10) ?? '',
+  }))
+
+  const programs = isDemo ? DEMO_PROGRAMS : normalizedRealPrograms
   const clients = isDemo ? DEMO_CLIENTS_BRIEF : []
 
   // Filter programs
@@ -122,7 +199,10 @@ export default function ProgramsPage() {
           <h1 className="text-2xl font-bold text-cb-text">Programs</h1>
           <p className="text-sm text-cb-muted mt-0.5">Build and manage training templates</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand/90 transition-colors font-medium text-sm">
+        <button
+          onClick={() => setShowNewProgramModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand/90 transition-colors font-medium text-sm"
+        >
           <Plus size={16} />
           New Program
         </button>
@@ -170,11 +250,55 @@ export default function ProgramsPage() {
         />
       </div>
 
+      {/* New Program Modal */}
+      {showNewProgramModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-surface border border-cb-border rounded-xl p-6 w-full max-w-sm mx-4 shadow-xl">
+            <h2 className="text-lg font-bold text-cb-text mb-4">New Program</h2>
+            <div className="space-y-3 mb-5">
+              <div>
+                <label className="text-xs font-medium text-cb-muted mb-1 block">Program Name</label>
+                <input
+                  type="text"
+                  value={newProgramName}
+                  onChange={e => setNewProgramName(e.target.value)}
+                  placeholder="e.g. 8-Week Fat Loss"
+                  className="w-full px-3 py-2 border border-cb-border rounded-lg text-sm text-cb-text bg-surface focus:outline-none focus:ring-2 focus:ring-brand"
+                  autoFocus
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-cb-muted mb-1 block">Duration (weeks)</label>
+                  <input type="number" min="1" max="52" value={newProgramWeeks} onChange={e => setNewProgramWeeks(e.target.value)} className="w-full px-3 py-2 border border-cb-border rounded-lg text-sm text-cb-text bg-surface focus:outline-none focus:ring-2 focus:ring-brand" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-cb-muted mb-1 block">Days/week</label>
+                  <input type="number" min="1" max="7" value={newProgramDays} onChange={e => setNewProgramDays(e.target.value)} className="w-full px-3 py-2 border border-cb-border rounded-lg text-sm text-cb-text bg-surface focus:outline-none focus:ring-2 focus:ring-brand" />
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setShowNewProgramModal(false)} className="flex-1 px-3 py-2 border border-cb-border rounded-lg text-sm text-cb-secondary hover:bg-surface-light transition-colors">Cancel</button>
+              <button onClick={handleCreateProgram} disabled={saving || !newProgramName.trim()} className="flex-1 px-3 py-2 bg-brand text-white rounded-lg text-sm font-semibold hover:bg-brand/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+                {saving && <Loader2 size={14} className="animate-spin" />}
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Programs grid */}
-      {filteredPrograms.length === 0 ? (
+      {loading ? (
+        <div className="bg-surface border border-cb-border rounded-lg p-16 text-center">
+          <Loader2 size={24} className="mx-auto text-cb-muted mb-3 animate-spin" />
+          <p className="text-cb-muted text-sm">Loading programs...</p>
+        </div>
+      ) : filteredPrograms.length === 0 ? (
         <div className="bg-surface border border-cb-border rounded-lg p-16 text-center">
           <Dumbbell size={40} className="mx-auto text-cb-muted mb-3" />
-          <p className="text-cb-muted">No programs found.</p>
+          <p className="text-cb-muted">{searchTerm ? 'No programs match your search.' : 'No programs yet. Create your first one!'}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-6">

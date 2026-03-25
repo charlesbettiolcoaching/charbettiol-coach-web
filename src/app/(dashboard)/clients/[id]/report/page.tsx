@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { FileText, Printer, TrendingDown, TrendingUp, Minus } from 'lucide-react'
+import { FileText, Printer, TrendingDown, TrendingUp, Minus, Loader2 } from 'lucide-react'
 import { useIsDemo } from '@/lib/demo/useDemoMode'
 import { DEMO_CLIENTS, DEMO_WEIGHT_LOGS, DEMO_CHECK_INS, DEMO_PRS } from '@/lib/demo/mockData'
+import { createClient } from '@/lib/supabase/client'
 import clsx from 'clsx'
 
 const DEMO_MEASUREMENTS: Record<string, { date: string; chest: number; waist: number; hips: number; arms: number; thighs: number }[]> = {
@@ -44,23 +45,48 @@ export default function ReportPage() {
   const isDemo = useIsDemo()
   const params = useParams()
   const clientId = params.id as string
+  const [loading, setLoading] = useState(!isDemo)
+  const [realClient, setRealClient] = useState<any>(null)
+  const [realWeightLogs, setRealWeightLogs] = useState<any[]>([])
+  const [realCheckIns, setRealCheckIns] = useState<any[]>([])
+  const [realPRs, setRealPRs] = useState<any[]>([])
 
-  const client = useMemo(() => {
-    const clients = isDemo ? DEMO_CLIENTS : []
-    return clients.find((c) => c.id === clientId)
-  }, [clientId, isDemo])
+  useEffect(() => {
+    if (isDemo || !clientId) return
+    const supabase = createClient()
+    setLoading(true)
+    Promise.all([
+      supabase.from('profiles').select('id, full_name, email, starting_weight_kg, created_at').eq('id', clientId).single(),
+      supabase.from('weight_logs').select('*').eq('client_id', clientId).order('date', { ascending: true }),
+      supabase.from('check_ins').select('energy, sleep_quality, stress, date, bodyweight_kg').eq('client_id', clientId).order('date', { ascending: false }),
+      supabase.from('personal_records').select('*').eq('client_id', clientId).order('date', { ascending: false }),
+    ]).then(([profileRes, wlRes, ciRes, prRes]) => {
+      if (profileRes.data) setRealClient({ ...profileRes.data, name: profileRes.data.full_name })
+      setRealWeightLogs(wlRes.data || [])
+      setRealCheckIns(ciRes.data || [])
+      setRealPRs(prRes.data || [])
+    }).finally(() => setLoading(false))
+  }, [isDemo, clientId])
+
+  const client = isDemo
+    ? DEMO_CLIENTS.find((c) => c.id === clientId)
+    : realClient
 
   const clientWeightLogs = useMemo(() => {
-    return DEMO_WEIGHT_LOGS.filter((w) => w.client_id === clientId)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  }, [clientId])
+    const logs = isDemo
+      ? DEMO_WEIGHT_LOGS.filter((w) => w.client_id === clientId)
+      : realWeightLogs
+    return logs.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  }, [clientId, isDemo, realWeightLogs])
 
   const clientCheckIns = useMemo(() => {
-    return DEMO_CHECK_INS.filter((c) => c.client_id === clientId)
-  }, [clientId])
+    return isDemo
+      ? DEMO_CHECK_INS.filter((c) => c.client_id === clientId)
+      : realCheckIns
+  }, [clientId, isDemo, realCheckIns])
 
   const measurements = useMemo(() => DEMO_MEASUREMENTS[clientId] ?? [], [clientId])
-  const prs = useMemo(() => DEMO_PRS[clientId] ?? [], [clientId])
+  const prs = useMemo(() => isDemo ? (DEMO_PRS[clientId] ?? []) : realPRs, [clientId, isDemo, realPRs])
 
   const startWeight = client?.starting_weight_kg ?? 0
   const currentWeight = clientWeightLogs[clientWeightLogs.length - 1]?.weight_kg ?? startWeight
@@ -80,6 +106,14 @@ export default function ReportPage() {
 
   const latestMeasurements = measurements[measurements.length - 1]
   const prevMeasurements = measurements[measurements.length - 2]
+
+  if (loading) {
+    return (
+      <div className="p-8 max-w-5xl mx-auto flex items-center justify-center min-h-64">
+        <Loader2 size={24} className="animate-spin text-cb-muted" />
+      </div>
+    )
+  }
 
   if (!client) {
     return (
