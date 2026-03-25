@@ -174,9 +174,7 @@ function TrialSetupContent() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-            <div className="w-8 h-8 rounded-lg bg-[#0F7B8C] flex items-center justify-center">
-              <Zap size={16} className="text-white" />
-            </div>
+            <img src="/logo.png" alt="Propel" className="w-8 h-8 rounded-lg" />
             <span className="font-bold text-gray-900 text-lg tracking-tight">Propel</span>
           </Link>
           <div className="flex items-center gap-3">

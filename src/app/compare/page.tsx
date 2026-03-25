@@ -26,9 +26,7 @@ export default function ComparePage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-            <div className="w-8 h-8 rounded-lg bg-[#0F7B8C] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">⚡</span>
-            </div>
+            <img src="/logo.svg" alt="Propel" className="w-8 h-8" />
             <span className="font-bold text-gray-900 text-lg">Propel</span>
           </Link>
           <div className="flex items-center gap-3">
@@ -79,9 +77,7 @@ export default function ComparePage() {
       <footer className="border-t border-gray-100 py-10 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#0F7B8C] flex items-center justify-center">
-              <span className="text-white text-xs font-bold">⚡</span>
-            </div>
+            <img src="/logo.svg" alt="Propel" className="w-7 h-7" />
             <span className="font-bold text-gray-900">Propel</span>
           </div>
           <p className="text-sm text-gray-400">© {new Date().getFullYear()} Propel. Built for coaches, by coaches.</p>

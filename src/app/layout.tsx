@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: { card: 'summary_large_image', title: 'Propel — Coaching Platform', description: 'The all-in-one platform for fitness coaches.' },
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
   robots: { index: true, follow: true },
 }
 

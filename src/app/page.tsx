@@ -13,7 +13,7 @@ export default function LandingPage() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-gray-900">
-            <div className="w-8 h-8 rounded-lg bg-[#0F7B8C] flex items-center justify-center text-white text-sm font-bold">P</div>
+            <img src="/logo.svg" alt="Propel" className="w-8 h-8" />
             Propel
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm text-gray-500">
@@ -784,7 +784,7 @@ export default function LandingPage() {
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[#0F7B8C] flex items-center justify-center text-white text-sm font-bold">P</div>
+                <img src="/logo.svg" alt="Propel" className="w-8 h-8" />
                 <span className="text-base font-bold text-white">Propel</span>
               </div>
               <p className="text-sm text-gray-500 leading-relaxed mb-4">The coaching platform for health &amp; fitness professionals. Built by coaches, for coaches.</p>
