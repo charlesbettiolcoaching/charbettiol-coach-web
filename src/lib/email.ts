@@ -60,7 +60,7 @@ ${previewText ? `<div style="display:none;max-height:0;overflow:hidden;">${previ
     ${content}
   </td></tr>
   <tr><td style="background:#f4f4f5;padding:24px 40px;text-align:center;">
-    <p style="margin:0;color:#9ca3af;font-size:12px;">© 2026 Propel · <a href="#" style="color:#7c3aed;">Unsubscribe</a> · <a href="#" style="color:#7c3aed;">Privacy Policy</a></p>
+    <p style="margin:0;color:#9ca3af;font-size:12px;">© 2026 Propel · <a href="mailto:hello@propelcoaches.com?subject=Unsubscribe" style="color:#7c3aed;">Unsubscribe</a> · <a href="https://propelcoaches.com/privacy-policy" style="color:#7c3aed;">Privacy Policy</a></p>
   </td></tr>
 </table>
 </td></tr>

@@ -166,8 +166,8 @@ export default function TrialExpiredPage() {
           </div>
           <p className="text-sm text-gray-400">© {new Date().getFullYear()} Propel. Built for coaches, by coaches.</p>
           <div className="flex gap-6 text-sm text-gray-400">
-            <a href="#" className="hover:text-gray-600 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-gray-600 transition-colors">Terms</a>
+            <a href="/privacy-policy" className="hover:text-gray-600 transition-colors">Privacy</a>
+            <a href="/terms" className="hover:text-gray-600 transition-colors">Terms</a>
           </div>
         </div>
       </footer>

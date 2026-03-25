@@ -536,8 +536,8 @@ export default function LandingPage() {
           </div>
           <p className="text-xs text-gray-400">© 2026 Propel. Built for coaches, by coaches.</p>
           <div className="flex items-center gap-4 text-xs text-gray-400">
-            <a href="#" className="hover:text-gray-600 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-gray-600 transition-colors">Terms</a>
+            <a href="/privacy-policy" className="hover:text-gray-600 transition-colors">Privacy</a>
+            <a href="/terms" className="hover:text-gray-600 transition-colors">Terms</a>
             <Link href="/login" className="hover:text-gray-600 transition-colors text-[#0F7B8C]">Coach login</Link>
           </div>
         </div>

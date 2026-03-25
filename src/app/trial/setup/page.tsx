@@ -298,11 +298,11 @@ export default function TrialSetupPage() {
                 />
                 <span className="text-sm text-gray-600">
                   By signing up you agree to our{' '}
-                  <a href="#" className="text-[#0F7B8C] hover:underline font-medium">
+                  <a href="/terms" className="text-[#0F7B8C] hover:underline font-medium">
                     Terms
                   </a>{' '}
                   and{' '}
-                  <a href="#" className="text-[#0F7B8C] hover:underline font-medium">
+                  <a href="/privacy-policy" className="text-[#0F7B8C] hover:underline font-medium">
                     Privacy Policy
                   </a>
                 </span>

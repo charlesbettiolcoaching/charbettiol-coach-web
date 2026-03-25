@@ -69,7 +69,7 @@ export default function HelpButton() {
               </Link>
 
               <Link
-                href="#"
+                href="/help"
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
               >
                 <Zap className="w-5 h-5 text-gray-600 flex-shrink-0" />

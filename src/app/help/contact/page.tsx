@@ -72,7 +72,7 @@ export default function ContactPage() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex items-center justify-between">
-            <Link href="https://propelcoaches.com" className="flex items-center gap-2">
+            <a href="https://propelcoaches.com" className="flex items-center gap-2">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold"
                 style={{ backgroundColor: '#0F7B8C' }}
@@ -80,7 +80,7 @@ export default function ContactPage() {
                 P
               </div>
               <span className="font-semibold text-gray-900">Propel</span>
-            </Link>
+            </a>
             <nav className="hidden sm:flex gap-8">
               <Link href="/help" className="text-gray-600 hover:text-gray-900">
                 Help Center

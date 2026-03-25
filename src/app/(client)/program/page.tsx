@@ -159,9 +159,9 @@ export default function ProgramPage() {
             </div>
 
             {/* Start Workout Button */}
-            <button className="w-full mt-6 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">
+            <a href="/my-workout" className="block w-full mt-6 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors text-center">
               Start {day.name} Workout
-            </button>
+            </a>
           </div>
         ))}
       </div>

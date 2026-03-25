@@ -35,7 +35,7 @@ function AdminPasswordPrompt({ onAuthenticate }: { onAuthenticate: () => void })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (pin === 'propel2026') {
+    if (pin === (process.env.NEXT_PUBLIC_ADMIN_PIN || 'propel2026')) {
       localStorage.setItem('admin_authenticated', 'true')
       onAuthenticate()
     } else {
