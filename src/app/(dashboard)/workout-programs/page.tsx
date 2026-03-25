@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 // ─── Types ──────────────────────────────────────────────────────────
 interface WorkoutProgram {
@@ -78,7 +78,7 @@ const SPLITS = [
 ];
 
 export default function WorkoutProgramsPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [clients, setClients] = useState<Client[]>([]);
   const [programs, setPrograms] = useState<WorkoutProgram[]>([]);

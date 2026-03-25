@@ -1,0 +1,17 @@
+"use strict";(()=>{var e={};e.id=7973,e.ids=[7973],e.modules={72934:e=>{e.exports=require("next/dist/client/components/action-async-storage.external.js")},54580:e=>{e.exports=require("next/dist/client/components/request-async-storage.external.js")},45869:e=>{e.exports=require("next/dist/client/components/static-generation-async-storage.external.js")},20399:e=>{e.exports=require("next/dist/compiled/next-server/app-page.runtime.prod.js")},30517:e=>{e.exports=require("next/dist/compiled/next-server/app-route.runtime.prod.js")},56945:(e,r,t)=>{t.r(r),t.d(r,{originalPathname:()=>g,patchFetch:()=>x,requestAsyncStorage:()=>l,routeModule:()=>d,serverHooks:()=>_,staticGenerationAsyncStorage:()=>m});var s={};t.r(s),t.d(s,{GET:()=>u,dynamic:()=>p});var n=t(49303),o=t(88716),i=t(60670),a=t(87070),c=t(65655);let p="force-dynamic";async function u(e,{params:r}){let t=(0,c.e)(),{data:{user:s}}=await t.auth.getUser();if(!s)return a.NextResponse.json({error:"Unauthorized"},{status:401});let{clientId:n}=r;if(s.id!==n){let{data:e}=await t.from("profiles").select("coach_id").eq("id",n).single();if(!e||e.coach_id!==s.id)return a.NextResponse.json({error:"Forbidden"},{status:403})}let{data:o,error:i}=await t.from("programs").select(`
+      id, name, description, duration_weeks, days_per_week,
+      goal, difficulty, status, started_at, notes,
+      workouts:program_workouts(
+        id, week_number, day_number, name, notes,
+        supersets(id, label),
+        exercises:program_workout_exercises(
+          id, order_index, sets, reps_min, reps_max,
+          weight, weight_unit, rest_seconds, rpe, tempo, notes,
+          superset_id,
+          exercise:exercises(
+            id, name, category, muscle_groups, equipment,
+            movement_type, instructions, demo_video_url, demo_image_url
+          )
+        )
+      )
+    `).eq("client_id",n).eq("status","active").order("started_at",{ascending:!1}).limit(1).maybeSingle();return i?a.NextResponse.json({error:i.message},{status:500}):o?(o.workouts?.sort((e,r)=>e.week_number!==r.week_number?e.week_number-r.week_number:e.day_number-r.day_number),o.workouts?.forEach(e=>{e.exercises?.sort((e,r)=>e.order_index-r.order_index),e.exercises?.forEach(e=>{e.rep_range=e.reps_min===e.reps_max?String(e.reps_min):`${e.reps_min}–${e.reps_max}`})}),a.NextResponse.json({program:o})):a.NextResponse.json({program:null})}let d=new n.AppRouteRouteModule({definition:{kind:o.x.APP_ROUTE,page:"/api/clients/[clientId]/programs/active/route",pathname:"/api/clients/[clientId]/programs/active",filename:"route",bundlePath:"app/api/clients/[clientId]/programs/active/route"},resolvedPagePath:"/Users/charlesbettiol/.openclaw/workspace/web/src/app/api/clients/[clientId]/programs/active/route.ts",nextConfigOutput:"",userland:s}),{requestAsyncStorage:l,staticGenerationAsyncStorage:m,serverHooks:_}=d,g="/api/clients/[clientId]/programs/active/route";function x(){return(0,i.patchFetch)({serverHooks:_,staticGenerationAsyncStorage:m})}},65655:(e,r,t)=>{t.d(r,{e:()=>o});var s=t(67721),n=t(71615);function o(){let e=(0,n.cookies)();return(0,s.createServerClient)(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,{cookies:{getAll:()=>e.getAll(),setAll(r){try{r.forEach(({name:r,value:t,options:s})=>e.set(r,t,s))}catch{}}}})}}};var r=require("../../../../../../webpack-runtime.js");r.C(e);var t=e=>r(r.s=e),s=r.X(0,[8948,3786,9702,5972],()=>t(56945));module.exports=s})();

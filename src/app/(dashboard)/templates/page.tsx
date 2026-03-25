@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 interface Template {
   id: string;
@@ -26,7 +26,7 @@ const DEFAULT_TEMPLATES = [
 ];
 
 export default function TemplatesPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);

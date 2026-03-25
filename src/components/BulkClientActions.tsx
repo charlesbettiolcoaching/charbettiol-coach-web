@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 interface Client {
   id: string;
@@ -26,7 +26,7 @@ interface Props {
 type BulkAction = 'assign_program' | 'send_reminder' | 'send_message' | 'export_data' | 'add_tag' | 'remove_tag';
 
 export default function BulkClientActions({ clients, selectedIds, onSelectionChange, onActionComplete }: Props) {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [action, setAction] = useState<BulkAction | null>(null);
   const [executing, setExecuting] = useState(false);

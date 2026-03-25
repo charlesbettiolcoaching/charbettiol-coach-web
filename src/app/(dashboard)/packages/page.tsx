@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 import {
   DollarSign,
   Users,
@@ -35,7 +35,7 @@ interface PackageStats {
 }
 
 export default function PackagesPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [packages, setPackages] = useState<CoachingPackage[]>([]);
   const [stats, setStats] = useState<Record<string, PackageStats>>({});
   const [loading, setLoading] = useState(true);
@@ -211,7 +211,7 @@ export default function PackagesPage() {
       description: pkg.description || '',
       price_cents: pkg.price_cents,
       currency: pkg.currency,
-      billing_interval: pkg.billing_interval,
+      billing_interval: pkg.billing_interval as any,
       features: pkg.features && pkg.features.length > 0 ? [...pkg.features] : [''],
       max_clients: pkg.max_clients,
     });

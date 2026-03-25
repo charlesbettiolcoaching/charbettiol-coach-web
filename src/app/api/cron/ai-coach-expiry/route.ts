@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder'
 const cronSecret = process.env.CRON_SECRET!
 const webhookSecret = process.env.AI_WEBHOOK_SECRET!
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || ''

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 interface CoachTag {
   id: string;
@@ -41,7 +41,7 @@ const TAG_COLORS = [
 ];
 
 export default function TagsPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [tags, setTags] = useState<CoachTag[]>([]);
   const [segments, setSegments] = useState<Segment[]>([]);

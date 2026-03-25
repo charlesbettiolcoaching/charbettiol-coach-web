@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 interface ExerciseVideo {
   id: string;
@@ -27,7 +27,7 @@ const MUSCLE_GROUPS = [
 const CATEGORIES = ['strength', 'cardio', 'mobility', 'warm-up', 'cool-down'];
 
 export default function VideoLibraryPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [videos, setVideos] = useState<ExerciseVideo[]>([]);

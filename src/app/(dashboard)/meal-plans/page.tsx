@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 // ─── Types ──────────────────────────────────────────────────────────
 interface MealPlan {
@@ -125,7 +125,7 @@ function TagPicker({
 
 // ─── Main Page Component ────────────────────────────────────────────
 export default function MealPlansPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   // State
   const [clients, setClients] = useState<Client[]>([]);

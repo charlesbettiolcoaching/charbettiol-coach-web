@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 interface DailySummary {
   date: string;
@@ -42,7 +42,7 @@ const PROVIDER_LABELS: Record<string, { name: string; color: string; icon: strin
 };
 
 export default function WearableDashboard({ clientId, clientName }: Props) {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [summaries, setSummaries] = useState<DailySummary[]>([]);
   const [connections, setConnections] = useState<WearableConnection[]>([]);

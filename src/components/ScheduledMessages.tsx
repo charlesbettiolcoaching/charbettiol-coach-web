@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 import {
   Send,
   Clock,
@@ -36,7 +36,7 @@ interface Client {
 }
 
 export default function ScheduledMessages() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [messages, setMessages] = useState<ScheduledMessage[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);

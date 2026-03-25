@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 interface MarketplaceListing {
   id: string;
@@ -38,7 +38,7 @@ interface Program {
 const GOALS = ['hypertrophy', 'strength', 'fat_loss', 'athletic_performance', 'general_fitness'];
 
 export default function MarketplacePage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
   const [myListings, setMyListings] = useState<MarketplaceListing[]>([]);

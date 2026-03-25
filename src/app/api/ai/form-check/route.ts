@@ -1,5 +1,6 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
   let parsedFormCheckId: string | undefined;
 
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -119,7 +120,7 @@ Please analyze the exercise form and return JSON with this EXACT structure:
     // Update status to failed using the pre-parsed ID
     try {
       if (parsedFormCheckId) {
-        const supabase = createRouteHandlerClient({ cookies });
+        const supabase = createClient();
         await supabase
           .from('form_checks')
           .update({ ai_status: 'failed' })
@@ -134,7 +135,7 @@ Please analyze the exercise form and return JSON with this EXACT structure:
 // GET: Fetch form checks for a coach
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

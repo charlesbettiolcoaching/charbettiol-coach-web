@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 
 interface Review {
   id: string;
@@ -24,7 +24,7 @@ interface Review {
 }
 
 export default function ReviewsPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
