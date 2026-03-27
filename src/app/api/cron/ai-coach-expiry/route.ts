@@ -4,17 +4,26 @@ import { createClient } from '@supabase/supabase-js'
 export const dynamic = 'force-dynamic'
 
 // Lazy initialization — only evaluated at request time, not during build.
-function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) throw new Error("Missing Supabase env vars")
-  return createClient(url, key)
+function getEnvVars() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Missing Supabase environment variables')
+  }
+  const cronSecret = process.env.CRON_SECRET!
+  const webhookSecret = process.env.AI_WEBHOOK_SECRET!
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || ''
+  return { supabaseUrl, serviceRoleKey, cronSecret, webhookSecret, siteUrl }
 }
 
+function adminClient() {
+  const { supabaseUrl, serviceRoleKey } = getEnvVars()
+  return createClient(supabaseUrl, serviceRoleKey)
 }
 
 export async function GET(request: NextRequest) {
-  const supabaseAdmin = getSupabaseAdmin()
+  const { cronSecret, webhookSecret, siteUrl } = getEnvVars()
+
   // 1. Verify Vercel cron Authorization header
   const authHeader = request.headers.get('authorization')
   const expectedToken = `Bearer ${cronSecret}`
