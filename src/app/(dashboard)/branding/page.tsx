@@ -120,151 +120,154 @@ function ColorPicker({ label, value, onChange }: { label: string; value: string;
   );
 }
 
-// Live preview: a scaled-down mock of the client app UI
+// Live preview: phone mockup of the client mobile app
 function ClientAppPreview({ config }: { config: BrandingConfig }) {
   const { accent_color, brand_name, logo_url } = config;
-  const brandBg = lightenColor(accent_color);
 
-  const navItems = [
+  const tabItems = [
     { icon: Home, label: 'Home', active: true },
     { icon: Dumbbell, label: 'Workout' },
     { icon: UtensilsCrossed, label: 'Nutrition' },
     { icon: ClipboardCheck, label: 'Check-in' },
     { icon: TrendingUp, label: 'Progress' },
-    { icon: MessageSquare, label: 'Messages' },
   ];
 
   return (
-    <div className="bg-surface-light border border-cb-border rounded-xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-cb-border flex items-center gap-2">
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-        </div>
-        <div className="flex-1 flex justify-center">
-          <div className="px-3 py-0.5 bg-white border border-cb-border rounded text-xs text-cb-muted font-mono">
-            app.propelcoach.app
+    /* Phone outer shell */
+    <div className="mx-auto" style={{ width: 260 }}>
+      <div
+        className="relative rounded-[40px] overflow-hidden shadow-2xl border-[6px] border-gray-800"
+        style={{ background: '#0f172a' }}
+      >
+        {/* Status bar notch */}
+        <div className="flex items-center justify-between px-5 pt-3 pb-1" style={{ background: '#0f172a' }}>
+          <span className="text-white text-[9px] font-semibold">9:41</span>
+          <div className="w-16 h-4 bg-gray-900 rounded-full" />
+          <div className="flex gap-1 items-center">
+            <div className="flex gap-0.5">
+              {[3, 4, 5].map((h) => (
+                <div key={h} className="w-0.5 rounded-sm bg-white" style={{ height: h }} />
+              ))}
+            </div>
+            <div className="w-3 h-1.5 border border-white rounded-sm ml-0.5">
+              <div className="h-full w-2/3 bg-white rounded-sm" />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Scaled client app */}
-      <div className="relative overflow-hidden" style={{ height: 420 }}>
-        <div
-          className="absolute origin-top-left"
-          style={{ transform: 'scale(0.65)', width: `${100 / 0.65}%`, transformOrigin: 'top center' }}
-        >
-          {/* Nav bar */}
-          <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white" style={{ minHeight: 56 }}>
+        {/* App content */}
+        <div style={{ background: '#0f172a', minHeight: 480 }}>
+          {/* App header */}
+          <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">
               {logo_url ? (
-                <img src={logo_url} alt="" className="h-8 object-contain max-w-[120px]" />
+                <img src={logo_url} alt="" className="h-6 object-contain max-w-[80px]" />
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                    style={{ backgroundColor: accent_color }}>
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs font-bold"
+                    style={{ backgroundColor: accent_color }}
+                  >
                     {(brand_name || 'P')[0].toUpperCase()}
                   </div>
-                  <span className="font-semibold text-gray-900 text-sm">{brand_name || 'Propel'}</span>
+                  <span className="text-white text-xs font-semibold">{brand_name || 'Propel'}</span>
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                <span className="text-xs font-medium text-gray-600">JC</span>
-              </div>
+            <div className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center">
+              <span className="text-[9px] font-medium text-gray-300">JC</span>
             </div>
           </div>
 
-          {/* Side nav + content */}
-          <div className="flex bg-gray-50" style={{ minHeight: 520 }}>
-            {/* Sidebar */}
-            <div className="w-52 bg-white border-r border-gray-200 flex-shrink-0 pt-4">
-              {navItems.map(({ icon: Icon, label, active }) => (
-                <div
-                  key={label}
-                  className={`flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg mb-0.5 text-sm ${active ? 'font-medium' : 'text-gray-500'}`}
-                  style={active ? { backgroundColor: hexToRgba(accent_color, 0.1), color: accent_color } : {}}
-                >
-                  <Icon size={16} style={active ? { color: accent_color } : { color: '#94a3b8' }} />
-                  {label}
-                </div>
-              ))}
-            </div>
-
-            {/* Main content */}
-            <div className="flex-1 p-6">
-              {/* Greeting */}
-              <div className="mb-5">
-                <p className="text-xs text-gray-500">Good morning 👋</p>
-                <h2 className="text-lg font-bold text-gray-900">Jamie Carter</h2>
-              </div>
-
-              {/* Stats row */}
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                {[
-                  { label: 'Workouts', value: '4', sub: 'this week' },
-                  { label: 'Streak', value: '12', sub: 'days' },
-                  { label: 'Check-in', value: '✓', sub: 'submitted' },
-                ].map(({ label, value, sub }) => (
-                  <div key={label} className="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
-                    <div className="text-2xl font-bold mb-0.5" style={{ color: accent_color }}>{value}</div>
-                    <div className="text-xs font-medium text-gray-700">{label}</div>
-                    <div className="text-xs text-gray-400">{sub}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Today's workout card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm mb-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Today</p>
-                    <h3 className="font-semibold text-gray-900">Upper Body Strength</h3>
-                  </div>
-                  <Dumbbell size={18} style={{ color: accent_color }} />
-                </div>
-                <div className="flex gap-3">
-                  <div className="text-xs bg-gray-50 rounded-lg px-3 py-1.5 text-gray-600">6 exercises</div>
-                  <div className="text-xs bg-gray-50 rounded-lg px-3 py-1.5 text-gray-600">~45 min</div>
-                </div>
-                <button
-                  className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
-                  style={{ backgroundColor: accent_color }}
-                >
-                  Start Workout
-                </button>
-              </div>
-
-              {/* Nutrition quick view */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900 text-sm">Today's Nutrition</h3>
-                  <UtensilsCrossed size={16} style={{ color: accent_color }} />
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { label: 'Calories', current: 1450, target: 2200 },
-                    { label: 'Protein', current: 142, target: 180 },
-                  ].map(({ label, current, target }) => (
-                    <div key={label}>
-                      <div className="flex justify-between text-xs text-gray-500 mb-1">
-                        <span>{label}</span>
-                        <span>{current} / {target}</span>
-                      </div>
-                      <div className="w-full bg-gray-100 rounded-full h-1.5">
-                        <div
-                          className="h-1.5 rounded-full"
-                          style={{ width: `${Math.min(100, (current / target) * 100)}%`, backgroundColor: accent_color }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {/* Greeting */}
+          <div className="px-4 pb-3">
+            <p className="text-gray-400 text-[10px]">Good morning 👋</p>
+            <p className="text-white text-sm font-bold">Jamie Carter</p>
           </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-3 gap-2 px-4 mb-3">
+            {[
+              { label: 'Workouts', value: '4', sub: 'this week' },
+              { label: 'Streak', value: '12', sub: 'days' },
+              { label: 'Check-in', value: '✓', sub: 'done' },
+            ].map(({ label, value, sub }) => (
+              <div key={label} className="rounded-xl p-2.5 text-center" style={{ background: '#1e293b' }}>
+                <div className="text-base font-bold" style={{ color: accent_color }}>{value}</div>
+                <div className="text-[8px] font-medium text-gray-300 leading-tight">{label}</div>
+                <div className="text-[7px] text-gray-500">{sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Today's workout card */}
+          <div className="mx-4 rounded-xl p-3 mb-3" style={{ background: '#1e293b' }}>
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <p className="text-[8px] text-gray-400 uppercase tracking-wide font-medium">Today</p>
+                <p className="text-white text-xs font-semibold">Upper Body Strength</p>
+              </div>
+              <Dumbbell size={13} style={{ color: accent_color }} />
+            </div>
+            <div className="flex gap-1.5 mb-2">
+              <span className="text-[8px] bg-gray-700 rounded px-2 py-1 text-gray-300">6 exercises</span>
+              <span className="text-[8px] bg-gray-700 rounded px-2 py-1 text-gray-300">~45 min</span>
+            </div>
+            <button
+              className="w-full py-1.5 rounded-lg text-[9px] font-semibold text-white"
+              style={{ backgroundColor: accent_color }}
+            >
+              Start Workout
+            </button>
+          </div>
+
+          {/* Nutrition bar */}
+          <div className="mx-4 rounded-xl p-3" style={{ background: '#1e293b' }}>
+            <p className="text-white text-[10px] font-semibold mb-2">Today's Nutrition</p>
+            {[
+              { label: 'Calories', current: 1450, target: 2200 },
+              { label: 'Protein', current: 142, target: 180 },
+            ].map(({ label, current, target }) => (
+              <div key={label} className="mb-1.5">
+                <div className="flex justify-between text-[8px] text-gray-400 mb-0.5">
+                  <span>{label}</span>
+                  <span>{current}/{target}</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-1">
+                  <div
+                    className="h-1 rounded-full"
+                    style={{ width: `${Math.min(100, (current / target) * 100)}%`, backgroundColor: accent_color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom tab bar */}
+        <div
+          className="flex items-center justify-around px-2 py-2 border-t"
+          style={{ background: '#1e293b', borderColor: '#334155' }}
+        >
+          {tabItems.map(({ icon: Icon, label, active }) => (
+            <div key={label} className="flex flex-col items-center gap-0.5 px-1">
+              <Icon
+                size={14}
+                style={{ color: active ? accent_color : '#64748b' }}
+              />
+              <span
+                className="text-[7px] font-medium"
+                style={{ color: active ? accent_color : '#64748b' }}
+              >
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Home indicator bar */}
+        <div className="flex justify-center pb-2 pt-1" style={{ background: '#1e293b' }}>
+          <div className="w-20 h-1 bg-gray-600 rounded-full" />
         </div>
       </div>
     </div>
