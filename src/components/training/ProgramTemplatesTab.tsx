@@ -699,9 +699,10 @@ export default function ProgramTemplatesTab() {
   // Modals
   const [previewTpl, setPreviewTpl]     = useState<ProgramTemplate | null>(null)
   const [assignTpl, setAssignTpl]       = useState<ProgramTemplate | null>(null)
-  const [duplicateTpl, setDuplicateTpl] = useState<ProgramTemplate | null>(null)
-  const [showImport, setShowImport]     = useState(false)
-  const [showCreate, setShowCreate]     = useState(false)
+  const [duplicateTpl, setDuplicateTpl]     = useState<ProgramTemplate | null>(null)
+  const [confirmDeleteTpl, setConfirmDeleteTpl] = useState<ProgramTemplate | null>(null)
+  const [showImport, setShowImport]         = useState(false)
+  const [showCreate, setShowCreate]         = useState(false)
 
   // Load clients + user id
   useEffect(() => {
@@ -780,9 +781,9 @@ export default function ProgramTemplatesTab() {
   }
 
   const handleDelete = async (template: ProgramTemplate) => {
-    if (!confirm(`Delete "${template.name}"? This cannot be undone.`)) return
     await fetch(`/api/program-templates/${template.id}`, { method: 'DELETE' })
     setTemplates((prev) => prev.filter((t) => t.id !== template.id))
+    setConfirmDeleteTpl(null)
     showToast(`"${template.name}" deleted`)
   }
 
@@ -975,7 +976,7 @@ export default function ProgramTemplatesTab() {
                 onPreview={() => setPreviewTpl(t)}
                 onQuickAssign={() => setAssignTpl(t)}
                 onDuplicate={() => setDuplicateTpl(t)}
-                onDelete={() => handleDelete(t)}
+                onDelete={() => setConfirmDeleteTpl(t)}
                 onExport={() => handleExport(t)}
                 onTogglePublic={() => handleTogglePublic(t)}
               />
@@ -1018,6 +1019,18 @@ export default function ProgramTemplatesTab() {
           onClose={() => setDuplicateTpl(null)}
           onDuplicate={(name) => handleDuplicate(duplicateTpl, name)}
         />
+      )}
+      {confirmDeleteTpl && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-surface rounded-xl max-w-sm w-full p-6">
+            <h3 className="text-lg font-semibold text-cb-text mb-2">Delete Program</h3>
+            <p className="text-sm text-cb-muted mb-6">Delete &quot;{confirmDeleteTpl.name}&quot;? This cannot be undone.</p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setConfirmDeleteTpl(null)} className="px-4 py-2 text-sm font-medium rounded-lg border border-cb-border text-cb-secondary hover:text-cb-text transition-colors">Cancel</button>
+              <button onClick={() => handleDelete(confirmDeleteTpl)} className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors">Delete</button>
+            </div>
+          </div>
+        </div>
       )}
       {showImport && (
         <ImportModal onClose={() => setShowImport(false)} onImport={handleImport} />
