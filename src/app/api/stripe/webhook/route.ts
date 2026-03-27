@@ -4,19 +4,30 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { sendPaymentFailedEmail } from '@/lib/email';
 
-const stripeKey = process.env.STRIPE_SECRET_KEY
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
-
-if (!stripeKey || !supabaseUrl || !supabaseServiceRoleKey || !webhookSecret) {
-  throw new Error('Missing required environment variables')
+// Lazy initialization — only evaluated at request time, not during build.
+function getStripeClient() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error('Missing STRIPE_SECRET_KEY')
+  return new Stripe(key)
 }
 
-const stripe = new Stripe(stripeKey);
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error('Missing Supabase environment variables')
+  return createClient(url, key)
+}
+
+function getWebhookSecret() {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET
+  if (!secret) throw new Error('Missing STRIPE_WEBHOOK_SECRET')
+  return secret
+}
 
 export async function POST(request: NextRequest) {
+  const stripe = getStripeClient()
+  const supabaseAdmin = getSupabaseAdmin()
+  const webhookSecret = getWebhookSecret()
   try {
     const body = await request.text();
     const signature = request.headers.get('stripe-signature');
