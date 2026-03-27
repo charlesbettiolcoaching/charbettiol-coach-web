@@ -5,20 +5,27 @@ import { sendAiCoachSummaryEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!supabaseUrl || !serviceRoleKey) {
-  throw new Error('Missing Supabase environment variables')
+// Lazy initialization — only evaluated at request time, not during build.
+function getAnthropicClient() {
+  const key = process.env.ANTHROPIC_API_KEY
+  if (!key) throw new Error("Missing ANTHROPIC_API_KEY")
+  return new Anthropic({ apiKey: key })
 }
-const anthropicApiKey = process.env.ANTHROPIC_API_KEY!
-const webhookSecret = process.env.AI_WEBHOOK_SECRET!
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error("Missing Supabase env vars")
+  return createClient(url, key)
+}
+
 
 function adminClient() {
   return createSupabaseClient(supabaseUrl, serviceRoleKey)
 }
 
 export async function POST(request: NextRequest) {
+  const anthropic = getAnthropicClient()
+  const supabaseAdmin = getSupabaseAdmin()
   // Auth check: accept either webhook secret header OR valid coach session
   const incomingSecret = request.headers.get('x-webhook-secret')
   const isWebhookCall = incomingSecret && incomingSecret === webhookSecret
