@@ -2,154 +2,14 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase environment variables')
+// Lazy initialization — only evaluated at request time, not during build.
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error("Missing Supabase env vars")
+  return createClient(url, key)
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-/**
- * Verify CRON_SECRET bearer token
- */
-function verifyAuthToken(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  const expectedToken = process.env.CRON_SECRET;
-
-  if (!expectedToken) {
-    console.warn('CRON_SECRET environment variable not set');
-    return false;
-  }
-
-  if (!authHeader) {
-    return false;
-  }
-
-  const [scheme, token] = authHeader.split(' ');
-
-  if (scheme !== 'Bearer' || token !== expectedToken) {
-    return false;
-  }
-
-  return true;
-}
-
-/**
- * Send a push notification to a client via Expo Push Notification service
- */
-async function sendPushNotification(
-  clientId: string,
-  title: string,
-  body: string
-): Promise<void> {
-  try {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('push_token')
-      .eq('id', clientId)
-      .single()
-
-    if (!profile?.push_token) return
-
-    await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to: profile.push_token, title, body }),
-    })
-  } catch (error) {
-    console.error('Failed to send push notification:', error);
-    // Don't throw - notification failure shouldn't block message processing
-  }
-}
-
-/**
- * Insert message into messages table
- */
-async function insertMessage(
-  coachId: string,
-  clientId: string,
-  content: string,
-  type: string
-): Promise<string | null> {
-  try {
-    const { data, error } = await supabase
-      .from('messages')
-      .insert({
-        coach_id: coachId,
-        client_id: clientId,
-        content,
-        type,
-        created_at: new Date().toISOString(),
-      })
-      .select('id')
-      .single();
-
-    if (error) throw error;
-    return data?.id || null;
-  } catch (error) {
-    console.error('Failed to insert message:', error);
-    return null;
-  }
-}
-
-/**
- * Process a single scheduled message
- */
-async function processScheduledMessage(
-  message: any
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const { id, coach_id, client_id, content, type } = message;
-
-    // If broadcast (client_id is null), send to all clients of this coach
-    if (client_id === null) {
-      const { data: subscriptions, error: subscriptionError } = await supabase
-        .from('client_subscriptions')
-        .select('client_id')
-        .eq('coach_id', coach_id)
-        .eq('status', 'active');
-
-      if (subscriptionError) throw subscriptionError;
-
-      const clientIds = subscriptions?.map((s) => s.client_id) || [];
-      let successCount = 0;
-
-      for (const cid of clientIds) {
-        const messageId = await insertMessage(coach_id, cid, content, type);
-        if (messageId) {
-          successCount++;
-          // Send push notification
-          await sendPushNotification(cid, 'New Message', content.substring(0, 50) + '...');
-        }
-      }
-
-      // Mark as sent only if at least one message succeeded
-      if (successCount > 0) {
-        const { error: updateError } = await supabase
-          .from('scheduled_messages')
-          .update({
-            status: 'sent',
-            sent_at: new Date().toISOString(),
-          })
-          .eq('id', id);
-
-        if (updateError) throw updateError;
-      }
-
-      return { success: true };
-    } else {
-      // Send to specific client
-      const messageId = await insertMessage(coach_id, client_id, content, type);
-
-      if (!messageId) {
-        throw new Error('Failed to create message');
       }
 
       // Send push notification
@@ -193,6 +53,7 @@ async function processScheduledMessage(
  * Health check endpoint
  */
 export async function GET(request: NextRequest) {
+  const supabaseAdmin = getSupabaseAdmin()
   if (!verifyAuthToken(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
