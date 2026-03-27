@@ -112,7 +112,8 @@ export default function GroupsPage() {
         const { data: clientsData, error: clientsError } = await (supabase as any)
           .from('profiles')
           .select('id, display_name, email, avatar_url')
-          .neq('id', user.id)
+          .eq('coach_id', user.id)
+          .eq('role', 'client')
           .order('display_name');
 
         if (clientsError) throw clientsError;

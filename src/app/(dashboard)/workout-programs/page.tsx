@@ -105,8 +105,9 @@ export default function WorkoutProgramsPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
     const [c, p] = await Promise.all([
-      supabase.from('profiles').select('id, full_name').eq('role', 'client'),
+      supabase.from('profiles').select('id, full_name').eq('coach_id', user?.id ?? '').eq('role', 'client'),
       supabase
         .from('workout_programs')
         .select('*, client:profiles!workout_programs_client_id_fkey(full_name)')

@@ -40,9 +40,11 @@ export default function TemplatesPage() {
 
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
     const { data } = await supabase
       .from('message_templates')
       .select('*')
+      .eq('coach_id', user?.id ?? '')
       .order('is_pinned', { ascending: false })
       .order('use_count', { ascending: false });
 

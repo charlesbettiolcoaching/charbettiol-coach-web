@@ -156,8 +156,9 @@ export default function MealPlansPage() {
   // Fetch clients and existing plans
   const fetchData = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
     const [clientsRes, plansRes] = await Promise.all([
-      supabase.from('profiles').select('id, full_name, avatar_url').eq('role', 'client'),
+      supabase.from('profiles').select('id, full_name, avatar_url').eq('coach_id', user?.id ?? '').eq('role', 'client'),
       supabase
         .from('meal_plans')
         .select(`*, client:profiles!meal_plans_client_id_fkey(full_name, avatar_url)`)

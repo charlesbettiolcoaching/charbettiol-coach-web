@@ -70,10 +70,11 @@ export default function TagsPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
     const [tagsRes, segmentsRes, clientsRes] = await Promise.all([
-      supabase.from('coach_tags').select('*').order('name'),
-      supabase.from('client_segments').select('*').order('name'),
-      supabase.from('profiles').select('id, full_name, email, avatar_url, tags, created_at').eq('role', 'client'),
+      supabase.from('coach_tags').select('*').eq('coach_id', user?.id ?? '').order('name'),
+      supabase.from('client_segments').select('*').eq('coach_id', user?.id ?? '').order('name'),
+      supabase.from('profiles').select('id, full_name, email, avatar_url, tags, created_at').eq('coach_id', user?.id ?? '').eq('role', 'client'),
     ]);
     if (tagsRes.data) setTags(tagsRes.data);
     if (segmentsRes.data) setSegments(segmentsRes.data as Segment[]);

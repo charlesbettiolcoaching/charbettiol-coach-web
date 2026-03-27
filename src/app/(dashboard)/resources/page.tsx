@@ -321,7 +321,7 @@ export default function ResourcesPage() {
 
       const [resRes, clientRes] = await Promise.all([
         supabase.from('resources').select('*').eq('coach_id', user.id).order('created_at', { ascending: false }),
-        supabase.from('profiles').select('id, name, email').eq('role', 'client').order('name'),
+        supabase.from('profiles').select('id, name, email').eq('coach_id', user.id).eq('role', 'client').order('name'),
       ])
 
       if (resRes.error) throw resRes.error
