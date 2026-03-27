@@ -4,11 +4,16 @@ import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 
-const stripeKey = process.env.STRIPE_SECRET_KEY
-if (!stripeKey) throw new Error('Missing STRIPE_SECRET_KEY')
-const stripe = new Stripe(stripeKey)
+// Lazy initialization — only evaluated at request time, not during build.
+function getStripeClient() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error("Missing STRIPE_SECRET_KEY")
+  return new Stripe(key)
+}
+
 
 export async function POST(req: NextRequest) {
+  const stripe = getStripeClient()
   const supabase = createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
