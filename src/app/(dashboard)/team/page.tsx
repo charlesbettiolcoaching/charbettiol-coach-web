@@ -162,11 +162,20 @@ export default function TeamPage() {
     return (
       <div className="p-8 max-w-lg">
         <div className="bg-surface-light border border-cb-border rounded-xl p-10 text-center">
-          <Users className="w-12 h-12 text-cb-muted mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-cb-text mb-2">No team yet</h2>
-          <p className="text-sm text-cb-muted">
-            Team features are available on multi-coach plans. Upgrade to create or join a team.
+          <div className="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+            <Users className="w-8 h-8 text-brand" />
+          </div>
+          <h2 className="text-lg font-semibold text-cb-text mb-2">Build your coaching team</h2>
+          <p className="text-sm text-cb-muted mb-6">
+            Invite coaches and support staff to collaborate with you. Team features are available on multi-coach plans.
           </p>
+          <a
+            href="mailto:support@propelcoaches.com?subject=Team%20Plan%20Inquiry"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Invite Team Member
+          </a>
         </div>
       </div>
     )

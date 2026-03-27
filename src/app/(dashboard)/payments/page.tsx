@@ -485,12 +485,20 @@ export default function PaymentsPage() {
   if (error) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
-        <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <AlertCircle size={32} className="text-cb-danger" />
-          <p className="text-cb-secondary text-sm">{error}</p>
+        <div className="flex flex-col items-center justify-center py-24 gap-4 max-w-md mx-auto text-center">
+          <div className="w-14 h-14 rounded-full bg-cb-danger/10 flex items-center justify-center">
+            <AlertCircle size={28} className="text-cb-danger" />
+          </div>
+          <div>
+            <p className="text-cb-text font-semibold mb-1">Failed to load payments</p>
+            <p className="text-cb-secondary text-sm font-mono bg-surface-light border border-cb-border rounded-lg px-3 py-2 mt-2">{error}</p>
+          </div>
           <button onClick={load} className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90 transition-colors">
-            <RefreshCw size={14} /> Retry
+            <RefreshCw size={14} /> Try Again
           </button>
+          <p className="text-xs text-cb-muted">
+            If this keeps happening, check your Supabase connection and ensure your environment variables are set correctly.
+          </p>
         </div>
       </div>
     )

@@ -465,6 +465,7 @@ export default function ClientsPage() {
   const [search, setSearch] = useState('')
   const [tagFilter, setTagFilter] = useState<string | null>(null)
   const [showTagFilter, setShowTagFilter] = useState(false)
+  const [page, setPage] = useState(1)
   const [showAddModal, setShowAddModal] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string; type: 'client' | 'invitation' } | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -541,10 +542,13 @@ export default function ClientsPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+  useEffect(() => { setPage(1) }, [search, tagFilter])
 
   // ── Computed ────────────────────────────────────────────────────────────────
 
   const allTags = Array.from(new Set(clients.flatMap(c => c.tags ?? [])))
+
+  const PAGE_SIZE = 25
 
   const filtered = clients.filter(c => {
     const q = search.toLowerCase()
@@ -552,6 +556,11 @@ export default function ClientsPage() {
     const matchesTag = !tagFilter || (c.tags ?? []).includes(tagFilter)
     return matchesSearch && matchesTag
   })
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const showingFrom = filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1
+  const showingTo = Math.min(page * PAGE_SIZE, filtered.length)
 
   // ── Actions ─────────────────────────────────────────────────────────────────
 
@@ -734,7 +743,7 @@ export default function ClientsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-cb-border">
-              {filtered.map(client => {
+              {paginated.map(client => {
                 const checkIn = latestCheckIns.get(client.id)
                 const program = activePrograms.get(client.id)
                 const duration = getDuration(client, program)
@@ -840,6 +849,34 @@ export default function ClientsPage() {
           </table>
         )}
       </div>
+
+      {/* Pagination */}
+      {filtered.length > PAGE_SIZE && (
+        <div className="flex items-center justify-between mt-4 px-1">
+          <p className="text-xs text-cb-muted">
+            Showing {showingFrom}–{showingTo} of {filtered.length} clients
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-cb-border text-cb-secondary hover:bg-surface-light disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-xs text-cb-muted">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-cb-border text-cb-secondary hover:bg-surface-light disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Add Client Modal */}
       {showAddModal && (

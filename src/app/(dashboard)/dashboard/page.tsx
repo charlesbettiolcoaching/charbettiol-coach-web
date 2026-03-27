@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   Users, Dumbbell, UtensilsCrossed, ArrowRight,
-  TrendingUp, Clock, CheckCircle2, AlertCircle,
+  TrendingUp, Clock, CheckCircle2, AlertCircle, Bell,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import clsx from 'clsx'
@@ -111,6 +111,8 @@ export default function DashboardPage() {
   const [activePrograms, setActivePrograms] = useState<ActiveEntry[]>([])
   type ActivityItem = { id: string; type: string; clientName: string; detail: string; timeLabel: string; icon: React.ComponentType<any> }
   const [activity, setActivity] = useState<ActivityItem[]>([])
+  const [nudgeClients, setNudgeClients] = useState<ClientRow[]>([])
+  const [sendingNudge, setSendingNudge] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -133,9 +135,11 @@ export default function DashboardPage() {
       }))
       setActivePrograms(entries.slice(0, 6))
 
-      // Fetch recent check-ins for activity feed
+      // Fetch recent check-ins for activity feed + nudge detection
       if (clients.length > 0) {
         const clientIds = clients.map((c) => c.id)
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
         const { data: checkInData } = await supabase
           .from('check_ins')
           .select('id, client_id, created_at, date')
@@ -155,6 +159,17 @@ export default function DashboardPage() {
           }
         })
         setActivity(recentActivity)
+
+        // Find clients with no check-in in last 7 days
+        const { data: recentCheckIns } = await supabase
+          .from('check_ins')
+          .select('client_id')
+          .in('client_id', clientIds)
+          .gte('created_at', sevenDaysAgo)
+
+        const recentClientIds = new Set((recentCheckIns ?? []).map((ci) => ci.client_id))
+        const needNudge = clients.filter((c) => !recentClientIds.has(c.id))
+        setNudgeClients(needNudge)
       }
 
       setLoading(false)
@@ -183,6 +198,43 @@ export default function DashboardPage() {
         <h1 className="text-xl font-bold text-cb-text">Welcome back</h1>
         <p className="text-sm text-cb-muted mt-1">Here's what's happening with your clients today.</p>
       </div>
+
+      {/* ── Nudges ── */}
+      {nudgeClients.length > 0 && (
+        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Bell size={15} className="text-amber-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-amber-900">
+              {nudgeClients.length} client{nudgeClients.length !== 1 ? 's' : ''} haven&apos;t checked in this week
+            </p>
+            <p className="text-xs text-amber-700 mt-0.5">
+              {nudgeClients.slice(0, 3).map((c) => c.name ?? c.email ?? 'Client').join(', ')}
+              {nudgeClients.length > 3 && ` +${nudgeClients.length - 3} more`}
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              setSendingNudge(true)
+              try {
+                await fetch('/api/notifications/broadcast', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ clientIds: nudgeClients.map((c) => c.id), message: 'Reminder: please submit your weekly check-in!' }),
+                })
+              } finally {
+                setSendingNudge(false)
+              }
+            }}
+            disabled={sendingNudge}
+            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-medium hover:bg-amber-700 disabled:opacity-60 transition-colors"
+          >
+            <Bell size={12} />
+            {sendingNudge ? 'Sending…' : 'Send Reminder'}
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ── Widget 1: Active Programs ── */}
