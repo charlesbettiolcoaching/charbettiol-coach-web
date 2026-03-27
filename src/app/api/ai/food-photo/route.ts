@@ -4,16 +4,19 @@ import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import { jwtDecode } from 'jwt-decode';
 
-const openaiKey = process.env.OPENAI_API_KEY
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-if (!openaiKey || !supabaseUrl || !supabaseKey) {
-  throw new Error('Missing required environment variables')
+// Lazy initialization — only evaluated at request time, not during build.
+function getOpenAIClient() {
+  const key = process.env.OPENAI_API_KEY
+  if (!key) throw new Error("Missing OPENAI_API_KEY")
+  return new OpenAI({ apiKey: key })
+}
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error("Missing Supabase env vars")
+  return createClient(url, key)
 }
 
-const openai = new OpenAI({ apiKey: openaiKey });
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 interface FoodItem {
   name: string;
@@ -99,6 +102,8 @@ function parseGPTResponse(content: string): FoodPhotoAnalysis {
 }
 
 export async function POST(request: NextRequest) {
+  const openai = getOpenAIClient()
+  const supabaseAdmin = getSupabaseAdmin()
   try {
     // Verify authentication
     const authHeader = request.headers.get('authorization');
