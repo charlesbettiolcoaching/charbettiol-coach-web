@@ -409,7 +409,7 @@ export default function ClientDetailPage() {
     if (!aiSession) return
     setAiLoading(true)
     // Call summarise endpoint
-    await fetch('/api/ai-coach/summarise', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-webhook-secret': '' }, body: JSON.stringify({ sessionId: aiSession.id }) })
+    await fetch('/api/ai-coach/summarise', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: aiSession.id }) })
     const supabase = createClient()
     await supabase.from('ai_mode_sessions').update({ is_active: false }).eq('id', aiSession.id)
     setAiSession(null); setAiModeActive(false); setAiLoading(false)

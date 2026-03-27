@@ -220,7 +220,6 @@ export default function BulkClientActions({ clients, selectedIds, onSelectionCha
       setTagInput('');
       setSelectedProgram('');
     } catch (err) {
-      console.error('Bulk action error:', err);
       toast.error('Some actions failed. Please check and try again.');
     } finally {
       setExecuting(false);

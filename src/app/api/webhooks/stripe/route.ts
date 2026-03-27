@@ -88,7 +88,6 @@ export async function POST(req: NextRequest) {
       }
       case 'customer.subscription.trial_will_end': {
         const sub = event.data.object as Stripe.Subscription
-        console.log(`Trial ending soon for customer: ${sub.customer}`)
         await logBillingEvent(sub.customer as string, 'trial_ending_soon', 0)
         break
       }

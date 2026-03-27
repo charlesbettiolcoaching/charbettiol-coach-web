@@ -39,6 +39,7 @@ export default function VideoLibraryPage() {
   const [filterMuscle, setFilterMuscle] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [search, setSearch] = useState('');
+  const [pendingDeleteVideoId, setPendingDeleteVideoId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     exercise_name: '',
@@ -109,10 +110,10 @@ export default function VideoLibraryPage() {
   };
 
   const deleteVideo = async (id: string) => {
-    if (!confirm('Delete this video?')) return;
     await supabase.from('exercise_videos').delete().eq('id', id);
     setVideos((prev) => prev.filter((v) => v.id !== id));
     if (selectedVideo?.id === id) setSelectedVideo(null);
+    setPendingDeleteVideoId(null);
   };
 
   const addFormCue = () => setForm({ ...form, form_cues: [...form.form_cues, ''] });
@@ -260,8 +261,14 @@ export default function VideoLibraryPage() {
             )}
 
             <div className="flex gap-2">
-              <button onClick={() => deleteVideo(selectedVideo.id)}
-                className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm hover:bg-red-200">Delete</button>
+              {pendingDeleteVideoId === selectedVideo.id ? (
+                <>
+                  <button onClick={() => setPendingDeleteVideoId(null)} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200">Cancel</button>
+                  <button onClick={() => deleteVideo(selectedVideo.id)} className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700">Confirm Delete</button>
+                </>
+              ) : (
+                <button onClick={() => setPendingDeleteVideoId(selectedVideo.id)} className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm hover:bg-red-200">Delete</button>
+              )}
             </div>
           </div>
         </div>

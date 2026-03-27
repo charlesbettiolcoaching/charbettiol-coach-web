@@ -36,6 +36,7 @@ export default function TemplatesPage() {
   const [search, setSearch] = useState('');
 
   const [form, setForm] = useState({ title: '', body: '', category: 'general', shortcut: '' });
+  const [pendingDeleteTplId, setPendingDeleteTplId] = useState<string | null>(null);
 
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
@@ -105,9 +106,9 @@ export default function TemplatesPage() {
   };
 
   const deleteTemplate = async (id: string) => {
-    if (!confirm('Delete this template?')) return;
     await supabase.from('message_templates').delete().eq('id', id);
     setTemplates((prev) => prev.filter((t) => t.id !== id));
+    setPendingDeleteTplId(null);
   };
 
   const togglePin = async (t: Template) => {
@@ -229,9 +230,16 @@ export default function TemplatesPage() {
                   <button onClick={() => startEdit(t)} className="p-1.5 hover:bg-gray-100 rounded text-sm" title="Edit">
                     ✏️
                   </button>
-                  <button onClick={() => deleteTemplate(t.id)} className="p-1.5 hover:bg-red-50 rounded text-sm" title="Delete">
-                    🗑️
-                  </button>
+                  {pendingDeleteTplId === t.id ? (
+                    <>
+                      <button onClick={() => setPendingDeleteTplId(null)} className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 rounded">Cancel</button>
+                      <button onClick={() => deleteTemplate(t.id)} className="px-2 py-1 text-xs text-red-600 font-semibold hover:text-red-800 rounded hover:bg-red-50">Delete</button>
+                    </>
+                  ) : (
+                    <button onClick={() => setPendingDeleteTplId(t.id)} className="p-1.5 hover:bg-red-50 rounded text-sm" title="Delete">
+                      🗑️
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

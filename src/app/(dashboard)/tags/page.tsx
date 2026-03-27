@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { toast } from '@/lib/toast';
 
 interface CoachTag {
   id: string;
@@ -49,6 +50,8 @@ export default function TagsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tags' | 'segments'>('tags');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [pendingDeleteTagId, setPendingDeleteTagId] = useState<string | null>(null);
+  const [pendingDeleteSegmentId, setPendingDeleteSegmentId] = useState<string | null>(null);
 
   // Tag form
   const [showTagForm, setShowTagForm] = useState(false);
@@ -105,9 +108,10 @@ export default function TagsPage() {
   };
 
   const deleteTag = async (id: string) => {
-    if (!confirm('Delete this tag? Clients will keep their tags.')) return;
     await supabase.from('coach_tags').delete().eq('id', id);
     setTags((prev) => prev.filter((t) => t.id !== id));
+    setPendingDeleteTagId(null);
+    toast.success('Tag deleted');
   };
 
   const editTag = (tag: CoachTag) => {
@@ -166,9 +170,9 @@ export default function TagsPage() {
   };
 
   const deleteSegment = async (id: string) => {
-    if (!confirm('Delete this segment?')) return;
     await supabase.from('client_segments').delete().eq('id', id);
     setSegments((prev) => prev.filter((s) => s.id !== id));
+    setPendingDeleteSegmentId(null);
   };
 
   // Filter clients by selected tag
@@ -258,7 +262,14 @@ export default function TagsPage() {
                   </div>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={(e) => { e.stopPropagation(); editTag(tag); }} className="text-xs text-gray-400 hover:text-gray-600">Edit</button>
-                    <button onClick={(e) => { e.stopPropagation(); deleteTag(tag.id); }} className="text-xs text-red-400 hover:text-red-600">Del</button>
+                    {pendingDeleteTagId === tag.id ? (
+                      <>
+                        <button onClick={(e) => { e.stopPropagation(); setPendingDeleteTagId(null); }} className="text-xs text-gray-400 hover:text-gray-600">Cancel</button>
+                        <button onClick={(e) => { e.stopPropagation(); deleteTag(tag.id); }} className="text-xs text-red-600 font-semibold hover:text-red-800">Confirm</button>
+                      </>
+                    ) : (
+                      <button onClick={(e) => { e.stopPropagation(); setPendingDeleteTagId(tag.id); }} className="text-xs text-red-400 hover:text-red-600">Del</button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -382,7 +393,14 @@ export default function TagsPage() {
                     </div>
                   )}
                 </div>
-                <button onClick={() => deleteSegment(seg.id)} className="text-sm text-red-400 hover:text-red-600">Delete</button>
+                {pendingDeleteSegmentId === seg.id ? (
+                  <div className="flex gap-2">
+                    <button onClick={() => setPendingDeleteSegmentId(null)} className="text-sm text-gray-400 hover:text-gray-600">Cancel</button>
+                    <button onClick={() => deleteSegment(seg.id)} className="text-sm text-red-600 font-semibold hover:text-red-800">Confirm</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setPendingDeleteSegmentId(seg.id)} className="text-sm text-red-400 hover:text-red-600">Delete</button>
+                )}
               </div>
             ))}
             {segments.length === 0 && (

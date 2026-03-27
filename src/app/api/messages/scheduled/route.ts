@@ -251,10 +251,6 @@ export async function POST(request: NextRequest) {
     const successCount = results.filter((r) => r.status === 'fulfilled' && r.value.success).length;
     const failureCount = results.filter((r) => r.status === 'rejected' || !r.value.success).length;
 
-    console.log(
-      `Processed ${pendingMessages.length} scheduled messages: ${successCount} succeeded, ${failureCount} failed`
-    );
-
     return NextResponse.json({
       success: true,
       processed: pendingMessages.length,
