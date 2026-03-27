@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createServerClient } from '@/lib/supabase/server'
@@ -7,22 +8,24 @@ import { createClient as createServerClient } from '@/lib/supabase/server'
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) throw new Error("Missing Supabase env vars")
+  if (!url || !key) throw new Error('Missing Supabase environment variables')
   return createClient(url, key)
 }
 
-
 export async function POST(req: NextRequest) {
-  const supabaseAdmin = getSupabaseAdmin()
+  const admin = getSupabaseAdmin()
+
   // Verify authenticated coach session
   const serverClient = createServerClient()
   const { data: { user }, error: authError } = await serverClient.auth.getUser()
+
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
     const { title, body, audience } = await req.json()
+
     if (!title || !body) {
       return NextResponse.json({ error: 'title and body are required' }, { status: 400 })
     }
