@@ -17,7 +17,6 @@ import {
   Bell,
   MessageSquare,
   ClipboardCheck,
-  HeartPulse,
   BookOpen,
   ListTodo,
   CreditCard,
@@ -35,7 +34,6 @@ import {
   Package,
   UsersRound,
   CalendarClock,
-  Watch,
 } from 'lucide-react'
 
 type NavSection = {
@@ -53,28 +51,25 @@ const NAV_SECTIONS: NavSection[] = [
     label: 'CLIENTS',
     items: [
       { href: '/clients', label: 'Clients', icon: Users },
-      { href: '/check-ins', label: 'Check-ins', icon: ClipboardCheck },
-      { href: '/tasks', label: 'Tasks', icon: ListTodo },
       { href: '/messages', label: 'Messages', icon: MessageSquare },
+      { href: '/check-ins', label: 'Check-ins', icon: ClipboardCheck },
     ],
   },
   {
-    label: 'AI & AUTOMATION',
+    label: 'PROGRAMS & NUTRITION',
     items: [
-      { href: '/meal-plans', label: 'Meal Plans', icon: UtensilsCrossed },
-      { href: '/workout-programs', label: 'Workout Programs', icon: Dumbbell },
+      { href: '/programs', label: 'Programs', icon: Dumbbell },
+      { href: '/nutrition', label: 'Nutrition', icon: UtensilsCrossed },
+    ],
+  },
+  {
+    label: 'TOOLS',
+    items: [
+      { href: '/tasks', label: 'Tasks', icon: ListTodo },
       { href: '/form-check', label: 'Form Check', icon: Video },
-    ],
-  },
-  {
-    label: 'COACHING',
-    items: [
-      { href: '/programs', label: 'Programs', icon: BookOpen },
-      { href: '/nutrition', label: 'Nutrition', icon: HeartPulse },
       { href: '/templates', label: 'Templates', icon: MessageSquareText },
-      { href: '/tags', label: 'Tags & Segments', icon: Tag },
       { href: '/video-library', label: 'Video Library', icon: Film },
-      { href: '/habits', label: 'Habits', icon: ListTodo },
+      { href: '/habits', label: 'Habits', icon: CalendarClock },
       { href: '/resources', label: 'Resources', icon: BookOpen },
     ],
   },
@@ -102,6 +97,7 @@ const NAV_SECTIONS: NavSection[] = [
     label: 'SETTINGS',
     items: [
       { href: '/branding', label: 'Branding', icon: Palette },
+      { href: '/tags', label: 'Tags & Segments', icon: Tag },
       { href: '/settings', label: 'Settings', icon: Settings },
       { href: '/privacy', label: 'Privacy & Data', icon: Shield },
     ],

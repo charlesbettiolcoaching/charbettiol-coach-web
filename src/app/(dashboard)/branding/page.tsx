@@ -381,9 +381,20 @@ export default function BrandingPage() {
 
       if (!res.ok) throw new Error(json.error ?? 'Upload failed');
 
-      if (type === 'logo') set({ logo_url: json.url });
-      else if (type === 'logo_dark') set({ logo_dark_url: json.url });
-      else set({ favicon_url: json.url });
+      const urlField = type === 'logo' ? 'logo_url' : type === 'logo_dark' ? 'logo_dark_url' : 'favicon_url';
+      set({ [urlField]: json.url });
+
+      // Auto-save the URL immediately so it persists on refresh
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const patch = { [urlField]: json.url, coach_id: user.id, updated_at: new Date().toISOString() };
+        if (config.id) {
+          await supabase.from('coach_branding').update(patch).eq('id', config.id);
+        } else {
+          const { data } = await supabase.from('coach_branding').insert(patch).select().single();
+          if (data) set({ id: data.id });
+        }
+      }
 
       toast.success('Image uploaded');
     } catch (e) {

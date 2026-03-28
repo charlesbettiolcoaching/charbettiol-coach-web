@@ -8,7 +8,7 @@ import { Send, MessageSquare, Bot, BotOff, SquareCheck, Search, Plus, CheckCheck
 import clsx from 'clsx'
 
 type ClientThread = {
-  client: Profile
+  client: Profile & { isPending?: boolean }
   lastMessage: Message | null
   unreadCount: number
 }
@@ -253,14 +253,21 @@ export default function MessagesPage() {
     if (!user) return
     setUserId(user.id)
 
-    const { data: clientData } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('coach_id', user.id)
-      .eq('role', 'client')
+    const [activeRes, pendingRes] = await Promise.all([
+      supabase.from('profiles').select('*').eq('coach_id', user.id).eq('role', 'client'),
+      supabase.from('client_invitations').select('id, client_name, client_email').eq('coach_id', user.id).eq('status', 'pending'),
+    ])
+
+    const activeClients = (activeRes.data ?? []) as Profile[]
+    const pendingClients = (pendingRes.data ?? []).map((i: { id: string; client_name: string | null; client_email: string | null }) => ({
+      id: i.id,
+      name: i.client_name ? `${i.client_name} (Pending)` : null,
+      email: i.client_email,
+      isPending: true,
+    } as Profile & { isPending: boolean }))
 
     const threadList: ClientThread[] = []
-    for (const client of (clientData ?? []) as Profile[]) {
+    for (const client of activeClients) {
       const { data: msgs } = await supabase
         .from('messages')
         .select('*')
@@ -282,6 +289,10 @@ export default function MessagesPage() {
         lastMessage: msgs?.[0] ?? null,
         unreadCount: count ?? 0,
       })
+    }
+
+    for (const client of pendingClients) {
+      threadList.push({ client, lastMessage: null, unreadCount: 0 })
     }
 
     threadList.sort((a, b) => {
@@ -473,8 +484,10 @@ export default function MessagesPage() {
                 >
                   {/* Colored avatar */}
                   <div className={clsx(
-                    'w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-white text-sm font-bold',
-                    avatarColor(thread.client.id)
+                    'w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold',
+                    (thread.client as Profile & { isPending?: boolean }).isPending
+                      ? 'bg-cb-border text-cb-muted'
+                      : clsx('text-white', avatarColor(thread.client.id))
                   )}>
                     {initials(thread.client.name, thread.client.email)}
                   </div>
@@ -503,9 +516,13 @@ export default function MessagesPage() {
                       )}
                       <p className={clsx(
                         'text-xs truncate',
-                        thread.unreadCount > 0 ? 'text-cb-text font-medium' : 'text-cb-muted'
+                        (thread.client as Profile & { isPending?: boolean }).isPending
+                          ? 'text-cb-muted italic'
+                          : thread.unreadCount > 0 ? 'text-cb-text font-medium' : 'text-cb-muted'
                       )}>
-                        {thread.lastMessage?.content ?? 'No messages yet'}
+                        {(thread.client as Profile & { isPending?: boolean }).isPending
+                          ? 'Invite pending'
+                          : (thread.lastMessage?.content ?? 'No messages yet')}
                       </p>
                       {thread.unreadCount > 0 && (
                         <span className="ml-auto flex-shrink-0 w-4 h-4 bg-cb-teal rounded-full flex items-center justify-center">
@@ -527,6 +544,15 @@ export default function MessagesPage() {
           <div className="flex-1 flex flex-col items-center justify-center text-cb-muted">
             <MessageSquare size={48} className="mb-3" />
             <p className="text-sm">Select a client to view messages</p>
+          </div>
+        ) : (selectedThread?.client as Profile & { isPending?: boolean })?.isPending ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-cb-muted p-8">
+            <MessageSquare size={48} className="mb-3 opacity-40" />
+            <p className="text-sm font-medium text-cb-text mb-1">Invite pending</p>
+            <p className="text-xs text-center max-w-xs">
+              {selectedThread?.client.name?.replace(' (Pending)', '') ?? selectedThread?.client.email} hasn&apos;t joined yet.
+              Messaging will be available once they accept your invitation.
+            </p>
           </div>
         ) : (
           <>

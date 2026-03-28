@@ -375,7 +375,8 @@ export default function TasksPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-cb-text">Tasks</h1>
-          <p className="text-sm text-cb-muted mt-0.5">Manage your coaching tasks and to-dos</p>
+          <div className="h-0.5 w-12 bg-gradient-to-r from-brand to-brand/40 rounded-full mt-1.5 mb-1" />
+          <p className="text-sm text-cb-muted mt-0.5">Assign tasks and reminders to your clients</p>
         </div>
         <button onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 px-4 py-2 bg-brand hover:bg-brand/90 text-white rounded-lg text-sm font-medium transition-colors">

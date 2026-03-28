@@ -149,13 +149,19 @@ export default function CheckInsPage() {
   if (checkIns.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-6">
-        <div className="w-24 h-24 mb-6 rounded-2xl bg-surface border border-cb-border flex items-center justify-center">
-          <CheckSquare size={40} className="text-cb-border" />
+        <div className="w-16 h-16 mb-5 rounded-2xl bg-brand/8 flex items-center justify-center">
+          <CheckSquare size={28} className="text-brand/60" />
         </div>
-        <h2 className="text-xl font-bold text-cb-text mb-2">No check ins found</h2>
-        <p className="text-sm text-cb-muted max-w-sm">
-          You don&apos;t have any check-in submissions yet. Check back later!
+        <h2 className="text-xl font-bold text-cb-text mb-2">No check-ins yet</h2>
+        <p className="text-sm text-cb-muted max-w-sm mb-4">
+          Clients submit check-ins through the Propel mobile app. Set up a check-in schedule to start receiving submissions.
         </p>
+        <a
+          href="/settings"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand/90 transition-colors"
+        >
+          Configure Check-ins
+        </a>
       </div>
     )
   }
@@ -164,8 +170,9 @@ export default function CheckInsPage() {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-cb-text">Check Ins</h1>
-          <p className="text-sm text-cb-muted mt-0.5">Review and respond to client check-ins</p>
+          <h1 className="text-xl font-bold text-cb-text">Check-ins</h1>
+          <div className="h-0.5 w-12 bg-gradient-to-r from-brand to-brand/40 rounded-full mt-1.5 mb-1" />
+          <p className="text-sm text-cb-muted mt-0.5">Review client check-in submissions</p>
         </div>
       </div>
 

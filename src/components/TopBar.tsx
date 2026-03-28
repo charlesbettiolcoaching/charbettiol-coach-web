@@ -2,33 +2,43 @@
 
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Plus, Users, Dumbbell, UtensilsCrossed, ChevronDown } from 'lucide-react'
+import { Plus, Users, Dumbbell, UtensilsCrossed, SquareCheck, ChevronDown } from 'lucide-react'
 import clsx from 'clsx'
 
 const PAGE_TITLES: Record<string, string> = {
-  '/dashboard':       'Dashboard',
-  '/clients':         'Clients',
-  '/training':        'Programs',
-  '/nutrition':       'Nutrition',
-  '/settings':        'Settings',
-  '/check-ins':       'Check-ins',
-  '/tasks':           'Tasks',
-  '/messages':        'Messages',
-  '/metrics':         'Metrics',
-  '/habits':          'Habits',
-  '/resources':       'Resources',
-  '/autoflow':        'Autoflow',
-  '/notifications':   'Notifications',
-  '/my-plan':         'My Meal Plan',
-  '/my-workout':      'My Training',
-  '/programs':        'Programs',
-  '/meal-plans':      'Meal Plans',
-  '/workout-programs':'Workout Programs',
-  '/packages':        'Packages',
-  '/team':            'Team',
-  '/form-check':      'Form Check',
-  '/branding':        'Branding',
-  '/payments':        'Payments',
+  '/dashboard':              'Dashboard',
+  '/clients':                'Clients',
+  '/training':               'Programs',
+  '/nutrition':              'Nutrition',
+  '/settings':               'Settings',
+  '/check-ins':              'Check-ins',
+  '/tasks':                  'Tasks',
+  '/messages':               'Messages',
+  '/metrics':                'Metrics',
+  '/habits':                 'Habits',
+  '/resources':              'Resources',
+  '/autoflow':               'Autoflow',
+  '/notifications':          'Notifications',
+  '/notifications-broadcast':'Broadcasts',
+  '/my-plan':                'My Meal Plan',
+  '/my-workout':             'My Training',
+  '/programs':               'Programs',
+  '/meal-plans':             'Nutrition',
+  '/workout-programs':       'Programs',
+  '/packages':               'Packages',
+  '/team':                   'Team',
+  '/form-check':             'Form Check',
+  '/branding':               'Branding',
+  '/payments':               'Payments',
+  '/templates':              'Templates',
+  '/tags':                   'Tags & Segments',
+  '/video-library':          'Video Library',
+  '/reviews':                'Reviews',
+  '/marketplace':            'Marketplace',
+  '/referrals':              'Referrals',
+  '/groups':                 'Group Chats',
+  '/email-sequences':        'Email Sequences',
+  '/privacy':                'Privacy & Data',
 }
 
 function getTitle(pathname: string): string {
@@ -40,9 +50,10 @@ function getTitle(pathname: string): string {
 }
 
 const QUICK_ACTIONS = [
-  { label: 'New Client',     href: '/clients',   icon: Users,           desc: 'Add a coaching client' },
-  { label: 'New Program',    href: '/training',  icon: Dumbbell,        desc: 'Build a workout program' },
-  { label: 'New Meal Plan',  href: '/nutrition', icon: UtensilsCrossed, desc: 'Create a nutrition plan' },
+  { label: 'New Client',    href: '/clients',   icon: Users,           desc: 'Add a coaching client' },
+  { label: 'New Program',   href: '/programs',  icon: Dumbbell,        desc: 'Build a workout program' },
+  { label: 'New Meal Plan', href: '/nutrition', icon: UtensilsCrossed, desc: 'Create a nutrition plan' },
+  { label: 'New Task',      href: '/tasks',     icon: SquareCheck,     desc: 'Add a task or reminder' },
 ]
 
 export default function TopBar() {
