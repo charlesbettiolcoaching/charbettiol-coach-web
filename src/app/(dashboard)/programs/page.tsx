@@ -7,16 +7,24 @@ import clsx from 'clsx'
 import { createClient } from '@/lib/supabase/client'
 import EmptyState from '@/components/EmptyState'
 import WorkoutDayBuilder from '@/components/programs/WorkoutDayBuilder'
-import { Workout } from '@/types/workout'
+import SportCategoryPicker from '@/components/programs/SportCategoryPicker'
+import WorkoutFormatPicker from '@/components/programs/WorkoutFormatPicker'
+import { Workout, SportCategory, WorkoutFormat } from '@/types/workout'
+import { SPORT_CONFIGS, getSportConfig } from '@/constants/workoutConfigs'
 
 // ─── AI Generator Config ─────────────────────────────────────────────────────
-const AI_GOALS = [
-  { value: 'hypertrophy', label: 'Hypertrophy (Muscle Growth)' },
-  { value: 'strength', label: 'Strength' },
-  { value: 'fat_loss', label: 'Fat Loss' },
-  { value: 'athletic_performance', label: 'Athletic Performance' },
-  { value: 'general_fitness', label: 'General Fitness' },
-]
+const SPORT_GOALS: Record<SportCategory, { value: string; label: string }[]> = {
+  strength:       [{ value: 'hypertrophy', label: 'Hypertrophy' }, { value: 'strength', label: 'Strength' }, { value: 'fat_loss', label: 'Fat Loss' }, { value: 'athletic_performance', label: 'Athletic Performance' }, { value: 'general_fitness', label: 'General Fitness' }],
+  running:        [{ value: '5k', label: '5K' }, { value: '10k', label: '10K' }, { value: 'half_marathon', label: 'Half Marathon' }, { value: 'marathon', label: 'Marathon' }, { value: 'speed', label: 'Speed' }, { value: 'endurance', label: 'Endurance' }],
+  cycling:        [{ value: 'endurance', label: 'Endurance' }, { value: 'speed', label: 'Speed / Power' }, { value: 'fat_loss', label: 'Fat Loss' }, { value: 'general_fitness', label: 'General Fitness' }],
+  swimming:       [{ value: 'endurance', label: 'Endurance' }, { value: 'speed', label: 'Speed / Technique' }, { value: 'general_fitness', label: 'General Fitness' }],
+  functional:     [{ value: 'competition_prep', label: 'Competition Prep' }, { value: 'general_fitness', label: 'General Fitness' }, { value: 'skill_development', label: 'Skill Development' }],
+  sports_specific:[{ value: 'sport_conditioning', label: 'Sport Conditioning' }, { value: 'speed', label: 'Speed & Agility' }, { value: 'strength', label: 'Strength' }, { value: 'endurance', label: 'Endurance' }],
+  rehab:          [{ value: 'post_surgery', label: 'Post-Surgery' }, { value: 'injury_prevention', label: 'Injury Prevention' }, { value: 'mobility', label: 'Mobility' }, { value: 'return_to_sport', label: 'Return to Sport' }],
+  hiit:           [{ value: 'fat_loss', label: 'Fat Loss' }, { value: 'cardiovascular', label: 'Cardiovascular Fitness' }, { value: 'athletic_performance', label: 'Athletic Performance' }],
+  yoga_pilates:   [{ value: 'flexibility', label: 'Flexibility' }, { value: 'strength', label: 'Strength & Stability' }, { value: 'mobility', label: 'Mobility & Recovery' }, { value: 'mindfulness', label: 'Mindfulness' }],
+}
+
 const EXPERIENCE_LEVELS = ['beginner', 'intermediate', 'advanced']
 const EQUIPMENT_OPTIONS = [
   'Barbell', 'Dumbbells', 'Cables', 'Machines', 'Kettlebells',
@@ -73,6 +81,7 @@ export default function ProgramsPage() {
   const [aiForm, setAiForm] = useState({
     client_id: '',
     title: '',
+    sport_category: 'strength' as SportCategory,
     goal: 'hypertrophy',
     experience_level: 'intermediate',
     days_per_week: 4,
@@ -80,6 +89,7 @@ export default function ProgramsPage() {
     equipment_available: ['Barbell', 'Dumbbells', 'Cables', 'Machines'],
     injuries_limitations: '',
     preferred_split: 'auto',
+    preferred_formats: [] as WorkoutFormat[],
     notes: '',
     program_length_weeks: 4,
   })
@@ -149,6 +159,25 @@ export default function ProgramsPage() {
       equipment_available: f.equipment_available.includes(item)
         ? f.equipment_available.filter(e => e !== item)
         : [...f.equipment_available, item],
+    }))
+  }
+
+  const toggleAiFormat = (fmt: WorkoutFormat) => {
+    setAiForm(f => ({
+      ...f,
+      preferred_formats: f.preferred_formats.includes(fmt)
+        ? f.preferred_formats.filter(x => x !== fmt)
+        : [...f.preferred_formats, fmt],
+    }))
+  }
+
+  const handleAiSportChange = (cat: SportCategory) => {
+    const goals = SPORT_GOALS[cat]
+    setAiForm(f => ({
+      ...f,
+      sport_category: cat,
+      goal: goals[0].value,
+      preferred_formats: [],
     }))
   }
 
@@ -303,6 +332,12 @@ export default function ProgramsPage() {
         <div className="h-0.5 w-12 bg-gradient-to-r from-brand to-brand/40 rounded-full mb-6" />
 
         <div className="space-y-6 bg-surface border border-cb-border rounded-xl p-6">
+          {/* Sport Category */}
+          <div>
+            <label className="block text-sm font-medium text-cb-secondary mb-2">Sport / Training Type</label>
+            <SportCategoryPicker value={aiForm.sport_category} onChange={handleAiSportChange} />
+          </div>
+
           {/* Client */}
           <div>
             <label className="block text-sm font-medium text-cb-secondary mb-1">
@@ -334,17 +369,31 @@ export default function ProgramsPage() {
             {aiFormErrors.title && <p className="text-red-500 text-xs mt-1">{aiFormErrors.title}</p>}
           </div>
 
-          {/* Goal */}
+          {/* Goal — adapts per sport */}
           <div>
             <label className="block text-sm font-medium text-cb-secondary mb-1">Training Goal</label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {AI_GOALS.map(g => (
+              {(SPORT_GOALS[aiForm.sport_category] ?? SPORT_GOALS.strength).map(g => (
                 <button key={g.value} type="button" onClick={() => setAiForm(f => ({ ...f, goal: g.value }))}
                   className={clsx('px-3 py-2 rounded-lg border text-sm text-left transition-colors', aiForm.goal === g.value ? 'bg-brand/10 border-brand/40 text-brand' : 'bg-surface border-cb-border text-cb-secondary hover:border-cb-secondary')}>
                   {g.label}
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Preferred Formats — filtered by sport */}
+          <div>
+            <label className="block text-sm font-medium text-cb-secondary mb-1">Preferred Workout Formats</label>
+            <p className="text-xs text-cb-muted mb-2">Select formats the AI should use (optional — leave blank for AI to decide)</p>
+            <WorkoutFormatPicker
+              sport={aiForm.sport_category}
+              value={aiForm.preferred_formats[0] ?? getSportConfig(aiForm.sport_category).defaultFormat}
+              onChange={fmt => toggleAiFormat(fmt)}
+            />
+            {aiForm.preferred_formats.length > 0 && (
+              <p className="text-xs text-brand mt-1.5">{aiForm.preferred_formats.length} format{aiForm.preferred_formats.length > 1 ? 's' : ''} selected</p>
+            )}
           </div>
 
           {/* Experience Level */}
@@ -387,18 +436,20 @@ export default function ProgramsPage() {
             </div>
           </div>
 
-          {/* Split */}
-          <div>
-            <label className="block text-sm font-medium text-cb-secondary mb-1">Training Split</label>
-            <div className="flex flex-wrap gap-2">
-              {SPLITS.map(s => (
-                <button key={s.value} type="button" onClick={() => setAiForm(f => ({ ...f, preferred_split: s.value }))}
-                  className={clsx('px-3 py-1.5 rounded-full text-sm border transition-colors', aiForm.preferred_split === s.value ? 'bg-brand/10 border-brand/40 text-brand' : 'bg-surface border-cb-border text-cb-secondary hover:border-cb-secondary')}>
-                  {s.label}
-                </button>
-              ))}
+          {/* Split — only for strength training */}
+          {aiForm.sport_category === 'strength' && (
+            <div>
+              <label className="block text-sm font-medium text-cb-secondary mb-1">Training Split</label>
+              <div className="flex flex-wrap gap-2">
+                {SPLITS.map(s => (
+                  <button key={s.value} type="button" onClick={() => setAiForm(f => ({ ...f, preferred_split: s.value }))}
+                    className={clsx('px-3 py-1.5 rounded-full text-sm border transition-colors', aiForm.preferred_split === s.value ? 'bg-brand/10 border-brand/40 text-brand' : 'bg-surface border-cb-border text-cb-secondary hover:border-cb-secondary')}>
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Equipment */}
           <div>
