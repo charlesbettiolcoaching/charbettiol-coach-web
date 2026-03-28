@@ -137,7 +137,7 @@ export default function FormCheckPage() {
 
     return (
       <div className="max-w-5xl mx-auto p-6">
-        <button onClick={() => setSelectedCheck(null)} className="text-indigo-600 hover:text-indigo-700 text-sm mb-4">
+        <button onClick={() => setSelectedCheck(null)} className="text-brand hover:text-brand/80 text-sm mb-4">
           ← Back to form checks
         </button>
 
@@ -168,7 +168,7 @@ export default function FormCheckPage() {
                 </button>
               )}
               {selectedCheck.ai_status === 'processing' && (
-                <div className="mt-4 text-center py-3 bg-indigo-50 rounded-lg text-indigo-600 text-sm font-medium">
+                <div className="mt-4 text-center py-3 bg-brand/8 rounded-lg text-brand text-sm font-medium">
                   Processing...
                 </div>
               )}
@@ -201,7 +201,7 @@ export default function FormCheckPage() {
                   <h3 className="font-semibold text-gray-900 mb-3">Quick Coaching Cues</h3>
                   <div className="flex flex-wrap gap-2">
                     {analysis.coaching_cues.map((cue, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium">
+                      <span key={i} className="px-3 py-1.5 bg-brand/8 text-brand rounded-full text-sm font-medium">
                         {cue}
                       </span>
                     ))}
@@ -240,7 +240,7 @@ export default function FormCheckPage() {
                           </div>
                           <p className="text-gray-500 text-sm mt-0.5">{imp.detail}</p>
                           {imp.drill && (
-                            <p className="text-indigo-600 text-sm mt-1">Drill: {imp.drill}</p>
+                            <p className="text-brand text-sm mt-1">Drill: {imp.drill}</p>
                           )}
                         </div>
                       ))}

@@ -13,7 +13,7 @@ import { toast } from '@/lib/toast'
 
 function genId() { return crypto.randomUUID() }
 
-interface Client { id: string; name?: string | null; email?: string }
+interface Client { id: string; name?: string | null; email?: string; isPending?: boolean }
 
 type Unit = 'g' | 'kg' | 'ml' | 'L' | 'cup' | 'tbsp' | 'tsp' | 'oz' | 'piece'
 
@@ -324,17 +324,21 @@ export default function AIMealPlanWizard({
     mealPrepStyle: 'both', additionalNotes: '',
   })
 
-  // Load clients
+  // Load clients (active + pending invites)
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
-      supabase.from('profiles').select('id, name, email').eq('coach_id', user.id).eq('role', 'client')
-        .then(({ data }) => {
-          const list = (data ?? []).map((c: { id: string; name: string | null; email: string }) => ({ id: c.id, name: c.name, email: c.email }))
-          setClients(list)
-          if (list.length > 0) setState((s) => ({ ...s, clientId: list[0].id }))
-        })
+      Promise.all([
+        supabase.from('profiles').select('id, name, email').eq('coach_id', user.id).eq('role', 'client'),
+        supabase.from('client_invitations').select('id, client_name, client_email').eq('coach_id', user.id).eq('status', 'pending'),
+      ]).then(([activeRes, pendingRes]) => {
+        const active = (activeRes.data ?? []).map((c: { id: string; name: string | null; email: string }) => ({ id: c.id, name: c.name, email: c.email }))
+        const pending = (pendingRes.data ?? []).map((i: { id: string; client_name: string; client_email: string }) => ({ id: i.id, name: `${i.client_name} (Pending)`, email: i.client_email, isPending: true }))
+        const list = [...active, ...pending]
+        setClients(list)
+        if (active.length > 0) setState((s) => ({ ...s, clientId: active[0].id }))
+      })
     })
   }, [])
 
@@ -449,7 +453,7 @@ export default function AIMealPlanWizard({
         <select value={state.clientId} onChange={(e) => set('clientId', e.target.value)} className={inputCls()}>
           <option value="">No specific client (template)</option>
           {clients.map((c) => (
-            <option key={c.id} value={c.id}>{c.name ?? c.email}</option>
+            <option key={c.id} value={c.id} disabled={c.isPending}>{c.name ?? c.email}</option>
           ))}
         </select>
       </div>

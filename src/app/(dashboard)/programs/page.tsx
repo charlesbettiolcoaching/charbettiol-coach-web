@@ -573,7 +573,7 @@ export default function ProgramsPage() {
             <h2 className="text-lg font-bold text-cb-text mb-4">New Program</h2>
             <div className="space-y-3 mb-5">
               <div>
-                <label className="text-xs font-medium text-cb-muted mb-1 block">Program Name</label>
+                <label className="text-xs font-medium text-cb-muted mb-1 block">Program Name <span className="text-cb-danger">*</span></label>
                 <input
                   type="text"
                   value={newProgramName}

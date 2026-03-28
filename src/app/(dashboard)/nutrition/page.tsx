@@ -1518,8 +1518,14 @@ export default function NutritionPage() {
       if (!data.user) return
       setCoachId(data.user.id)
       loadPlansFromDB(supabase)
-      supabase.from('profiles').select('id, name').eq('coach_id', data.user.id).eq('role', 'client')
-        .then(({ data: clients }) => setClients((clients ?? []).map(c => ({ id: c.id, name: c.name ?? '' }))))
+      Promise.all([
+        supabase.from('profiles').select('id, name').eq('coach_id', data.user.id).eq('role', 'client'),
+        supabase.from('client_invitations').select('id, client_name').eq('coach_id', data.user.id).eq('status', 'pending'),
+      ]).then(([activeRes, pendingRes]) => {
+        const active = (activeRes.data ?? []).map(c => ({ id: c.id, name: c.name ?? '' }))
+        const pending = (pendingRes.data ?? []).map(i => ({ id: i.id, name: `${i.client_name} (Pending)` }))
+        setClients([...active, ...pending])
+      })
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

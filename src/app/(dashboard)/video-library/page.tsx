@@ -189,7 +189,7 @@ export default function VideoLibraryPage() {
               <input key={i} type="text" value={cue} onChange={(e) => updateCue(i, e.target.value)}
                 placeholder={`Cue ${i + 1}`} className="w-full border rounded-lg px-3 py-2 text-sm mb-2" />
             ))}
-            <button onClick={addFormCue} className="text-sm text-indigo-600 hover:text-indigo-700">+ Add Cue</button>
+            <button onClick={addFormCue} className="text-sm text-brand hover:text-brand/80">+ Add Cue</button>
           </div>
 
           {/* Common mistakes */}
@@ -199,7 +199,7 @@ export default function VideoLibraryPage() {
               <input key={i} type="text" value={m} onChange={(e) => updateMistake(i, e.target.value)}
                 placeholder={`Mistake ${i + 1}`} className="w-full border rounded-lg px-3 py-2 text-sm mb-2" />
             ))}
-            <button onClick={addMistake} className="text-sm text-indigo-600 hover:text-indigo-700">+ Add Mistake</button>
+            <button onClick={addMistake} className="text-sm text-brand hover:text-brand/80">+ Add Mistake</button>
           </div>
 
           <label className="flex items-center gap-2 text-sm">
@@ -208,7 +208,7 @@ export default function VideoLibraryPage() {
           </label>
 
           <button onClick={handleUpload} disabled={uploading || !videoFile || !form.exercise_name.trim()}
-            className="w-full py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50">
+            className="w-full py-3 bg-brand text-white rounded-lg font-semibold hover:bg-brand/90 disabled:opacity-50">
             {uploading ? 'Uploading...' : 'Upload Video'}
           </button>
         </div>
@@ -220,7 +220,7 @@ export default function VideoLibraryPage() {
   if (selectedVideo) {
     return (
       <div className="max-w-4xl mx-auto p-6">
-        <button onClick={() => setSelectedVideo(null)} className="text-indigo-600 hover:text-indigo-700 text-sm mb-4">← Back to library</button>
+        <button onClick={() => setSelectedVideo(null)} className="text-brand hover:text-brand/80 text-sm mb-4">← Back to library</button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
@@ -232,7 +232,7 @@ export default function VideoLibraryPage() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{selectedVideo.exercise_name}</h1>
               <div className="flex gap-2 mt-2">
-                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">{selectedVideo.muscle_group}</span>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-brand/10 text-brand">{selectedVideo.muscle_group}</span>
                 <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 capitalize">{selectedVideo.category}</span>
                 {selectedVideo.is_public && <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Public</span>}
               </div>
@@ -281,11 +281,12 @@ export default function VideoLibraryPage() {
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Exercise Video Library</h1>
-          <p className="text-gray-500 text-sm mt-1">Attach form-cue videos to exercises in your programs</p>
+          <h1 className="text-xl font-bold text-cb-text">Video Library</h1>
+          <div className="h-0.5 w-12 bg-gradient-to-r from-brand to-brand/40 rounded-full mt-1.5 mb-1" />
+          <p className="text-sm text-cb-muted mt-0.5">Attach form-cue videos to exercises in your programs</p>
         </div>
         <button onClick={() => setShowUpload(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">
+          className="px-4 py-2 bg-brand text-white rounded-lg font-medium hover:bg-brand/90">
           + Upload Video
         </button>
       </div>
@@ -311,7 +312,7 @@ export default function VideoLibraryPage() {
           <div className="text-4xl mb-3">🎬</div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">No videos yet</h3>
           <p className="text-gray-500 mb-4">Upload exercise demo videos for your clients.</p>
-          <button onClick={() => setShowUpload(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">Upload First Video</button>
+          <button onClick={() => setShowUpload(true)} className="px-4 py-2 bg-brand text-white rounded-lg font-medium hover:bg-brand/90">Upload First Video</button>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

@@ -169,7 +169,7 @@ export default function TemplatesPage() {
 
           <div className="flex gap-3 pt-2">
             <button onClick={save}
-              className="flex-1 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">
+              className="flex-1 py-2.5 bg-brand text-white rounded-lg font-medium hover:bg-brand/90">
               {isNew ? 'Create Template' : 'Save Changes'}
             </button>
           </div>
@@ -187,7 +187,7 @@ export default function TemplatesPage() {
           <p className="text-gray-500 text-sm mt-1">Canned replies you can insert in 1 tap during chat</p>
         </div>
         <button onClick={startNew}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">
+          className="px-4 py-2 bg-brand text-white rounded-lg font-medium hover:bg-brand/90">
           + New Template
         </button>
       </div>
@@ -200,7 +200,7 @@ export default function TemplatesPage() {
           {['all', ...CATEGORIES].map((c) => (
             <button key={c} onClick={() => setFilterCategory(c)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize transition-colors ${
-                filterCategory === c ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                filterCategory === c ? 'bg-brand/10 text-brand' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}>{c}</button>
           ))}
         </div>
@@ -219,7 +219,7 @@ export default function TemplatesPage() {
                     <h3 className="font-semibold text-gray-900">{t.title}</h3>
                     <span className="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-500 capitalize">{t.category}</span>
                     {t.shortcut && (
-                      <code className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 text-xs font-mono">{t.shortcut}</code>
+                      <code className="px-2 py-0.5 rounded bg-brand/8 text-brand text-xs font-mono">{t.shortcut}</code>
                     )}
                   </div>
                   <p className="text-sm text-gray-500 mt-1 whitespace-pre-line line-clamp-2">{t.body}</p>
