@@ -323,8 +323,15 @@ export default function BrandingPage() {
 
   const fetchBranding = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase.from('coach_branding').select('*').single();
-    if (data) setConfig({ ...DEFAULTS, ...data });
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data } = await supabase
+        .from('coach_branding')
+        .select('*')
+        .eq('coach_id', user.id)
+        .maybeSingle();
+      if (data) setConfig({ ...DEFAULTS, ...data });
+    }
     setLoading(false);
   }, [supabase]);
 
@@ -364,20 +371,26 @@ export default function BrandingPage() {
 
   const uploadLogo = async (file: File, type: 'logo' | 'logo_dark' | 'favicon') => {
     setUploading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setUploading(false); return; }
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', type);
 
-    const path = `branding/${user.id}/${type}-${Date.now()}.${file.name.split('.').pop()}`;
-    const { error } = await supabase.storage.from('branding').upload(path, file);
-    if (error) { toast.error('Upload failed'); setUploading(false); return; }
+      const res = await fetch('/api/upload/branding', { method: 'POST', body: formData });
+      const json = await res.json();
 
-    const { data: { publicUrl } } = supabase.storage.from('branding').getPublicUrl(path);
+      if (!res.ok) throw new Error(json.error ?? 'Upload failed');
 
-    if (type === 'logo') set({ logo_url: publicUrl });
-    else if (type === 'logo_dark') set({ logo_dark_url: publicUrl });
-    else set({ favicon_url: publicUrl });
+      if (type === 'logo') set({ logo_url: json.url });
+      else if (type === 'logo_dark') set({ logo_dark_url: json.url });
+      else set({ favicon_url: json.url });
 
-    setUploading(false);
+      toast.success('Image uploaded');
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const isElite = config.plan === 'elite';
