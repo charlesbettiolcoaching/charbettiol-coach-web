@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { UtensilsCrossed } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from '@/lib/toast';
+import EmptyState from '@/components/EmptyState';
 
 // ─── Types ──────────────────────────────────────────────────────────
 interface MealPlan {
@@ -112,8 +114,8 @@ function TagPicker({
             onClick={() => onToggle(opt)}
             className={`px-3 py-1 rounded-full text-sm border transition-colors ${
               selected.includes(opt)
-                ? 'bg-indigo-100 border-indigo-400 text-indigo-700'
-                : 'bg-white border-gray-300 text-gray-600 hover:border-gray-400'
+                ? 'bg-brand/10 border-brand/40 text-brand'
+                : 'bg-surface border-cb-border text-cb-secondary hover:border-cb-secondary'
             }`}
           >
             {opt}
@@ -302,8 +304,8 @@ export default function MealPlansPage() {
                   onClick={() => setForm({ ...form, meals_per_day: n })}
                   className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
                     form.meals_per_day === n
-                      ? 'bg-indigo-600 text-white border-indigo-600'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                      ? 'bg-brand text-white border-brand'
+                      : 'bg-surface text-cb-secondary border-cb-border hover:border-cb-secondary'
                   }`}
                 >
                   {n}
@@ -348,7 +350,7 @@ export default function MealPlansPage() {
           <button
             onClick={handleGenerate}
             disabled={generating || !form.client_id}
-            className="w-full py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 bg-brand text-white rounded-lg font-semibold hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {generating ? (
               <>
@@ -422,8 +424,8 @@ export default function MealPlansPage() {
               onClick={() => { setActiveDay(day.day_number); setShowShoppingList(false); }}
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 activeDay === day.day_number && !showShoppingList
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-brand text-white'
+                  : 'bg-surface-light text-cb-secondary hover:bg-cb-border/50'
               }`}
             >
               {day.day_label}
@@ -434,8 +436,8 @@ export default function MealPlansPage() {
               onClick={() => setShowShoppingList(true)}
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 showShoppingList
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-brand text-white'
+                  : 'bg-surface-light text-cb-secondary hover:bg-cb-border/50'
               }`}
             >
               🛒 Shopping List
@@ -511,7 +513,7 @@ export default function MealPlansPage() {
         </div>
         <button
           onClick={() => setShowGenerator(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 flex items-center gap-2"
+          className="px-4 py-2 bg-brand text-white rounded-lg font-medium hover:bg-brand/90 flex items-center gap-2"
         >
           ✨ Generate New Plan
         </button>
@@ -520,17 +522,13 @@ export default function MealPlansPage() {
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading...</div>
       ) : mealPlans.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border">
-          <div className="text-4xl mb-3">🍽️</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No meal plans yet</h3>
-          <p className="text-gray-500 mb-4">Generate your first AI-powered meal plan for a client.</p>
-          <button
-            onClick={() => setShowGenerator(true)}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700"
-          >
-            Get Started
-          </button>
-        </div>
+        <EmptyState
+          icon={<UtensilsCrossed size={48} />}
+          title="No meal plans yet"
+          description="Generate your first AI-powered meal plan for a client."
+          actionLabel="Generate New Plan"
+          onAction={() => setShowGenerator(true)}
+        />
       ) : (
         <div className="grid gap-4">
           {mealPlans.map((plan) => (

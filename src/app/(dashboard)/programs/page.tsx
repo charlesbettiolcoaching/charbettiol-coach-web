@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Plus, Dumbbell, Loader2 } from 'lucide-react'
+import { Plus, Dumbbell, Loader2, Layers, FileText, Calendar, Users } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import clsx from 'clsx'
 import { createClient } from '@/lib/supabase/client'
+import EmptyState from '@/components/EmptyState'
 
 type FilterTab = 'all' | 'templates' | 'assigned'
 
@@ -160,13 +161,16 @@ export default function ProgramsPage() {
       {/* Stats row */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         {[
-          { label: 'Total Programs', value: totalPrograms.toString() },
-          { label: 'Templates', value: totalTemplates.toString() },
-          { label: 'Avg Weeks', value: avgWeeks },
-          { label: 'Active Clients', value: uniqueClients.toString() },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-surface border border-cb-border rounded-lg p-4">
-            <p className="text-xs text-cb-muted mb-1">{label}</p>
+          { label: 'Total Programs', value: totalPrograms.toString(), icon: Layers },
+          { label: 'Templates', value: totalTemplates.toString(), icon: FileText },
+          { label: 'Avg Weeks', value: avgWeeks, icon: Calendar },
+          { label: 'Active Clients', value: uniqueClients.toString(), icon: Users },
+        ].map(({ label, value, icon: Icon }) => (
+          <div key={label} className="bg-surface border border-cb-border border-l-4 border-l-brand rounded-lg p-4 shadow-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <Icon size={14} className="text-brand opacity-70" />
+              <p className="text-xs text-cb-muted">{label}</p>
+            </div>
             <p className="text-xl font-bold text-cb-text">{value}</p>
           </div>
         ))}
@@ -245,10 +249,13 @@ export default function ProgramsPage() {
           <p className="text-cb-muted text-sm">Loading programs...</p>
         </div>
       ) : filteredPrograms.length === 0 ? (
-        <div className="bg-surface border border-cb-border rounded-lg p-16 text-center">
-          <Dumbbell size={40} className="mx-auto text-cb-muted mb-3" />
-          <p className="text-cb-muted">{searchTerm ? 'No programs match your search.' : 'No programs yet. Create your first one!'}</p>
-        </div>
+        <EmptyState
+          icon={<Layers size={48} />}
+          title={searchTerm ? 'No programs match your search' : 'No programs yet'}
+          description={searchTerm ? 'Try adjusting your search or filters.' : 'Build your first training program — assign it to clients and track their progress.'}
+          actionLabel={!searchTerm ? 'New Program' : undefined}
+          onAction={!searchTerm ? () => setShowNewProgramModal(true) : undefined}
+        />
       ) : (
         <div className="grid grid-cols-2 gap-6">
           {filteredPrograms.map(program => {
@@ -256,7 +263,7 @@ export default function ProgramsPage() {
             const isExpanded = expandedProgram === program.id
 
             return (
-              <div key={program.id} className="bg-surface border border-cb-border rounded-lg overflow-hidden">
+              <div key={program.id} className="bg-surface border border-cb-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                 {/* Card header - clickable to expand */}
                 <button
                   onClick={() => setExpandedProgram(isExpanded ? null : program.id)}

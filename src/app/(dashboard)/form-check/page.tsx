@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Video } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from '@/lib/toast';
+import EmptyState from '@/components/EmptyState';
 
 interface FormCheck {
   id: string;
@@ -160,7 +162,7 @@ export default function FormCheckPage() {
                 <button
                   onClick={() => runAnalysis(selectedCheck.id)}
                   disabled={analyzing === selectedCheck.id}
-                  className="mt-4 w-full py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+                  className="mt-4 w-full py-2 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90 disabled:opacity-50"
                 >
                   {analyzing === selectedCheck.id ? 'Analyzing...' : '🤖 Run AI Analysis'}
                 </button>
@@ -309,7 +311,7 @@ export default function FormCheckPage() {
         {['all', 'pending', 'unreviewed', 'reviewed'].map((f) => (
           <button key={f} onClick={() => setFilter(f)}
             className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
-              filter === f ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              filter === f ? 'bg-brand text-white' : 'bg-surface-light text-cb-secondary hover:bg-cb-border/50'
             }`}>
             {f}
           </button>
@@ -319,11 +321,11 @@ export default function FormCheckPage() {
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading...</div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border">
-          <div className="text-4xl mb-3">📹</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No form checks yet</h3>
-          <p className="text-gray-500">Clients can upload workout videos from the mobile app.</p>
-        </div>
+        <EmptyState
+          icon={<Video size={48} />}
+          title="No form checks yet"
+          description="Clients can upload workout videos from the mobile app for AI-powered movement analysis."
+        />
       ) : (
         <div className="grid gap-3">
           {filtered.map((fc) => (

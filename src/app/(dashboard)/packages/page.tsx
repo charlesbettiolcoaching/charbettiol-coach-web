@@ -15,7 +15,9 @@ import {
   X,
   AlertCircle,
   Loader,
+  Package,
 } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
 
 interface CoachingPackage {
   id: string;
@@ -288,30 +290,30 @@ export default function PackagesPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="flex h-screen items-center justify-center bg-bg">
         <div className="text-center">
-          <Loader className="mx-auto mb-4 h-12 w-12 animate-spin text-indigo-600" />
-          <p className="text-slate-600">Loading packages...</p>
+          <Loader className="mx-auto mb-4 h-12 w-12 animate-spin text-brand/80" />
+          <p className="text-cb-secondary">Loading packages...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen bg-bg p-6">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Coaching Packages</h1>
-            <p className="mt-2 text-slate-600">Manage your service offerings and pricing</p>
+            <h1 className="text-3xl font-bold text-cb-text">Coaching Packages</h1>
+            <p className="mt-2 text-cb-secondary">Manage your service offerings and pricing</p>
           </div>
           <button
             onClick={() => {
               resetForm();
               setShowForm(true);
             }}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition-colors hover:bg-indigo-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 font-medium text-white transition-colors hover:bg-brand/90"
           >
             <Plus className="h-5 w-5" />
             New Package
@@ -334,14 +336,14 @@ export default function PackagesPage() {
         {/* Form Modal */}
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-            <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-200 p-6">
-                <h2 className="text-xl font-bold text-slate-900">
+            <div className="w-full max-w-2xl rounded-xl bg-surface shadow-xl">
+              <div className="flex items-center justify-between border-b border-cb-border p-6">
+                <h2 className="text-xl font-bold text-cb-text">
                   {editingId ? 'Edit Package' : 'Create New Package'}
                 </h2>
                 <button
                   onClick={resetForm}
-                  className="text-slate-400 hover:text-slate-600"
+                  className="text-cb-muted hover:text-cb-secondary"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -350,7 +352,7 @@ export default function PackagesPage() {
               <form onSubmit={handleSubmit} className="space-y-4 p-6">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700">
+                    <label className="block text-sm font-medium text-cb-text">
                       Package Name *
                     </label>
                     <input
@@ -359,13 +361,13 @@ export default function PackagesPage() {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, name: e.target.value }))
                       }
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="mt-1 w-full rounded-lg border border-cb-border px-3 py-2 text-cb-text placeholder-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                       placeholder="e.g., Premium Training"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700">
+                    <label className="block text-sm font-medium text-cb-text">
                       Billing Interval
                     </label>
                     <select
@@ -376,7 +378,7 @@ export default function PackagesPage() {
                           billing_interval: e.target.value as any,
                         }))
                       }
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="mt-1 w-full rounded-lg border border-cb-border px-3 py-2 text-cb-text focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                     >
                       <option value="monthly">Monthly</option>
                       <option value="quarterly">Quarterly</option>
@@ -387,7 +389,7 @@ export default function PackagesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700">
+                  <label className="block text-sm font-medium text-cb-text">
                     Description
                   </label>
                   <textarea
@@ -396,18 +398,18 @@ export default function PackagesPage() {
                       setFormData((prev) => ({ ...prev, description: e.target.value }))
                     }
                     rows={3}
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="mt-1 w-full rounded-lg border border-cb-border px-3 py-2 text-cb-text placeholder-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                     placeholder="Describe what clients get with this package..."
                   />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700">
+                    <label className="block text-sm font-medium text-cb-text">
                       Price ({formData.currency})
                     </label>
                     <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cb-secondary">
                         $
                       </span>
                       <input
@@ -421,14 +423,14 @@ export default function PackagesPage() {
                         }
                         step="0.01"
                         min="0"
-                        className="w-full rounded-lg border border-slate-300 pl-7 pr-3 py-2 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        className="w-full rounded-lg border border-cb-border pl-7 pr-3 py-2 text-cb-text focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                         placeholder="0.00"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700">
+                    <label className="block text-sm font-medium text-cb-text">
                       Max Clients (optional)
                     </label>
                     <input
@@ -441,14 +443,14 @@ export default function PackagesPage() {
                         }))
                       }
                       min="1"
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="mt-1 w-full rounded-lg border border-cb-border px-3 py-2 text-cb-text focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                       placeholder="Leave empty for unlimited"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
+                  <label className="mb-2 block text-sm font-medium text-cb-text">
                     Features
                   </label>
                   <div className="space-y-2">
@@ -458,14 +460,14 @@ export default function PackagesPage() {
                           type="text"
                           value={feature}
                           onChange={(e) => handleFeatureChange(index, e.target.value)}
-                          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          className="flex-1 rounded-lg border border-cb-border px-3 py-2 text-cb-text placeholder-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                           placeholder="e.g., 4 sessions per month"
                         />
                         {formData.features.length > 1 && (
                           <button
                             type="button"
                             onClick={() => handleRemoveFeature(index)}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                            className="rounded-lg p-2 text-cb-muted hover:bg-surface-light hover:text-cb-secondary"
                           >
                             <X className="h-5 w-5" />
                           </button>
@@ -476,23 +478,23 @@ export default function PackagesPage() {
                   <button
                     type="button"
                     onClick={handleAddFeature}
-                    className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                    className="mt-2 text-sm font-medium text-brand hover:text-brand"
                   >
                     + Add Feature
                   </button>
                 </div>
 
-                <div className="flex justify-end gap-3 border-t border-slate-200 pt-6">
+                <div className="flex justify-end gap-3 border-t border-cb-border pt-6">
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                    className="rounded-lg border border-cb-border px-4 py-2 font-medium text-cb-text transition-colors hover:bg-surface-light"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition-colors hover:bg-indigo-700"
+                    className="rounded-lg bg-brand px-4 py-2 font-medium text-white transition-colors hover:bg-brand/90"
                   >
                     {editingId ? 'Update' : 'Create'} Package
                   </button>
@@ -504,20 +506,13 @@ export default function PackagesPage() {
 
         {/* Packages Grid */}
         {packages.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <DollarSign className="mx-auto mb-4 h-12 w-12 text-slate-400" />
-            <h3 className="text-lg font-medium text-slate-900">No packages yet</h3>
-            <p className="mt-2 text-slate-600">
-              Create your first coaching package to start accepting clients
-            </p>
-            <button
-              onClick={() => { resetForm(); setShowForm(true); }}
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition-colors hover:bg-indigo-700"
-            >
-              <Plus className="h-4 w-4" />
-              Create Your First Package
-            </button>
-          </div>
+          <EmptyState
+            icon={<Package size={48} />}
+            title="No packages yet"
+            description="Create your first coaching package to start accepting clients."
+            actionLabel="New Package"
+            onAction={() => { resetForm(); setShowForm(true); }}
+          />
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {packages.map((pkg) => {
@@ -527,20 +522,20 @@ export default function PackagesPage() {
                   key={pkg.id}
                   className={`rounded-xl border transition-all ${
                     pkg.is_active
-                      ? 'border-slate-200 bg-white shadow-md hover:shadow-lg'
-                      : 'border-slate-200 bg-slate-50 shadow-sm'
+                      ? 'border-cb-border bg-surface shadow-md hover:shadow-lg'
+                      : 'border-cb-border bg-slate-50 shadow-sm'
                   }`}
                 >
                   {/* Header */}
-                  <div className="border-b border-slate-200 p-6">
+                  <div className="border-b border-cb-border p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className={`text-lg font-bold ${!pkg.is_active ? 'text-slate-500' : 'text-slate-900'}`}>
+                        <h3 className={`text-lg font-bold ${!pkg.is_active ? 'text-cb-secondary' : 'text-cb-text'}`}>
                           {pkg.name}
                         </h3>
                         <p
                           className={`mt-1 text-sm ${
-                            !pkg.is_active ? 'text-slate-400' : 'text-slate-600'
+                            !pkg.is_active ? 'text-cb-muted' : 'text-cb-secondary'
                           }`}
                         >
                           {pkg.description || 'No description'}
@@ -548,10 +543,10 @@ export default function PackagesPage() {
                       </div>
                       <button
                         onClick={() => handleToggleActive(pkg)}
-                        className="ml-2 text-slate-400 hover:text-indigo-600 transition-colors"
+                        className="ml-2 text-cb-muted hover:text-brand transition-colors"
                       >
                         {pkg.is_active ? (
-                          <ToggleRight className="h-6 w-6 text-indigo-600" />
+                          <ToggleRight className="h-6 w-6 text-brand" />
                         ) : (
                           <ToggleLeft className="h-6 w-6" />
                         )}
@@ -560,25 +555,25 @@ export default function PackagesPage() {
                   </div>
 
                   {/* Price & Stats */}
-                  <div className="border-b border-slate-200 p-6">
+                  <div className="border-b border-cb-border p-6">
                     <div className="mb-4">
-                      <span className="text-3xl font-bold text-indigo-600">
+                      <span className="text-3xl font-bold text-brand">
                         {formatPrice(pkg.price_cents, pkg.currency)}
                       </span>
-                      <span className="ml-2 text-slate-600">{getBillingLabel(pkg.billing_interval)}</span>
+                      <span className="ml-2 text-cb-secondary">{getBillingLabel(pkg.billing_interval)}</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-lg bg-indigo-50 p-3">
-                        <div className="flex items-center gap-2 text-indigo-600">
+                      <div className="rounded-lg bg-brand/5 p-3">
+                        <div className="flex items-center gap-2 text-brand">
                           <Users className="h-4 w-4" />
                           <span className="text-sm font-medium">Active</span>
                         </div>
-                        <p className="mt-1 text-2xl font-bold text-indigo-900">
+                        <p className="mt-1 text-2xl font-bold text-cb-text">
                           {packageStats.activeSubscribers}
                         </p>
                         {pkg.max_clients && (
-                          <p className="mt-1 text-xs text-indigo-700">
+                          <p className="mt-1 text-xs text-brand">
                             of {pkg.max_clients}
                           </p>
                         )}
@@ -599,12 +594,12 @@ export default function PackagesPage() {
 
                   {/* Features */}
                   {pkg.features && pkg.features.length > 0 && (
-                    <div className="border-b border-slate-200 p-6">
-                      <h4 className="mb-3 text-sm font-medium text-slate-900">Features</h4>
+                    <div className="border-b border-cb-border p-6">
+                      <h4 className="mb-3 text-sm font-medium text-cb-text">Features</h4>
                       <ul className="space-y-2">
                         {pkg.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm text-slate-600">
-                            <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-indigo-400" />
+                          <li key={idx} className="flex items-start gap-2 text-sm text-cb-secondary">
+                            <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand/60" />
                             {feature}
                           </li>
                         ))}
@@ -616,7 +611,7 @@ export default function PackagesPage() {
                   <div className="flex gap-2 p-6">
                     <button
                       onClick={() => handleEdit(pkg)}
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-cb-border px-3 py-2 font-medium text-cb-text transition-colors hover:bg-surface-light"
                     >
                       <Edit2 className="h-4 w-4" />
                       Edit
@@ -625,7 +620,7 @@ export default function PackagesPage() {
                       <>
                         <button
                           onClick={() => setPendingDeleteId(null)}
-                          className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                          className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-cb-border px-3 py-2 font-medium text-cb-text transition-colors hover:bg-surface-light"
                         >
                           Cancel
                         </button>
