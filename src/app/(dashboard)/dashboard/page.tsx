@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation'
 import {
   Users, Dumbbell, UtensilsCrossed, ArrowRight,
   TrendingUp, Clock, CheckCircle2, AlertCircle, Bell,
+  Layers, DollarSign, BarChart2,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import clsx from 'clsx'
+import EmptyState from '@/components/EmptyState'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -108,12 +110,14 @@ function ActiveProgramCard({ entry, onClick }: { entry: ActiveEntry; onClick: ()
 
 export default function DashboardPage() {
   const router = useRouter()
+  const [firstName, setFirstName] = useState<string | null>(null)
   const [activePrograms, setActivePrograms] = useState<ActiveEntry[]>([])
   type ActivityItem = { id: string; type: string; clientName: string; detail: string; timeLabel: string; icon: React.ComponentType<any> }
   const [activity, setActivity] = useState<ActivityItem[]>([])
   const [nudgeClients, setNudgeClients] = useState<ClientRow[]>([])
   const [sendingNudge, setSendingNudge] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({ totalClients: 0, activePrograms: 0, checkinRate: 0, revenue: 0 })
 
   useEffect(() => {
     async function load() {
@@ -121,11 +125,18 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { setLoading(false); return }
 
-      const [{ data: clientData }, { data: programData }] = await Promise.all([
+      const [{ data: profileData }, { data: clientData }, { data: programData }, { data: inviteData }, { data: paidInvoices }] = await Promise.all([
+        supabase.from('profiles').select('full_name, name').eq('id', user.id).single(),
         supabase.from('profiles').select('id,name,email,goal').eq('coach_id', user.id).eq('role', 'client'),
         supabase.from('workout_programs').select('id,name,client_id,is_active,current_week,weeks,days_per_week,updated_at')
           .eq('coach_id', user.id).eq('is_active', true).order('updated_at', { ascending: false }),
+        supabase.from('client_invitations').select('id').eq('coach_id', user.id),
+        supabase.from('invoices').select('amount_cents').eq('coach_id', user.id).eq('status', 'paid')
+          .gte('paid_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
       ])
+
+      const name = (profileData as any)?.full_name || (profileData as any)?.name || ''
+      setFirstName(name.split(' ')[0] || null)
 
       const clients = (clientData ?? []) as ClientRow[]
       const programs = (programData ?? []) as ProgramRow[]
@@ -134,6 +145,9 @@ export default function DashboardPage() {
         client: clients.find((c) => c.id === p.client_id) ?? { id: p.client_id },
       }))
       setActivePrograms(entries.slice(0, 6))
+
+      const totalClients = clients.length + (inviteData?.length ?? 0)
+      const monthRevenue = (paidInvoices ?? []).reduce((s: number, inv: any) => s + (inv.amount_cents ?? 0), 0) / 100
 
       // Fetch recent check-ins for activity feed + nudge detection
       if (clients.length > 0) {
@@ -170,6 +184,13 @@ export default function DashboardPage() {
         const recentClientIds = new Set((recentCheckIns ?? []).map((ci) => ci.client_id))
         const needNudge = clients.filter((c) => !recentClientIds.has(c.id))
         setNudgeClients(needNudge)
+
+        const checkinRate = clients.length > 0
+          ? Math.round((recentClientIds.size / clients.length) * 100)
+          : 0
+        setStats({ totalClients, activePrograms: programs.length, checkinRate, revenue: monthRevenue })
+      } else {
+        setStats({ totalClients, activePrograms: programs.length, checkinRate: 0, revenue: monthRevenue })
       }
 
       setLoading(false)
@@ -194,9 +215,53 @@ export default function DashboardPage() {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       {/* Page greeting */}
-      <div className="mb-8">
-        <h1 className="text-xl font-bold text-cb-text">Welcome back</h1>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-cb-text">
+          Welcome back{firstName ? `, ${firstName}` : ''}
+        </h1>
         <p className="text-sm text-cb-muted mt-1">Here's what's happening with your clients today.</p>
+      </div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[
+          {
+            label: 'Total Clients',
+            value: stats.totalClients.toString(),
+            icon: Users,
+            iconColor: 'text-brand',
+            iconBg: 'bg-brand/10',
+          },
+          {
+            label: 'Active Programs',
+            value: stats.activePrograms.toString(),
+            icon: Layers,
+            iconColor: 'text-blue-600',
+            iconBg: 'bg-blue-50',
+          },
+          {
+            label: 'Check-in Rate',
+            value: `${stats.checkinRate}%`,
+            icon: BarChart2,
+            iconColor: 'text-emerald-600',
+            iconBg: 'bg-emerald-50',
+          },
+          {
+            label: "This Month's Revenue",
+            value: stats.revenue > 0 ? `$${stats.revenue.toFixed(0)}` : '$0',
+            icon: DollarSign,
+            iconColor: 'text-amber-600',
+            iconBg: 'bg-amber-50',
+          },
+        ].map(({ label, value, icon: Icon, iconColor, iconBg }) => (
+          <div key={label} className="bg-surface border border-cb-border rounded-xl p-4 shadow-sm">
+            <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center mb-3`}>
+              <Icon size={16} className={iconColor} />
+            </div>
+            <p className="text-2xl font-bold text-cb-text">{value}</p>
+            <p className="text-sm text-cb-muted mt-0.5">{label}</p>
+          </div>
+        ))}
       </div>
 
       {/* ── Nudges ── */}
@@ -245,19 +310,13 @@ export default function DashboardPage() {
             count={activePrograms.length}
           />
           {activePrograms.length === 0 ? (
-            <div className="bg-surface border border-cb-border rounded-xl p-8 text-center">
-              <div className="w-12 h-12 rounded-xl bg-surface-light border border-cb-border flex items-center justify-center mx-auto mb-3">
-                <Dumbbell size={20} className="text-cb-muted" />
-              </div>
-              <p className="text-sm font-medium text-cb-secondary">No active programs yet</p>
-              <p className="text-xs text-cb-muted mt-1 mb-4">Create a program and assign it to a client to see it here.</p>
-              <Link
-                href="/training"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand/90 transition-colors"
-              >
-                <Dumbbell size={14} /> Create Program
-              </Link>
-            </div>
+            <EmptyState
+              icon={<Layers size={48} />}
+              title="No active programs yet"
+              description="Create a program and assign it to a client to see it here."
+              actionLabel="Create Program"
+              actionHref="/training"
+            />
           ) : (
             <div className="space-y-3">
               {activePrograms.map((entry) => (
