@@ -79,7 +79,7 @@ export default function PrivacyPage() {
         <div className="flex items-start justify-between">
           <div>
             <h2 className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
-              <Download className="w-4 h-4 text-blue-600" /> Export Your Data
+              <Download className="w-4 h-4 text-brand" /> Export Your Data
             </h2>
             <p className="text-gray-500 text-sm mb-1">Get a complete copy of all your Propel data including:</p>
             <ul className="text-gray-500 text-sm space-y-0.5 list-disc list-inside">
@@ -94,7 +94,7 @@ export default function PrivacyPage() {
         <button
           onClick={handleExport}
           disabled={exporting || exportDone}
-          className="mt-4 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          className="mt-4 flex items-center gap-2 bg-brand hover:bg-brand/90 disabled:bg-brand/60 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
         >
           {exporting ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Preparing export…</>

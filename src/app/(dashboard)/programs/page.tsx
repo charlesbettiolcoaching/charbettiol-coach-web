@@ -273,16 +273,14 @@ export default function ProgramsPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      // Upsert into program_workouts with sport_category + format of first section
-      const { error } = await supabase.from('program_workouts').upsert({
+      // Upsert into workout_days (the correct table)
+      const { error } = await supabase.from('workout_days').upsert({
         id: workout.id,
         program_id: builderProgramId ?? workout.id,
-        week_number: 1,
         day_number: 1,
         name: workout.title || 'Workout',
+        focus: workout.sportCategory ?? null,
         notes: workout.coachNotes ?? null,
-        sport_category: workout.sportCategory,
-        format: workout.sections[0]?.format ?? 'custom',
       })
       if (error) throw error
 

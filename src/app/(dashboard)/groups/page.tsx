@@ -322,7 +322,7 @@ export default function GroupsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -337,7 +337,7 @@ export default function GroupsPage() {
             <h2 className="text-lg font-bold text-gray-900">Group Chats</h2>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
+              className="p-2 rounded-lg bg-brand/5 text-brand hover:bg-brand/10 transition-colors"
             >
               <svg
                 className="w-5 h-5"
@@ -370,7 +370,7 @@ export default function GroupsPage() {
                   onClick={() => setSelectedGroupId(group.id)}
                   className={`w-full text-left p-3 rounded-lg transition-colors ${
                     selectedGroupId === group.id
-                      ? 'bg-indigo-50 border-2 border-indigo-300'
+                      ? 'bg-brand/5 border-2 border-brand/30'
                       : 'hover:bg-gray-100 border-2 border-transparent'
                   }`}
                 >
@@ -382,8 +382,8 @@ export default function GroupsPage() {
                         className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        <span className="text-indigo-600 font-bold text-sm">
+                      <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                        <span className="text-brand font-bold text-sm">
                           {group.name[0]?.toUpperCase()}
                         </span>
                       </div>
@@ -419,8 +419,8 @@ export default function GroupsPage() {
                   className="w-12 h-12 rounded-lg object-cover"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center">
-                  <span className="text-indigo-600 font-bold">
+                <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center">
+                  <span className="text-brand font-bold">
                     {selectedGroup.name[0]?.toUpperCase()}
                   </span>
                 </div>
@@ -482,8 +482,8 @@ export default function GroupsPage() {
                               className="w-8 h-8 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                              <span className="text-indigo-600 text-xs font-bold">
+                            <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center">
+                              <span className="text-brand text-xs font-bold">
                                 {message.sender_profile?.display_name?.[0]?.toUpperCase() ||
                                   'U'}
                               </span>
@@ -500,7 +500,7 @@ export default function GroupsPage() {
                         <div
                           className={`rounded-lg px-4 py-2 ${
                             isCurrentUser
-                              ? 'bg-indigo-600 text-white'
+                              ? 'bg-brand text-white'
                               : 'bg-gray-100 text-gray-900'
                           }`}
                         >
@@ -555,12 +555,12 @@ export default function GroupsPage() {
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
               />
               <button
                 type="submit"
                 disabled={!messageInput.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 Send
               </button>
@@ -583,8 +583,8 @@ export default function GroupsPage() {
                         className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        <span className="text-indigo-600 text-xs font-bold">
+                      <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center flex-shrink-0">
+                        <span className="text-brand text-xs font-bold">
                           {member.user_profile?.display_name?.[0]?.toUpperCase() ||
                             'U'}
                         </span>
@@ -610,7 +610,7 @@ export default function GroupsPage() {
             <p className="text-gray-500 mb-4">Select a group to start chatting</p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand/90 transition-colors font-medium"
             >
               Create Group
             </button>
@@ -639,7 +639,7 @@ export default function GroupsPage() {
                     onChange={(e) => setNewGroupName(e.target.value)}
                     placeholder="e.g., Morning Bootcamp"
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
                   />
                 </div>
 
@@ -653,7 +653,7 @@ export default function GroupsPage() {
                     onChange={(e) => setNewGroupDescription(e.target.value)}
                     placeholder="Group description..."
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent resize-none"
                   />
                 </div>
 
@@ -680,7 +680,7 @@ export default function GroupsPage() {
                                 );
                               }
                             }}
-                            className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            className="w-4 h-4 text-brand border-gray-300 rounded focus:ring-brand"
                           />
                           <span className="text-sm text-gray-700">
                             {client.display_name || client.email}
@@ -708,7 +708,7 @@ export default function GroupsPage() {
                   <button
                     type="submit"
                     disabled={!newGroupName.trim()}
-                    className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                    className="flex-1 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                   >
                     Create Group
                   </button>

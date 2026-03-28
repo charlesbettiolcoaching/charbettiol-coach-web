@@ -205,7 +205,7 @@ export default function MarketplacePage() {
               <span className="text-gray-400 text-sm">Set to 0 for free</span>
             </div>
           </div>
-          <button onClick={createListing} className="w-full py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700">
+          <button onClick={createListing} className="w-full py-3 bg-brand text-white rounded-lg font-semibold hover:bg-brand/90">
             Create Listing (Draft)
           </button>
         </div>
@@ -220,7 +220,7 @@ export default function MarketplacePage() {
           <h1 className="text-2xl font-bold text-gray-900">Program Marketplace</h1>
           <p className="text-gray-500 text-sm mt-1">Browse, sell, and purchase training programs</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">
+        <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-brand text-white rounded-lg font-medium hover:bg-brand/90">
           + Sell a Program
         </button>
       </div>
@@ -255,7 +255,7 @@ export default function MarketplacePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredListings.map((listing) => (
                 <div key={listing.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-40 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <div className="h-40 bg-gradient-to-br from-brand to-brand/70 flex items-center justify-center">
                     {listing.cover_image_url ? (
                       <img src={listing.cover_image_url} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -265,7 +265,7 @@ export default function MarketplacePage() {
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="font-semibold text-gray-900 truncate">{listing.title}</h3>
-                      <span className="text-lg font-bold text-indigo-600 shrink-0 ml-2">{formatPrice(listing.price_cents)}</span>
+                      <span className="text-lg font-bold text-brand shrink-0 ml-2">{formatPrice(listing.price_cents)}</span>
                     </div>
                     {listing.short_description && <p className="text-sm text-gray-500 line-clamp-2 mb-2">{listing.short_description}</p>}
                     <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
@@ -285,7 +285,7 @@ export default function MarketplacePage() {
                       <span className="text-xs text-gray-400">{listing.purchase_count} sold</span>
                     </div>
                     <button onClick={() => purchaseProgram(listing)}
-                      className="w-full mt-3 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                      className="w-full mt-3 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90">
                       {listing.price_cents === 0 ? 'Get Free' : 'Purchase'}
                     </button>
                   </div>

@@ -160,8 +160,8 @@ export default function ReviewsPage() {
 
             {/* Coach response */}
             {review.coach_response ? (
-              <div className="mt-4 ml-4 pl-4 border-l-2 border-indigo-200 bg-indigo-50/50 rounded-r-lg p-3">
-                <p className="text-sm font-medium text-indigo-700 mb-1">Your Response</p>
+              <div className="mt-4 ml-4 pl-4 border-l-2 border-brand/20 bg-brand/5/50 rounded-r-lg p-3">
+                <p className="text-sm font-medium text-brand mb-1">Your Response</p>
                 <p className="text-sm text-gray-600">{review.coach_response}</p>
               </div>
             ) : respondingTo === review.id ? (
@@ -171,7 +171,7 @@ export default function ReviewsPage() {
                   className="w-full border rounded-lg px-3 py-2 text-sm" />
                 <div className="flex gap-2 mt-2">
                   <button onClick={() => submitResponse(review.id)}
-                    className="px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                    className="px-4 py-1.5 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90">
                     Submit Response
                   </button>
                   <button onClick={() => { setRespondingTo(null); setResponseText(''); }}
@@ -180,7 +180,7 @@ export default function ReviewsPage() {
               </div>
             ) : (
               <button onClick={() => setRespondingTo(review.id)}
-                className="mt-3 text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+                className="mt-3 text-sm text-brand hover:text-brand font-medium">
                 Reply to this review
               </button>
             )}

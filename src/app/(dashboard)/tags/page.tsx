@@ -220,7 +220,7 @@ export default function TagsPage() {
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-semibold text-gray-900">Tags</h2>
               <button onClick={() => { setShowTagForm(true); setEditingTagId(null); setTagForm({ name: '', color: TAG_COLORS[0], description: '' }); }}
-                className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">+ Add Tag</button>
+                className="text-sm text-brand hover:text-brand font-medium">+ Add Tag</button>
             </div>
 
             {showTagForm && (
@@ -237,7 +237,7 @@ export default function TagsPage() {
                   ))}
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={saveTag} className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Save</button>
+                  <button onClick={saveTag} className="px-3 py-1.5 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90">Save</button>
                   <button onClick={() => setShowTagForm(false)} className="px-3 py-1.5 text-gray-500 text-sm">Cancel</button>
                 </div>
               </div>
@@ -246,14 +246,14 @@ export default function TagsPage() {
             <div className="space-y-2">
               <button onClick={() => setSelectedTag(null)}
                 className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  selectedTag === null ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-gray-50 text-gray-600'
+                  selectedTag === null ? 'bg-brand/5 text-brand' : 'hover:bg-gray-50 text-gray-600'
                 }`}>
                 All Clients ({clients.length})
               </button>
               {tags.map((tag) => (
                 <div key={tag.id}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors cursor-pointer group ${
-                    selectedTag === tag.name ? 'bg-indigo-50' : 'hover:bg-gray-50'
+                    selectedTag === tag.name ? 'bg-brand/5' : 'hover:bg-gray-50'
                   }`}
                   onClick={() => setSelectedTag(selectedTag === tag.name ? null : tag.name)}>
                   <div className="flex items-center gap-2">
@@ -331,7 +331,7 @@ export default function TagsPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-gray-900">Smart Segments</h2>
             <button onClick={() => setShowSegmentForm(true)}
-              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">+ New Segment</button>
+              className="text-sm text-brand hover:text-brand font-medium">+ New Segment</button>
           </div>
 
           {showSegmentForm && (
@@ -364,7 +364,7 @@ export default function TagsPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={saveSegment} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Create Segment</button>
+                <button onClick={saveSegment} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90">Create Segment</button>
                 <button onClick={() => setShowSegmentForm(false)} className="px-4 py-2 text-gray-500 text-sm">Cancel</button>
               </div>
             </div>
@@ -376,7 +376,7 @@ export default function TagsPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-gray-900">{seg.name}</h3>
-                    <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-100 text-indigo-700 font-medium">
+                    <span className="px-2 py-0.5 rounded-full text-xs bg-brand/10 text-brand font-medium">
                       {getSegmentClientCount(seg)} clients
                     </span>
                     {seg.is_smart && <span className="px-2 py-0.5 rounded-full text-xs bg-purple-100 text-purple-700">Smart</span>}

@@ -65,7 +65,7 @@ export default function ReferralsPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
           { label: 'Total Referred', value: loading ? '—' : referrals.length, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
-          { label: 'Signed Up', value: loading ? '—' : signedUp, icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Signed Up', value: loading ? '—' : signedUp, icon: Clock, color: 'text-brand', bg: 'bg-brand/5' },
           { label: 'Converted', value: loading ? '—' : converted, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
           { label: 'Credits Earned', value: loading ? '—' : `$${totalCredits}`, icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50' },
         ].map(stat => (

@@ -2,15 +2,15 @@
 -- Run this in the Supabase SQL editor to add sport/format support.
 -- All ALTER TABLE statements are idempotent (safe to run multiple times).
 
--- 1. Add sport_category and format to program_workouts
-alter table public.program_workouts
+-- 1. Add sport_category and format to workout_days
+alter table public.workout_days
   add column if not exists sport_category text not null default 'strength',
   add column if not exists format         text not null default 'straight_sets';
 
 -- 2. Create workout_sections table (blocks within a session)
 create table if not exists public.workout_sections (
   id                  uuid         default gen_random_uuid() primary key,
-  workout_id          uuid         not null references public.program_workouts(id) on delete cascade,
+  workout_id          uuid         not null references public.workout_days(id) on delete cascade,
   title               text,
   format              text         not null default 'straight_sets',
   rounds              integer,
@@ -30,18 +30,18 @@ create policy "Access workout sections"
   using (
     exists (
       select 1
-      from public.program_workouts pw
-      join public.programs p on p.id = pw.program_id
-      where pw.id = workout_id
+      from public.workout_days wd
+      join public.workout_programs wp on wp.id = wd.program_id
+      where wd.id = workout_id
         and (
-          p.coach_id = auth.uid()
-          or (p.client_id = auth.uid() and p.status in ('active', 'completed'))
+          wp.coach_id = auth.uid()
+          or (wp.client_id = auth.uid() and wp.is_active = true)
         )
     )
   );
 
--- 3. Add section_id to program_workout_exercises (optional FK — null = legacy/no section)
-alter table public.program_workout_exercises
+-- 3. Add section_id to workout_exercises (optional FK — null = legacy/no section)
+alter table public.workout_exercises
   add column if not exists section_id       uuid references public.workout_sections(id) on delete set null,
   add column if not exists duration_seconds integer,
   add column if not exists distance_meters  numeric(10, 2),
@@ -50,5 +50,5 @@ alter table public.program_workout_exercises
   add column if not exists calories         integer,
   add column if not exists coach_notes      text;
 
--- Note: rpe and tempo columns already exist on program_workout_exercises.
--- Note: reps_min / reps_max are int; for flexible reps (e.g. "8-12", "AMRAP") use notes/coach_notes.
+-- Note: rpe and tempo columns already exist on workout_exercises.
+-- Note: reps is text; use string values like "8-12", "AMRAP", etc.
