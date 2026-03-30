@@ -1,8 +1,13 @@
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import DashboardShell from '@/components/DashboardShell'
 import GettingStartedChecklist from '@/components/GettingStartedChecklist'
 import Toaster from '@/components/Toaster'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()

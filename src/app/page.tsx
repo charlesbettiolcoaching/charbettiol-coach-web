@@ -1,12 +1,38 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Propel — The coaching platform for health professionals',
-  description: 'One platform for personal trainers, dietitians, and exercise physiologists. Training programs, nutrition, check-ins, payments, and an AI coach that works while you sleep.',
+export const metadata: Metadata = {
+  title: 'Propel Coaches — The All-in-One Coaching Platform',
+  description:
+    'Manage your coaching business in one place. Client management, workout programming, nutrition plans, payments, and AI-powered tools for personal trainers and fitness coaches.',
+  alternates: {
+    canonical: '/',
+  },
 }
 
 export default function LandingPage() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Propel Coaches',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    description:
+      'The all-in-one coaching platform for personal trainers, nutritionists, and fitness coaches.',
+    url: 'https://propelcoaches.com',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'AUD',
+    },
+  }
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="min-h-screen bg-white font-sans">
 
       {/* ─── Header ─── */}
@@ -887,5 +913,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </>
   )
 }

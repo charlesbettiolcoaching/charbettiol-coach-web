@@ -13,18 +13,49 @@ const figtree = Figtree({
 })
 
 export const metadata: Metadata = {
-  title: { default: 'Propel — Coaching Platform for PTs & Nutritionists', template: '%s | Propel' },
-  description: 'The all-in-one platform for personal trainers, nutritionists and fitness coaches. Build programs, send check-ins, track progress and grow your coaching business.',
-  keywords: ['personal trainer app', 'coaching platform', 'online coaching software', 'fitness coach app', 'PT software', 'check-in app', 'nutrition coaching'],
-  authors: [{ name: 'Propel' }],
-  openGraph: {
-    title: 'Propel — Coaching Platform',
-    description: 'Programs, check-ins, nutrition, AI coaching and payments — all in one place.',
-    url: 'https://propelcoaches.com',
-    siteName: 'Propel',
-    type: 'website',
+  metadataBase: new URL('https://propelcoaches.com'),
+  title: {
+    default: 'Propel Coaches — The All-in-One Coaching Platform',
+    template: '%s | Propel Coaches',
   },
-  twitter: { card: 'summary_large_image', title: 'Propel — Coaching Platform', description: 'The all-in-one platform for fitness coaches.' },
+  description:
+    'The all-in-one coaching platform for personal trainers, nutritionists, and fitness coaches. Manage clients, programs, nutrition, and payments in one place.',
+  keywords: [
+    'coaching platform',
+    'personal trainer software',
+    'fitness coaching app',
+    'nutrition coaching',
+    'client management',
+    'workout programming',
+    'online coaching',
+    'PT software',
+    'check-in app',
+  ],
+  authors: [{ name: 'Propel Coaches' }],
+  openGraph: {
+    type: 'website',
+    locale: 'en_AU',
+    url: 'https://propelcoaches.com',
+    siteName: 'Propel Coaches',
+    title: 'Propel Coaches — The All-in-One Coaching Platform',
+    description:
+      'Manage clients, programs, nutrition, and payments. Built for personal trainers, nutritionists, and fitness coaches.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Propel Coaches Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Propel Coaches — The All-in-One Coaching Platform',
+    description:
+      'The all-in-one platform for fitness coaches. Manage clients, programs, nutrition, and payments.',
+    images: ['/og-image.png'],
+  },
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
