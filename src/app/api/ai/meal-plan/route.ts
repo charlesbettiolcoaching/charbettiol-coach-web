@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import OpenAI from 'openai';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 
 // Lazy initialization — only evaluated at request time, not during build.
@@ -44,6 +45,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Rate limit per user
+    if (!checkRateLimit(`meal-plan:${user.id}`)) {
+      return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 });
+    }
+
     const body: MealPlanRequest = await req.json();
     const {
       client_id,
@@ -59,9 +65,32 @@ export async function POST(req: NextRequest) {
       notes,
     } = body;
 
-    // Validate
+    // Validate required fields
     if (!client_id || !target_calories || !target_protein_g || !target_carbs_g || !target_fat_g) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Validate numeric ranges
+    if (typeof target_calories !== 'number' || target_calories < 500 || target_calories > 10000) {
+      return NextResponse.json({ error: 'target_calories must be between 500 and 10000' }, { status: 400 });
+    }
+    if (typeof target_protein_g !== 'number' || target_protein_g < 10 || target_protein_g > 500) {
+      return NextResponse.json({ error: 'target_protein_g must be between 10 and 500' }, { status: 400 });
+    }
+    if (typeof target_carbs_g !== 'number' || target_carbs_g < 0 || target_carbs_g > 1500) {
+      return NextResponse.json({ error: 'target_carbs_g must be between 0 and 1500' }, { status: 400 });
+    }
+    if (typeof target_fat_g !== 'number' || target_fat_g < 0 || target_fat_g > 500) {
+      return NextResponse.json({ error: 'target_fat_g must be between 0 and 500' }, { status: 400 });
+    }
+    if (typeof meals_per_day !== 'number' || ![3, 4, 5, 6].includes(meals_per_day)) {
+      return NextResponse.json({ error: 'meals_per_day must be 3, 4, 5, or 6' }, { status: 400 });
+    }
+    if (title && (typeof title !== 'string' || title.length > 255)) {
+      return NextResponse.json({ error: 'title must be under 255 characters' }, { status: 400 });
+    }
+    if (notes && (typeof notes !== 'string' || notes.length > 2000)) {
+      return NextResponse.json({ error: 'notes must be under 2000 characters' }, { status: 400 });
     }
 
     // Verify client belongs to this coach

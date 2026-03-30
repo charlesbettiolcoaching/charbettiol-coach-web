@@ -41,6 +41,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate types and lengths
+    if (typeof email !== 'string' || email.length > 254) {
+      return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
+    }
+    if (typeof name !== 'string' || name.trim().length === 0 || name.length > 255) {
+      return NextResponse.json({ error: 'name must be a non-empty string under 255 characters' }, { status: 400 });
+    }
+    if (profession !== undefined && (typeof profession !== 'string' || profession.length > 100)) {
+      return NextResponse.json({ error: 'profession must be a string under 100 characters' }, { status: 400 });
+    }
+
     const priceId = planToPriceId[plan.toLowerCase()];
     if (!priceId) {
       return NextResponse.json(

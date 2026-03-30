@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { SportCategory, WorkoutFormat } from '@/types/workout'
 import { getSportConfig, getFormatConfig } from '@/constants/workoutConfigs'
 
@@ -135,6 +136,28 @@ export async function POST(req: NextRequest) {
 
   if (!client_id || !goal || !days_per_week) {
     return NextResponse.json({ error: 'Missing required fields: client_id, goal, days_per_week' }, { status: 400 })
+  }
+
+  // Rate limit per user
+  if (!checkRateLimit(`workout-program:${user.id}`)) {
+    return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 })
+  }
+
+  // Validate numeric ranges
+  if (typeof days_per_week !== 'number' || days_per_week < 2 || days_per_week > 6) {
+    return NextResponse.json({ error: 'days_per_week must be between 2 and 6' }, { status: 400 })
+  }
+  if (typeof session_duration_minutes !== 'number' || session_duration_minutes < 15 || session_duration_minutes > 180) {
+    return NextResponse.json({ error: 'session_duration_minutes must be between 15 and 180' }, { status: 400 })
+  }
+  if (typeof program_length_weeks !== 'number' || program_length_weeks < 1 || program_length_weeks > 52) {
+    return NextResponse.json({ error: 'program_length_weeks must be between 1 and 52' }, { status: 400 })
+  }
+  if (injuries_limitations && injuries_limitations.length > 2000) {
+    return NextResponse.json({ error: 'injuries_limitations must be under 2000 characters' }, { status: 400 })
+  }
+  if (notes && notes.length > 2000) {
+    return NextResponse.json({ error: 'notes must be under 2000 characters' }, { status: 400 })
   }
 
   // Verify client belongs to this coach

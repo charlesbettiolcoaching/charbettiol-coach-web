@@ -55,9 +55,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate types and lengths
+    if (typeof body.name !== 'string' || body.name.length > 255) {
+      return NextResponse.json({ error: 'name must be a string under 255 characters' }, { status: 400 });
+    }
+    if (typeof body.subject !== 'string' || body.subject.length > 255) {
+      return NextResponse.json({ error: 'subject must be a string under 255 characters' }, { status: 400 });
+    }
+    if (typeof body.message !== 'string' || body.message.length > 10000) {
+      return NextResponse.json({ error: 'message must be a string under 10,000 characters' }, { status: 400 });
+    }
+
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(body.email)) {
+    if (typeof body.email !== 'string' || body.email.length > 254 || !emailRegex.test(body.email)) {
       return NextResponse.json(
         { error: 'Invalid email address' },
         { status: 400 }

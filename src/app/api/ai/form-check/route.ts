@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 // ── Claude form-check analyser ────────────────────────────────────────────────
 // Uses claude-sonnet-4-6 with vision when a thumbnail is available,
@@ -66,9 +67,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // Rate limit per user
+  if (!checkRateLimit(`form-check:${user.id}`)) {
+    return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 })
+  }
+
   const { form_check_id } = await req.json()
-  if (!form_check_id) {
+  if (!form_check_id || typeof form_check_id !== 'string') {
     return NextResponse.json({ error: 'Missing form_check_id' }, { status: 400 })
+  }
+
+  // Validate UUID format
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!uuidRegex.test(form_check_id)) {
+    return NextResponse.json({ error: 'Invalid form_check_id' }, { status: 400 })
   }
 
   const { data: formCheck, error: fetchError } = await supabase

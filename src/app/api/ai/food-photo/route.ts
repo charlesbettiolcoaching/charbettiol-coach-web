@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import { jwtDecode } from 'jwt-decode';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 // Lazy initialization — only evaluated at request time, not during build.
 function getOpenAIClient() {
@@ -115,11 +116,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const clientId = await verifyAuth(authHeader);
-    if (!clientId) {
+    const userId = await verifyAuth(authHeader);
+    if (!userId) {
       return NextResponse.json(
         { error: 'Invalid or expired token' },
         { status: 401 }
+      );
+    }
+
+    // Rate limit per user
+    if (!checkRateLimit(`food-photo:${userId}`)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 }
       );
     }
 
@@ -137,6 +146,14 @@ export async function POST(request: NextRequest) {
     if (!image_base64.startsWith('data:image/')) {
       return NextResponse.json(
         { error: 'Invalid image format. Expected data URL format.' },
+        { status: 400 }
+      );
+    }
+
+    // Limit image size (~10MB base64 ≈ 13.3MB string)
+    if (image_base64.length > 13_000_000) {
+      return NextResponse.json(
+        { error: 'Image too large. Maximum size is 10MB.' },
         { status: 400 }
       );
     }

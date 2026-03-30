@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 
 // Lazy Supabase client — only created at request time, not at module import time.
 // This prevents build failures when env vars aren't available during static analysis.
@@ -35,24 +36,46 @@ interface CoachData {
   created_at: string;
 }
 
+async function isAdmin(userId: string): Promise<boolean> {
+  // Check ADMIN_USER_IDS env var (comma-separated list of admin user IDs)
+  const adminUserIds = process.env.ADMIN_USER_IDS;
+  if (adminUserIds) {
+    const ids = adminUserIds.split(',').map((id) => id.trim());
+    if (ids.includes(userId)) return true;
+  }
+
+  // Check profiles.role = 'admin' in the database
+  try {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data } = await supabaseAdmin
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+    if (data?.role === 'admin') return true;
+  } catch {
+    // fall through
+  }
+
+  return false;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    // Check admin authorization via header
-    const adminSecret = request.headers.get('x-admin-secret');
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    // Authenticate via Supabase session
+    const supabase = createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!adminPassword) {
-      return NextResponse.json({ error: 'ADMIN_PASSWORD not configured' }, { status: 500 });
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (adminSecret !== adminPassword) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Check admin role
+    const adminAccess = await isAdmin(user.id);
+    if (!adminAccess) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Create Supabase client at request time (not module load time)
     const supabaseAdmin = getSupabaseAdmin();
 
     // Fetch all coaches with their profile and subscription data
