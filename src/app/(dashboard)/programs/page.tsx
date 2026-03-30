@@ -94,17 +94,67 @@ export default function ProgramsPage() {
     program_length_weeks: 4,
   })
 
+  const seedDefaultPrograms = async () => {
+    const STARTER_TEMPLATES = [
+      {
+        name: '8-Week Strength Program',
+        description: 'A progressive 8-week strength program focused on compound lifts — squats, deadlifts, bench, and overhead press. Designed to build raw strength for intermediate athletes.',
+        duration_weeks: 8,
+        days_per_week: 4,
+        goal: 'strength',
+        difficulty: 'intermediate',
+        is_public: false,
+      },
+      {
+        name: '12-Week Body Recomp',
+        description: 'A 12-week body recomposition template combining strength work and conditioning. Build muscle and reduce body fat simultaneously with structured progressive overload.',
+        duration_weeks: 12,
+        days_per_week: 3,
+        goal: 'fat_loss',
+        difficulty: 'intermediate',
+        is_public: false,
+      },
+      {
+        name: '4-Week HIIT Starter',
+        description: 'An energetic 4-week HIIT program for clients new to high-intensity training. Short, effective sessions that build cardiovascular fitness and burn calories.',
+        duration_weeks: 4,
+        days_per_week: 5,
+        goal: 'general_fitness',
+        difficulty: 'beginner',
+        is_public: false,
+      },
+    ]
+
+    const results = await Promise.all(
+      STARTER_TEMPLATES.map(t =>
+        fetch('/api/program-templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(t),
+        }).then(r => r.json())
+      )
+    )
+    const seeded = results.map(r => r.template).filter(Boolean) as RealProgram[]
+    if (seeded.length > 0) setRealPrograms(seeded)
+  }
+
   const fetchPrograms = useCallback(async () => {
     setLoading(true)
     try {
       const res = await fetch('/api/program-templates')
       const json = await res.json()
-      setRealPrograms(json.templates || [])
+      const templates: RealProgram[] = json.templates || []
+      if (templates.length === 0) {
+        await seedDefaultPrograms()
+      } else {
+        setRealPrograms(templates)
+      }
     } catch (e) {
       toast.error('Failed to load programs')
     } finally {
       setLoading(false)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchClients = useCallback(async () => {

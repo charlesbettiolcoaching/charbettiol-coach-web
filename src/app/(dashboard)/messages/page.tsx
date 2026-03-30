@@ -4,7 +4,8 @@ import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Message, Profile } from '@/lib/types'
 import { format, formatDistanceToNowStrict } from 'date-fns'
-import { Send, MessageSquare, Bot, BotOff, SquareCheck, Search, Plus, CheckCheck, Check, X, Loader2 } from 'lucide-react'
+import { Send, MessageSquare, Bot, BotOff, SquareCheck, Search, Plus, CheckCheck, Check, X, Loader2, UserPlus } from 'lucide-react'
+import Link from 'next/link'
 import clsx from 'clsx'
 
 type ClientThread = {
@@ -466,8 +467,27 @@ export default function MessagesPage() {
         {/* Thread list */}
         <div className="flex-1 overflow-y-auto">
           {filteredThreads.length === 0 ? (
-            <div className="p-6 text-center text-sm text-cb-muted">
-              {search ? 'No clients match your search.' : 'No clients to message.'}
+            <div className="flex flex-col items-center justify-center p-6 text-center gap-3 h-full">
+              <div className="w-12 h-12 rounded-2xl bg-brand/8 flex items-center justify-center">
+                <MessageSquare size={22} className="text-brand/60" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-cb-text">
+                  {search ? 'No results found' : 'No messages yet'}
+                </p>
+                <p className="text-xs text-cb-muted mt-1 max-w-[160px]">
+                  {search ? 'Try a different search term.' : 'Conversations with your clients will appear here.'}
+                </p>
+              </div>
+              {!search && (
+                <Link
+                  href="/clients"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand/90 transition-colors"
+                >
+                  <UserPlus size={12} />
+                  Add a Client
+                </Link>
+              )}
             </div>
           ) : (
             filteredThreads.map((thread) => {
@@ -541,9 +561,14 @@ export default function MessagesPage() {
       {/* ── Message Thread ── */}
       <div className="flex-1 flex flex-col bg-bg">
         {!selectedClientId ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-cb-muted">
-            <MessageSquare size={48} className="mb-3" />
-            <p className="text-sm">Select a client to view messages</p>
+          <div className="flex-1 flex flex-col items-center justify-center text-cb-muted gap-3">
+            <div className="w-16 h-16 rounded-2xl bg-brand/8 flex items-center justify-center">
+              <MessageSquare size={28} className="text-brand/60" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-cb-text">No conversation selected</p>
+              <p className="text-xs text-cb-muted mt-1">Select a client from the list to view messages</p>
+            </div>
           </div>
         ) : (selectedThread?.client as Profile & { isPending?: boolean })?.isPending ? (
           <div className="flex-1 flex flex-col items-center justify-center text-cb-muted p-8">

@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  Users, Dumbbell, UtensilsCrossed, ArrowRight,
-  TrendingUp, Clock, CheckCircle2, AlertCircle, Bell,
-  Layers, DollarSign, BarChart2, UserPlus,
+  Users, Dumbbell, ArrowRight,
+  Clock, CheckCircle2, Bell,
+  Layers, DollarSign, BarChart2, UserPlus, MessageSquare,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import clsx from 'clsx'
@@ -254,11 +254,32 @@ export default function DashboardPage() {
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto animate-fade-in-up">
       {/* Page greeting */}
-      <div className="mb-7">
+      <div className="mb-5">
         <h1 className="font-display text-2xl font-bold text-cb-text">
           Welcome back{firstName ? `, ${firstName}` : ''}
         </h1>
         <p className="text-sm text-cb-muted mt-1.5">Here&apos;s what&apos;s happening with your clients today.</p>
+      </div>
+
+      {/* Quick action cards */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {[
+          { label: 'Add Client',      href: '/clients',  icon: UserPlus,     color: 'text-brand',        bg: 'bg-brand/10' },
+          { label: 'Create Program',  href: '/programs', icon: Dumbbell,     color: 'text-blue-600',     bg: 'bg-blue-500/10' },
+          { label: 'View Messages',   href: '/messages', icon: MessageSquare,color: 'text-emerald-600',  bg: 'bg-emerald-500/10' },
+        ].map(({ label, href, icon: Icon, color, bg }) => (
+          <Link
+            key={label}
+            href={href}
+            className="flex items-center gap-3 px-4 py-3 bg-surface border border-cb-border rounded-xl hover:border-brand/30 hover:shadow-sm transition-all group"
+          >
+            <div className={`w-8 h-8 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
+              <Icon size={15} className={color} />
+            </div>
+            <span className="text-sm font-medium text-cb-text group-hover:text-brand transition-colors">{label}</span>
+            <ArrowRight size={13} className="text-cb-muted group-hover:text-brand transition-colors ml-auto flex-shrink-0" />
+          </Link>
+        ))}
       </div>
 
       {/* Stat cards */}

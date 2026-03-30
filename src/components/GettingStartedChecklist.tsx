@@ -6,7 +6,7 @@ import { CheckCircle2, Circle, ChevronDown, X, Sparkles } from 'lucide-react'
 import clsx from 'clsx'
 import { createClient } from '@/lib/supabase/client'
 
-const STORAGE_KEY = 'coach_getting_started_v1'
+const STORAGE_KEY = 'coach_getting_started_v2'
 
 interface Step {
   id: string
@@ -25,22 +25,22 @@ const STEPS: Step[] = [
     cta: 'Add Client',
   },
   {
-    id: 'customize_branding',
-    label: 'Customize your branding',
-    description: 'Add your logo and brand colors.',
-    href: '/branding',
-    cta: 'Set Up Branding',
+    id: 'create_program',
+    label: 'Create a program template',
+    description: 'Build a reusable training plan template for your clients.',
+    href: '/programs',
+    cta: 'Create Program',
   },
   {
-    id: 'create_program',
-    label: 'Create a workout program',
-    description: 'Build a week-by-week training plan for a client.',
-    href: '/workout-programs',
-    cta: 'Build Program',
+    id: 'set_up_profile',
+    label: 'Set up your profile',
+    description: 'Complete your coach profile with your bio and details.',
+    href: '/settings',
+    cta: 'Open Settings',
   },
   {
     id: 'setup_payments',
-    label: 'Set up payments',
+    label: 'Connect Stripe',
     description: 'Connect Stripe to accept payments from clients.',
     href: '/payments',
     cta: 'Set Up Payments',
@@ -124,16 +124,15 @@ export default function GettingStartedChecklist() {
 
       const updates: Record<string, boolean> = { ...s }
 
-      const [clientsRes, brandingRes, programsRes, profileRes] = await Promise.all([
+      const [clientsRes, programsRes, profileRes] = await Promise.all([
         supabase.from('profiles').select('id').eq('coach_id', user.id).eq('role', 'client').limit(1),
-        supabase.from('coach_branding').select('id').eq('coach_id', user.id).limit(1),
-        supabase.from('workout_programs').select('id').eq('coach_id', user.id).limit(1),
-        supabase.from('profiles').select('stripe_account_id').eq('id', user.id).single(),
+        supabase.from('program_templates').select('id').eq('coach_id', user.id).limit(1),
+        supabase.from('profiles').select('full_name, stripe_account_id').eq('id', user.id).single(),
       ])
 
       if (clientsRes.data && clientsRes.data.length > 0) updates['add_client'] = true
-      if (brandingRes.data && brandingRes.data.length > 0) updates['customize_branding'] = true
       if (programsRes.data && programsRes.data.length > 0) updates['create_program'] = true
+      if (!profileRes.error && profileRes.data?.full_name) updates['set_up_profile'] = true
       if (!profileRes.error && profileRes.data?.stripe_account_id) updates['setup_payments'] = true
 
       setChecked(updates)

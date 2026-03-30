@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Plus, Users, Dumbbell, UtensilsCrossed, SquareCheck, ChevronDown } from 'lucide-react'
+import { Plus, Users, Dumbbell, UtensilsCrossed, SquareCheck, ChevronDown, Menu } from 'lucide-react'
 import clsx from 'clsx'
 
 const PAGE_TITLES: Record<string, string> = {
@@ -56,15 +56,26 @@ const QUICK_ACTIONS = [
   { label: 'New Task',      href: '/tasks',     icon: SquareCheck,     desc: 'Add a task or reminder' },
 ]
 
-export default function TopBar() {
+export default function TopBar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const title = getTitle(pathname)
 
   return (
-    <div className="flex-shrink-0 h-16 flex items-center justify-between px-8 border-b border-cb-border bg-surface">
-      <h1 className="text-lg font-semibold text-cb-text">{title}</h1>
+    <div className="flex-shrink-0 h-16 flex items-center justify-between px-4 sm:px-8 border-b border-cb-border bg-surface">
+      <div className="flex items-center gap-2">
+        {onMenuToggle && (
+          <button
+            onClick={onMenuToggle}
+            className="lg:hidden p-2 -ml-1 rounded-lg text-cb-muted hover:bg-surface-light hover:text-cb-secondary transition-colors"
+            aria-label="Toggle menu"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        <h1 className="text-lg font-semibold text-cb-text">{title}</h1>
+      </div>
 
       <div className="flex items-center gap-4">
         {/* Search bar (decorative) */}

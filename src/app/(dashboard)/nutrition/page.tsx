@@ -1517,7 +1517,7 @@ export default function NutritionPage() {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) return
       setCoachId(data.user.id)
-      loadPlansFromDB(supabase)
+      loadPlansFromDB(supabase, data.user.id)
       Promise.all([
         supabase.from('profiles').select('id, name').eq('coach_id', data.user.id).eq('role', 'client'),
         supabase.from('client_invitations').select('id, client_name').eq('coach_id', data.user.id).eq('status', 'pending'),
@@ -1530,14 +1530,51 @@ export default function NutritionPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function loadPlansFromDB(supabase: ReturnType<typeof createClient>) {
+  async function seedDefaultPlans(supabase: ReturnType<typeof createClient>, coachUserId: string) {
+    const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    const makeDays = () => Array.from({ length: 7 }, (_, i) => ({
+      id: genId(), dayNumber: i + 1, dayName: DAY_NAMES[i], meals: [],
+    }))
+
+    const STARTER_PLANS = [
+      { name: 'Fat Loss – 1,800 kcal', calories_target: 1800, protein_target: 180, carbs_target: 120, fat_target: 60, fibre_target: 35, notes: 'High-protein, moderate-carb plan for fat loss. Adjust portion sizes to client body weight.' },
+      { name: 'Muscle Building – 2,500 kcal', calories_target: 2500, protein_target: 200, carbs_target: 250, fat_target: 80, fibre_target: 30, notes: 'Calorie surplus plan focused on building lean muscle. Increase carbs on training days.' },
+      { name: 'Maintenance – 2,200 kcal', calories_target: 2200, protein_target: 165, carbs_target: 220, fat_target: 70, fibre_target: 30, notes: 'Balanced maintenance plan. Suitable for active clients maintaining their current body composition.' },
+    ]
+
+    const rows = STARTER_PLANS.map(p => ({
+      id: genId(),
+      coach_id: coachUserId,
+      client_id: null,
+      name: p.name,
+      status: 'draft',
+      calories_target: p.calories_target,
+      protein_target: p.protein_target,
+      carbs_target: p.carbs_target,
+      fat_target: p.fat_target,
+      fibre_target: p.fibre_target,
+      days: makeDays(),
+      notes: p.notes,
+      published_at: null,
+      updated_at: new Date().toISOString(),
+    }))
+
+    const { data } = await supabase.from('nutrition_plans_v2').insert(rows).select()
+    if (data) setPlans(data.map(dbRowToPlan))
+  }
+
+  async function loadPlansFromDB(supabase: ReturnType<typeof createClient>, coachUserId?: string) {
     setLoading(true)
     try {
       const { data } = await supabase
         .from('nutrition_plans_v2')
         .select('*')
         .order('created_at', { ascending: false })
-      if (data) setPlans(data.map(dbRowToPlan))
+      if (data && data.length === 0 && coachUserId) {
+        await seedDefaultPlans(supabase, coachUserId)
+      } else if (data) {
+        setPlans(data.map(dbRowToPlan))
+      }
     } finally {
       setLoading(false)
     }

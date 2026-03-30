@@ -34,6 +34,7 @@ import {
   Package,
   UsersRound,
   CalendarClock,
+  Bot,
 } from 'lucide-react'
 
 type NavSection = {
@@ -53,6 +54,7 @@ const NAV_SECTIONS: NavSection[] = [
       { href: '/clients', label: 'Clients', icon: Users },
       { href: '/messages', label: 'Messages', icon: MessageSquare },
       { href: '/check-ins', label: 'Check-ins', icon: ClipboardCheck },
+      { href: '/ai-reviews', label: 'AI Reviews', icon: Bot },
     ],
   },
   {
@@ -104,7 +106,7 @@ const NAV_SECTIONS: NavSection[] = [
   },
 ]
 
-export default function Sidebar({ userEmail, userName }: { userEmail?: string | null; userName?: string | null }) {
+export default function Sidebar({ userEmail, userName, onClose }: { userEmail?: string | null; userName?: string | null; onClose?: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
@@ -127,13 +129,24 @@ export default function Sidebar({ userEmail, userName }: { userEmail?: string | 
     <aside className="w-[220px] flex-shrink-0 bg-surface border-r border-cb-border flex flex-col h-screen">
       {/* Minimal Header */}
       <div className="px-5 py-5 border-b border-cb-border">
-        <div className="flex items-center gap-2.5">
-          <img
-            src={theme === 'dark' ? '/logo/icon-dark.png' : '/logo/icon-light.png'}
-            alt="Propel"
-            className="w-7 h-7 object-contain flex-shrink-0"
-          />
-          <span className="font-bold text-cb-text text-sm tracking-tight">Propel</span>
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5">
+            <img
+              src={theme === 'dark' ? '/logo/icon-dark.png' : '/logo/icon-light.png'}
+              alt="Propel"
+              className="w-7 h-7 object-contain flex-shrink-0"
+            />
+            <span className="font-bold text-cb-text text-sm tracking-tight">Propel</span>
+          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-1 text-cb-muted hover:text-cb-secondary rounded transition-colors"
+              aria-label="Close menu"
+            >
+              <LogOut size={15} className="rotate-180" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -155,6 +168,7 @@ export default function Sidebar({ userEmail, userName }: { userEmail?: string | 
                     <li key={item.href}>
                       <Link
                         href={item.href}
+                        onClick={() => onClose?.()}
                         className={clsx(
                           'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                           active

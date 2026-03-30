@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import Sidebar from '@/components/Sidebar'
-import TopBar from '@/components/TopBar'
+import DashboardShell from '@/components/DashboardShell'
 import GettingStartedChecklist from '@/components/GettingStartedChecklist'
 import Toaster from '@/components/Toaster'
 
@@ -19,16 +18,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const userName = (profile?.full_name || profile?.name || '').split(' ')[0] || null
 
   return (
-    <div className="flex h-screen bg-bg">
-      <Sidebar userEmail={userEmail} userName={userName} />
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar />
-        <main className="flex-1 overflow-auto bg-gradient-to-br from-white to-slate-50 dark:from-bg dark:to-surface-light min-h-0">
-          {children}
-        </main>
-      </div>
+    <>
+      <DashboardShell userEmail={userEmail} userName={userName}>
+        {children}
+      </DashboardShell>
       <GettingStartedChecklist />
       <Toaster />
-    </div>
+    </>
   )
 }
