@@ -59,16 +59,16 @@ function SectionHeader({ title, href, count }: { title: string; href?: string; c
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
-        <h2 className="text-sm font-semibold text-cb-text">{title}</h2>
-        {count !== undefined && (
-          <span className="text-[11px] font-medium text-cb-muted bg-surface-light border border-cb-border rounded-full px-2 py-0.5">
+        <h2 className="text-[13px] font-semibold text-cb-text tracking-tight">{title}</h2>
+        {count !== undefined && count > 0 && (
+          <span className="text-[11px] font-semibold text-brand bg-brand/8 rounded-full px-2 py-0.5 tabular-nums">
             {count}
           </span>
         )}
       </div>
       {href && (
-        <Link href={href} className="flex items-center gap-1 text-xs text-brand hover:underline font-medium">
-          View all <ArrowRight size={12} />
+        <Link href={href} className="flex items-center gap-1 text-xs text-brand hover:text-brand-light transition-colors font-medium">
+          View all <ArrowRight size={11} />
         </Link>
       )}
     </div>
@@ -252,14 +252,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto animate-fade-in-up">
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto animate-fade-in-up">
       {/* Page greeting */}
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-cb-text">
+      <div className="mb-7">
+        <h1 className="font-display text-2xl font-bold text-cb-text">
           Welcome back{firstName ? `, ${firstName}` : ''}
         </h1>
-        <div className="h-0.5 w-12 bg-gradient-to-r from-brand to-brand/40 rounded-full mt-1.5 mb-1" />
-        <p className="text-sm text-cb-muted mt-1">Here's what's happening with your clients today.</p>
+        <p className="text-sm text-cb-muted mt-1.5">Here&apos;s what&apos;s happening with your clients today.</p>
       </div>
 
       {/* Stat cards */}
@@ -271,39 +270,44 @@ export default function DashboardPage() {
             icon: Users,
             iconColor: 'text-brand',
             iconBg: 'bg-brand/10',
-            accentBorder: 'border-l-[#7CBCB5]',
+            accentBar: 'bg-brand',
+            trend: null,
           },
           {
             label: 'Active Programs',
             value: stats.activePrograms.toString(),
             icon: Layers,
             iconColor: 'text-blue-600',
-            iconBg: 'bg-blue-50',
-            accentBorder: 'border-l-blue-500',
+            iconBg: 'bg-blue-500/10',
+            accentBar: 'bg-blue-500',
+            trend: null,
           },
           {
             label: 'Check-in Rate',
             value: `${stats.checkinRate}%`,
             icon: BarChart2,
             iconColor: 'text-emerald-600',
-            iconBg: 'bg-emerald-50',
-            accentBorder: 'border-l-emerald-500',
+            iconBg: 'bg-emerald-500/10',
+            accentBar: 'bg-emerald-500',
+            trend: stats.checkinRate >= 80 ? 'good' : stats.checkinRate >= 50 ? 'ok' : 'low',
           },
           {
             label: "This Month's Revenue",
-            value: stats.revenue > 0 ? `$${stats.revenue.toFixed(0)}` : '$0',
+            value: stats.revenue > 0 ? `$${stats.revenue.toFixed(0)}` : '—',
             icon: DollarSign,
             iconColor: 'text-amber-600',
-            iconBg: 'bg-amber-50',
-            accentBorder: 'border-l-amber-500',
+            iconBg: 'bg-amber-500/10',
+            accentBar: 'bg-amber-500',
+            trend: null,
           },
-        ].map(({ label, value, icon: Icon, iconColor, iconBg, accentBorder }) => (
-          <div key={label} className={`bg-surface border border-cb-border border-l-4 ${accentBorder} rounded-xl p-5 shadow-sm`}>
-            <div className={`w-9 h-9 rounded-lg ${iconBg} flex items-center justify-center mb-3`}>
+        ].map(({ label, value, icon: Icon, iconColor, iconBg, accentBar }) => (
+          <div key={label} className="bg-surface border border-cb-border rounded-xl p-5 shadow-sm overflow-hidden relative">
+            <div className={`absolute top-0 left-0 w-full h-0.5 ${accentBar}`} />
+            <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center mb-3.5`}>
               <Icon size={17} className={iconColor} />
             </div>
-            <p className="text-3xl font-bold text-cb-text">{value}</p>
-            <p className="text-sm text-cb-secondary font-medium mt-1">{label}</p>
+            <p className="text-2xl font-bold text-cb-text tracking-tight">{value}</p>
+            <p className="text-xs text-cb-muted font-medium mt-1 uppercase tracking-wide">{label}</p>
           </div>
         ))}
       </div>

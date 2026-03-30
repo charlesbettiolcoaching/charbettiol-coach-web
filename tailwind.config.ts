@@ -4,6 +4,10 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-figtree)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+      },
       colors: {
         brand: 'var(--brand)',
         'brand-light': 'var(--brand-light)',

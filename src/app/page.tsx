@@ -12,21 +12,21 @@ export default function LandingPage() {
       {/* ─── Header ─── */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-gray-900">
+          <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-gray-900 font-display">
             <img src="/logo.svg" alt="Propel" className="w-8 h-8" />
             Propel
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm text-gray-500">
             <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
-            <a href="#demo" className="hover:text-gray-900 transition-colors font-medium text-[#0F7B8C]">Watch Demo</a>
+            <a href="#demo" className="hover:text-gray-900 transition-colors font-medium text-brand">Watch Demo</a>
             <a href="#how-it-works" className="hover:text-gray-900 transition-colors">How it works</a>
             <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm font-medium text-[#0F7B8C] hover:text-[#0d6b7a] transition-colors hidden sm:block">
+            <Link href="/login" className="text-sm font-medium text-brand hover:text-brand-light transition-colors hidden sm:block">
               Coach login
             </Link>
-            <Link href="/register" className="bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">
+            <Link href="/register" className="bg-brand hover:bg-brand-light text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors shadow-sm shadow-brand/20">
               Start free trial
             </Link>
           </div>
@@ -34,46 +34,50 @@ export default function LandingPage() {
       </header>
 
       {/* ─── Hero ─── */}
-      <section className="pt-28 pb-16 px-6">
+      <section className="hero-gradient pt-28 pb-16 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left */}
             <div>
-              <div className="inline-flex items-center gap-2 bg-[#0F7B8C]/8 border border-[#0F7B8C]/15 rounded-full px-3 py-1.5 mb-5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0F7B8C] animate-pulse" />
-                <span className="text-xs font-semibold text-[#0F7B8C]">Built for health &amp; fitness professionals</span>
+              <div className="brand-pill mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" aria-hidden="true" />
+                Built for health &amp; fitness professionals
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight tracking-tight">
+              <h1 className="font-display text-5xl md:text-6xl font-extrabold text-gray-900 leading-[1.08] tracking-tight">
                 Stop juggling tools.<br />
-                <span className="text-[#0F7B8C]">Start coaching more.</span>
+                <span className="text-brand">Start coaching more.</span>
               </h1>
               <p className="mt-6 text-lg text-gray-500 leading-relaxed max-w-lg">
                 One platform for PTs, dietitians, and exercise physiologists.
                 Programs, nutrition, check-ins, messaging, and an AI coach that handles clients 24/7 — so you can focus on what you do best.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-8 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#0F7B8C]/20">
-                  Start free — 14 days <span aria-hidden="true">→</span>
+                <Link href="/register" className="btn-primary">
+                  Start free — 14 days
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </Link>
-                <a href="#demo" className="inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold px-8 py-4 rounded-2xl text-base transition-colors hover:border-gray-300 hover:bg-gray-50">
-                  <span className="w-5 h-5 rounded-full bg-[#0F7B8C] flex items-center justify-center flex-shrink-0">
-                    <svg width="8" height="9" viewBox="0 0 8 9" fill="white"><path d="M1 1l6 3.5L1 8V1z"/></svg>
+                <a href="#demo" className="inline-flex items-center justify-center gap-2.5 border border-gray-200 text-gray-700 font-semibold px-7 py-3.5 rounded-2xl text-base transition-all hover:border-brand/30 hover:bg-brand-bg cursor-pointer">
+                  <span className="w-6 h-6 rounded-full bg-brand flex items-center justify-center flex-shrink-0">
+                    <svg width="8" height="9" viewBox="0 0 8 9" fill="white" aria-hidden="true"><path d="M1 1l6 3.5L1 8V1z"/></svg>
                   </span>
                   Watch demo
                 </a>
               </div>
               <div className="mt-10 flex items-center gap-6 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <div className="flex -space-x-1.5">
                     {['#0F7B8C20','#0F7B8C35','#0F7B8C50','#0F7B8C70'].map((c, i) => (
-                      <div key={i} className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-[#0F7B8C]" style={{backgroundColor: c}}>
+                      <div key={i} className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-brand" style={{backgroundColor: c}}>
                         {['S','J','M','L'][i]}
                       </div>
                     ))}
                   </div>
-                  <span><strong className="text-gray-600">500+</strong> coaches already on Propel</span>
+                  <span><strong className="text-gray-700">500+</strong> coaches on Propel</span>
                 </div>
-                <span className="hidden sm:block">14-day free trial</span>
+                <span className="hidden sm:flex items-center gap-1.5 text-gray-400">
+                  <svg className="w-3.5 h-3.5 text-brand" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                  14-day free trial
+                </span>
               </div>
             </div>
 
@@ -131,8 +135,8 @@ export default function LandingPage() {
                     <div className="px-3.5 pb-4 flex-1">
                       <p className="text-[9px] text-gray-400 mb-0.5">Good morning</p>
                       <p className="text-[13px] font-bold text-gray-900 mb-3">Emma Wilson</p>
-                      <div className="bg-[#0F7B8C]/5 rounded-xl p-2.5 border border-[#0F7B8C]/10">
-                        <p className="text-[9px] font-semibold text-[#0F7B8C] mb-0.5">Today&apos;s Workout</p>
+                      <div className="bg-brand/5 rounded-xl p-2.5 border border-brand/10">
+                        <p className="text-[9px] font-semibold text-brand mb-0.5">Today&apos;s Workout</p>
                         <p className="text-[11px] font-bold text-gray-900">Upper Body Push</p>
                         <p className="text-[9px] text-gray-400">5 exercises · ~55 min</p>
                         <div className="mt-1.5 bg-[#0F7B8C] rounded-lg py-1.5 text-center">
@@ -159,7 +163,7 @@ export default function LandingPage() {
                         ))}
                       </div>
                       <div className="mt-3 flex justify-around border-t border-gray-100 pt-2">
-                        <div className="text-center"><div className="text-[10px]">🏠</div><p className="text-[7px] text-[#0F7B8C] font-semibold">Home</p></div>
+                        <div className="text-center"><div className="text-[10px]">🏠</div><p className="text-[7px] text-brand font-semibold">Home</p></div>
                         <div className="text-center"><div className="text-[10px]">🏋️</div><p className="text-[7px] text-gray-400">Train</p></div>
                         <div className="text-center"><div className="text-[10px]">🍎</div><p className="text-[7px] text-gray-400">Nutrition</p></div>
                         <div className="text-center"><div className="text-[10px]">💬</div><p className="text-[7px] text-gray-400">Chat</p></div>
@@ -181,11 +185,11 @@ export default function LandingPage() {
                       <p className="text-[9px] text-gray-400">1/4 sessions this week</p>
                       <div className="flex gap-1 mt-1">
                         {['M','T','W','T','F','S','S'].map((d, i) => (
-                          <div key={i} className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-medium ${i === 2 ? 'bg-[#0F7B8C] text-white' : 'bg-gray-100 text-gray-400'}`}>{d}</div>
+                          <div key={i} className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[7px] font-medium ${i === 2 ? 'bg-brand text-white' : 'bg-gray-100 text-gray-400'}`}>{d}</div>
                         ))}
                       </div>
                       <div className="mt-1.5 bg-gray-50 rounded-xl p-2.5">
-                        <span className="text-[9px] font-semibold text-[#0F7B8C]">TODAY</span>
+                        <span className="text-[9px] font-semibold text-brand">TODAY</span>
                         <p className="text-[10px] font-bold text-gray-900 mt-0.5">Upper Body Push</p>
                         <p className="text-[8px] text-gray-400">~55 min · 5 exercises</p>
                       </div>
@@ -206,7 +210,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Social Proof Stats Bar ─── */}
-      <section className="py-10 bg-[#0F7B8C]">
+      <section className="py-10 bg-brand">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
@@ -225,12 +229,23 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Professions bar ─── */}
-      <section className="py-10 bg-gray-50 border-b border-gray-100">
+      <section className="py-10 bg-white border-y border-gray-100">
         <div className="max-w-5xl mx-auto px-6">
-          <p className="text-center text-xs font-semibold text-gray-400 tracking-widest uppercase mb-4">Built for every health profession</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {['🏋️ Personal Trainers','🥗 Nutritionists','🍎 Dietitians','🏃 Exercise Physiologists','💪 Strength Coaches','📱 Online Coaches','🦴 Physiotherapists'].map((p, i) => (
-              <span key={i} className="px-4 py-2 bg-white rounded-full text-sm text-gray-600 border border-gray-100 shadow-sm">{p}</span>
+          <p className="text-center text-[11px] font-semibold text-gray-400 tracking-[0.12em] uppercase mb-5">Built for every health profession</p>
+          <div className="flex flex-wrap justify-center gap-2.5">
+            {[
+              { label: 'Personal Trainers', icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path d="M3.5 10a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0zm6.5-5a.75.75 0 01.75.75v4.25h2.5a.75.75 0 010 1.5H10a.75.75 0 01-.75-.75V5.75A.75.75 0 0110 5z"/></svg> },
+              { label: 'Nutritionists', icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd"/></svg> },
+              { label: 'Dietitians', icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zm8 0a3 3 0 11-6 0 3 3 0 016 0zM9 12a3 3 0 11-6 0 3 3 0 016 0zm8 0a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
+              { label: 'Exercise Physiologists', icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"/></svg> },
+              { label: 'Strength Coaches', icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd"/></svg> },
+              { label: 'Online Coaches', icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd"/></svg> },
+              { label: 'Physiotherapists', icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg> },
+            ].map(({ label, icon }, i) => (
+              <span key={i} className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-brand-bg rounded-full text-sm font-medium text-gray-600 hover:text-brand border border-gray-200 hover:border-brand/25 shadow-sm transition-all cursor-default">
+                <span className="text-brand" aria-hidden="true">{icon}</span>
+                {label}
+              </span>
             ))}
           </div>
         </div>
@@ -246,7 +261,7 @@ export default function LandingPage() {
           {/* Video embed placeholder */}
           <div className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-2xl shadow-gray-200/60 bg-gray-900 aspect-video group cursor-pointer">
             {/* Gradient thumbnail background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0F7B8C] via-[#0a5a68] to-gray-900" />
+            <div className="absolute inset-0 bg-gradient-to-br from-brand via-[#0a5a68] to-gray-900" />
             {/* Fake screenshot overlay */}
             <div className="absolute inset-0 opacity-30">
               <div className="absolute top-6 left-6 right-6 h-8 bg-white/10 rounded-xl" />
@@ -256,7 +271,7 @@ export default function LandingPage() {
             {/* Play button */}
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
               <div className="w-20 h-20 rounded-full bg-white shadow-2xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <svg width="22" height="26" viewBox="0 0 22 26" fill="#0F7B8C">
+                <svg width="22" height="26" viewBox="0 0 22 26" fill="var(--brand)">
                   <path d="M1 1.5l20 11L1 23.5V1.5z"/>
                 </svg>
               </div>
@@ -281,7 +296,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-sm font-semibold text-[#0F7B8C] tracking-wide mb-3">Training Programs</p>
+              <p className="text-sm font-semibold text-brand tracking-wide mb-3">Training Programs</p>
               <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">
                 Build programs your clients will actually complete
               </h2>
@@ -297,7 +312,7 @@ export default function LandingPage() {
                   'Progress auto-tracked over every session',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-3 text-sm text-gray-600">
-                    <svg className="w-5 h-5 text-[#0F7B8C] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-brand flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     {item}
@@ -318,12 +333,12 @@ export default function LandingPage() {
                     <p className="text-sm font-bold text-gray-900">Hypertrophy Block A</p>
                     <p className="text-xs text-gray-400">Emma Wilson · Week 3 of 8 · 4 days/week</p>
                   </div>
-                  <span className="px-2 py-0.5 bg-[#0F7B8C]/10 text-[#0F7B8C] text-xs font-semibold rounded-full">Active</span>
+                  <span className="px-2 py-0.5 bg-brand/10 text-brand text-xs font-semibold rounded-full">Active</span>
                 </div>
                 {/* Day tabs */}
                 <div className="flex gap-1 mb-4">
                   {['Day 1','Day 2','Day 3','Day 4'].map((d,i) => (
-                    <button key={d} className={`px-3 py-1 rounded-lg text-xs font-medium ${i===0?'bg-[#0F7B8C] text-white':'bg-gray-100 text-gray-500'}`}>{d}</button>
+                    <button key={d} className={`px-3 py-1 rounded-lg text-xs font-medium ${i===0?'bg-brand text-white':'bg-gray-100 text-gray-500'}`}>{d}</button>
                   ))}
                 </div>
                 <p className="text-xs font-semibold text-gray-500 mb-2">Upper Body Push</p>
@@ -336,7 +351,7 @@ export default function LandingPage() {
                   ].map(([ex,sets,reps,weight],i) => (
                     <div key={i} className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2.5 text-xs">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-lg bg-[#0F7B8C]/10 flex items-center justify-center text-[10px] font-bold text-[#0F7B8C]">{i+1}</div>
+                        <div className="w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center text-[10px] font-bold text-brand">{i+1}</div>
                         <span className="font-medium text-gray-800">{ex}</span>
                       </div>
                       <div className="flex gap-4 text-gray-400">
@@ -382,8 +397,8 @@ export default function LandingPage() {
                         <p className="text-[8px] text-gray-500">Chicken Rice Bowl</p>
                         <p className="text-[8px] text-gray-400">52g P · 72g C · 14g F</p>
                       </div>
-                      <div className="bg-[#0F7B8C]/5 rounded-xl p-2.5 border border-[#0F7B8C]/15">
-                        <p className="text-[9px] font-bold text-[#0F7B8C] mb-1.5">Daily Totals</p>
+                      <div className="bg-brand/5 rounded-xl p-2.5 border border-brand/15">
+                        <p className="text-[9px] font-bold text-brand mb-1.5">Daily Totals</p>
                         {[['Calories','2,050 kcal','88'],['Protein','165g','92'],['Carbs','210g','84'],['Fat','62g','89']].map(([l,v,p]) => (
                           <div key={l} className="mb-1">
                             <div className="flex justify-between text-[8px] mb-0.5">
@@ -403,7 +418,7 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-[#0F7B8C] tracking-wide mb-3">Nutrition & Meal Plans</p>
+              <p className="text-sm font-semibold text-brand tracking-wide mb-3">Nutrition & Meal Plans</p>
               <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">
                 Nutrition coaching without the spreadsheets
               </h2>
@@ -419,7 +434,7 @@ export default function LandingPage() {
                   'Adjust targets week-by-week as clients progress',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-3 text-sm text-gray-600">
-                    <svg className="w-5 h-5 text-[#0F7B8C] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-brand flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     {item}
@@ -436,7 +451,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <p className="text-sm font-semibold text-[#0F7B8C] tracking-wide mb-3">Check-ins & Progress Tracking</p>
+              <p className="text-sm font-semibold text-brand tracking-wide mb-3">Check-ins & Progress Tracking</p>
               <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">
                 Know exactly how every client is doing, every week
               </h2>
@@ -452,7 +467,7 @@ export default function LandingPage() {
                   'Spot compliance trends across all clients at once',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-3 text-sm text-gray-600">
-                    <svg className="w-5 h-5 text-[#0F7B8C] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-brand flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     {item}
@@ -497,10 +512,10 @@ export default function LandingPage() {
                   </div>
                   <div className="flex items-center justify-between pt-1">
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-[#0F7B8C]/15 overflow-hidden flex items-center justify-center text-[8px] text-[#0F7B8C] font-bold">EW</div>
+                      <div className="w-4 h-4 rounded-full bg-brand/15 overflow-hidden flex items-center justify-center text-[8px] text-brand font-bold">EW</div>
                       <p className="text-gray-400">Current weight: <span className="font-semibold text-gray-600">78.2 kg</span></p>
                     </div>
-                    <span className="text-[#0F7B8C] text-[10px] font-medium">↓ 0.8kg from last week</span>
+                    <span className="text-brand text-[10px] font-medium">↓ 0.8kg from last week</span>
                   </div>
                 </div>
               </div>
@@ -522,21 +537,25 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[
-              {title:'AI Coach Assistant',desc:'Responds to clients 24/7 in your tone and style',icon:'🤖'},
-              {title:'Habit Tracking',desc:'Daily habits with streaks, charts, and reminders',icon:'✅'},
-              {title:'Client Messaging',desc:'Real-time chat with voice notes and canned replies',icon:'💬'},
-              {title:'Payments & Billing',desc:'Invoicing, subscriptions, and Stripe integration',icon:'💳'},
-              {title:'Autoflow Scheduling',desc:'Automate program delivery, check-ins, and messages',icon:'⚡'},
-              {title:'White Label Branding',desc:'Your logo, colours, and brand — not ours',icon:'🎨'},
-              {title:'Progress Photos',desc:'Side-by-side comparison with date overlays',icon:'📷'},
-              {title:'Video Exercise Library',desc:'Upload your own exercise demos for every movement',icon:'🎬'},
-              {title:'Wearable Sync',desc:'Apple Watch, Fitbit, and Garmin data auto-synced',icon:'⌚'},
-              {title:'AI Form Check',desc:'Clients upload videos for instant technique feedback',icon:'📹'},
-              {title:'Group Coaching',desc:'Channels for challenges, groups, and communities',icon:'👥'},
-              {title:'Marketplace',desc:'Sell programs and templates to earn passive income',icon:'🛒'},
+              {title:'AI Coach Assistant',desc:'Responds to clients 24/7 in your tone and style',path:'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z'},
+              {title:'Habit Tracking',desc:'Daily habits with streaks, charts, and reminders',path:'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'},
+              {title:'Client Messaging',desc:'Real-time chat with voice notes and canned replies',path:'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'},
+              {title:'Payments & Billing',desc:'Invoicing, subscriptions, and Stripe integration',path:'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'},
+              {title:'Autoflow Scheduling',desc:'Automate program delivery, check-ins, and messages',path:'M13 10V3L4 14h7v7l9-11h-7z'},
+              {title:'White Label Branding',desc:'Your logo, colours, and brand — not ours',path:'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01'},
+              {title:'Progress Photos',desc:'Side-by-side comparison with date overlays',path:'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'},
+              {title:'Video Exercise Library',desc:'Upload your own exercise demos for every movement',path:'M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'},
+              {title:'Wearable Sync',desc:'Apple Watch, Fitbit, and Garmin data auto-synced',path:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'},
+              {title:'AI Form Check',desc:'Clients upload videos for instant technique feedback',path:'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'},
+              {title:'Group Coaching',desc:'Channels for challenges, groups, and communities',path:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'},
+              {title:'Marketplace',desc:'Sell programs and templates to earn passive income',path:'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'},
             ].map((f, i) => (
-              <div key={i} className="bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-[#0F7B8C]/30 hover:shadow-sm transition-all">
-                <span className="text-2xl mb-3 block">{f.icon}</span>
+              <div key={i} className="group bg-white rounded-2xl p-5 border border-gray-100 hover:border-brand/30 hover:shadow-md transition-all cursor-default">
+                <div className="w-9 h-9 rounded-xl bg-brand/8 group-hover:bg-brand/12 flex items-center justify-center mb-3.5 transition-colors">
+                  <svg className="w-4.5 h-4.5 text-brand" style={{width:'1.125rem',height:'1.125rem'}} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={f.path}/>
+                  </svg>
+                </div>
                 <h3 className="text-sm font-bold text-gray-900 mb-1">{f.title}</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
               </div>
@@ -546,7 +565,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── AI Section ─── */}
-      <section className="py-24 px-6 bg-gradient-to-br from-[#0F7B8C] to-[#0a5a68] text-white">
+      <section className="py-24 px-6 bg-gradient-to-br from-brand to-[#0a5a68] text-white">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -589,7 +608,7 @@ export default function LandingPage() {
                   <div className="flex justify-start">
                     <div className="bg-white rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[80%]">
                       <p className="text-sm text-gray-700">Don&apos;t be too hard on yourself — one missed session won&apos;t undo your progress. How are you feeling? Want to make it up tomorrow?</p>
-                      <p className="text-[10px] text-[#0F7B8C] font-semibold mt-1">🤖 AI Coach (James K.)</p>
+                      <p className="text-[10px] text-brand font-semibold mt-1">🤖 AI Coach (James K.)</p>
                     </div>
                   </div>
                   <div className="flex justify-end">
@@ -600,7 +619,7 @@ export default function LandingPage() {
                   <div className="flex justify-start">
                     <div className="bg-white rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[80%]">
                       <p className="text-sm text-gray-700">That&apos;s the spirit. Tomorrow is upper body — sleep well tonight and get a good breakfast in. You&apos;ve got this 💪</p>
-                      <p className="text-[10px] text-[#0F7B8C] font-semibold mt-1">🤖 AI Coach (James K.)</p>
+                      <p className="text-[10px] text-brand font-semibold mt-1">🤖 AI Coach (James K.)</p>
                     </div>
                   </div>
                 </div>
@@ -626,13 +645,17 @@ export default function LandingPage() {
               {quote:'The check-in forms have completely transformed how I understand my clients. I know exactly how they&apos;re feeling before our calls — saves so much time.',name:'Emma Wilson',role:'Nutritionist',location:'Adelaide, SA',initials:'EW'},
               {quote:'The white-label branding was a big one for me. My clients see my brand everywhere, not a third-party platform. It makes me look so much more professional.',name:'Daniel Park',role:'Online Fitness Coach',location:'Gold Coast, QLD',initials:'DP'},
             ].map((t, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex gap-0.5 mb-4">
-                  {[1,2,3,4,5].map(s => <span key={s} className="text-amber-400 text-sm">★</span>)}
+              <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-brand/15 transition-all">
+                <div className="flex gap-0.5 mb-4" aria-label="5 out of 5 stars">
+                  {[1,2,3,4,5].map(s => (
+                    <svg key={s} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                  ))}
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed mb-5">&ldquo;{t.quote}&rdquo;</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#0F7B8C]/10 flex items-center justify-center text-xs font-bold text-[#0F7B8C] flex-shrink-0">{t.initials}</div>
+                  <div className="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-xs font-bold text-brand flex-shrink-0">{t.initials}</div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{t.name}</p>
                     <p className="text-xs text-gray-400">{t.role} · {t.location}</p>
@@ -649,8 +672,10 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="w-16 h-16 rounded-2xl bg-[#0F7B8C]/10 flex items-center justify-center mb-5">
-                <span className="text-3xl">🤝</span>
+              <div className="w-14 h-14 rounded-2xl bg-brand/8 flex items-center justify-center mb-5">
+                <svg className="w-7 h-7 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
               </div>
               <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">The Propel Promise</h2>
               <p className="mt-4 text-gray-500 leading-relaxed">
@@ -659,21 +684,25 @@ export default function LandingPage() {
               <p className="mt-3 text-gray-500 leading-relaxed">
                 If Propel isn&apos;t the best coaching platform you&apos;ve used within your first 30 days, email us and you&apos;ll get a full refund the same day. Simple as that.
               </p>
-              <Link href="/register" className="mt-6 inline-flex items-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-6 py-3 rounded-xl text-sm transition-colors shadow-md shadow-[#0F7B8C]/20">
+              <Link href="/register" className="mt-6 inline-flex items-center gap-2 bg-brand hover:bg-brand-light text-white font-bold px-6 py-3 rounded-xl text-sm transition-colors shadow-md shadow-brand/20">
                 Start your free trial →
               </Link>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[
-                {icon:'📅',title:'14-day free trial',desc:'Try every feature with no credit card required until your trial ends.'},
-                {icon:'💸',title:'30-day money-back guarantee',desc:'If you\'re not happy, we refund you that day. No questions, no forms.'},
-                {icon:'🔓',title:'No lock-in contracts',desc:'Month-to-month. Cancel any time, instantly, with no cancellation fees.'},
-                {icon:'📞',title:'Onboarding support included',desc:'Every new coach gets a walkthrough call to get set up the right way.'},
+                {path:'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',title:'14-day free trial',desc:'Try every feature with no credit card required until your trial ends.'},
+                {path:'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',title:'30-day money-back guarantee',desc:'If you\'re not happy, we refund you that day. No questions, no forms.'},
+                {path:'M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z',title:'No lock-in contracts',desc:'Month-to-month. Cancel any time, instantly, with no cancellation fees.'},
+                {path:'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z',title:'Onboarding support included',desc:'Every new coach gets a walkthrough call to get set up the right way.'},
               ].map(item => (
-                <div key={item.title} className="flex items-start gap-4 bg-gray-50 rounded-2xl p-4">
-                  <span className="text-xl flex-shrink-0">{item.icon}</span>
+                <div key={item.title} className="flex items-start gap-4 bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                  <div className="w-8 h-8 rounded-lg bg-brand/8 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d={item.path}/>
+                    </svg>
+                  </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900">{item.title}</p>
+                    <p className="text-sm font-semibold text-gray-900">{item.title}</p>
                     <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
@@ -699,9 +728,9 @@ export default function LandingPage() {
             ].map((s, i) => (
               <div key={i} className="text-center relative">
                 {i < 3 && (
-                  <div className="hidden md:block absolute top-6 left-[60%] right-0 h-0.5 bg-[#0F7B8C]/20" />
+                  <div className="hidden md:block absolute top-6 left-[60%] right-0 h-0.5 bg-brand/20" />
                 )}
-                <div className="w-12 h-12 rounded-2xl bg-[#0F7B8C] flex items-center justify-center mx-auto mb-4 relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-brand flex items-center justify-center mx-auto mb-4 relative z-10">
                   <span className="text-base font-bold text-white">{s.step}</span>
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">{s.title}</h3>
@@ -725,25 +754,25 @@ export default function LandingPage() {
               {name:'Pro',desc:'For coaches scaling their business',price:'29',clientLimit:'30 active clients',features:['Up to 30 active clients','Everything in Starter','AI Coach Assistant','Custom branding','Stripe payments','Autoflow scheduling','Priority support'],popular:true,cta:'Start free trial'},
               {name:'Team',desc:'For multi-practitioner clinics and teams',price:'79',clientLimit:'Unlimited clients',features:['Unlimited active clients','Up to 5 coach accounts','Everything in Pro','Team dashboard','Revenue analytics','Marketplace access','Phone support'],popular:false,cta:'Start free trial'},
             ].map((plan, i) => (
-              <div key={i} className={`rounded-2xl p-6 border relative flex flex-col ${plan.popular ? 'border-[#0F7B8C] ring-1 ring-[#0F7B8C]/20' : 'border-gray-200'}`}>
+              <div key={i} className={`rounded-2xl p-6 border relative flex flex-col ${plan.popular ? 'border-brand ring-1 ring-brand/20' : 'border-gray-200'}`}>
                 {plan.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#0F7B8C] text-white text-[11px] font-bold px-3 py-1 rounded-full whitespace-nowrap">Most popular</div>
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand text-white text-[11px] font-bold px-3 py-1 rounded-full whitespace-nowrap">Most popular</div>
                 )}
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
                   <p className="text-sm text-gray-500 mt-1 mb-1">{plan.desc}</p>
-                  <p className="text-xs font-semibold text-[#0F7B8C] mb-4">{plan.clientLimit}</p>
+                  <p className="text-xs font-semibold text-brand mb-4">{plan.clientLimit}</p>
                   <div className="mb-6">
                     <span className="text-4xl font-extrabold text-gray-900">{plan.price === '0' ? 'Free' : `$${plan.price}`}</span>
                     {plan.price !== '0' && <span className="text-gray-400 text-sm"> AUD/month</span>}
                   </div>
-                  <Link href="/register" className={`block text-center font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-6 ${plan.popular ? 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a]' : 'bg-gray-900 text-white hover:bg-gray-800'}`}>
+                  <Link href="/register" className={`block text-center font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-6 ${plan.popular ? 'bg-brand text-white hover:bg-brand-light' : 'bg-gray-900 text-white hover:bg-gray-800'}`}>
                     {plan.cta}
                   </Link>
                   <ul className="space-y-2.5 flex-1">
                     {plan.features.map((f, j) => (
                       <li key={j} className="flex items-center gap-2 text-sm text-gray-600">
-                        <svg className="w-4 h-4 text-[#0F7B8C] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 text-brand flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                         {f}
@@ -759,14 +788,14 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Final CTA ─── */}
-      <section className="py-24 px-6 bg-gradient-to-br from-[#0F7B8C] to-[#0a5a68]">
+      <section className="py-24 px-6 bg-gradient-to-br from-brand to-[#0a5a68]">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">Ready to propel your practice?</h2>
           <p className="mt-4 text-white/70 max-w-xl mx-auto text-lg">
             Join 500+ health professionals who&apos;ve simplified their entire coaching business with one platform.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/register" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-[#0F7B8C] font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg">
+            <Link href="/register" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-brand font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg">
               Start free — 14 days <span aria-hidden="true">→</span>
             </Link>
             <a href="#demo" className="inline-flex items-center gap-2 border border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-4 rounded-2xl text-base transition-colors">
