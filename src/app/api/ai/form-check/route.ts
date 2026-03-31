@@ -120,7 +120,17 @@ export async function POST(req: NextRequest) {
     const raw = msg.content[0].type === 'text' ? msg.content[0].text.trim() : '{}'
     // Strip markdown fences if present
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '')
-    analysis = JSON.parse(cleaned)
+
+    try {
+      analysis = JSON.parse(cleaned)
+    } catch (parseErr) {
+      console.error('[form-check] JSON parse failed — raw response:', cleaned, parseErr)
+      await supabase
+        .from('form_checks')
+        .update({ ai_status: 'failed' })
+        .eq('id', form_check_id)
+      return NextResponse.json({ error: 'AI returned unparseable response' }, { status: 500 })
+    }
   } catch (err) {
     console.error('[form-check] Analysis failed:', err)
     await supabase
