@@ -1,14 +1,14 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Propel Coaches â The coaching platform that propels your practice',
-  description: 'One platform for personal trainers, dietitians, and exercise physiologists. A powerful web dashboard, a coach app, and a beautiful client experience â plus an AI coach that works while you sleep.',
+  title: 'Propel Coaches — The coaching platform that propels your practice',
+  description: 'One platform for personal trainers, dietitians, and exercise physiologists. A powerful web dashboard, a coach app, and a beautiful client experience — plus an AI coach that works while you sleep.',
 }
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans">
-      {/* âââ Header âââ */}
+      {/* ─── Header ─── */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-gray-900">
@@ -32,7 +32,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* âââ Hero âââ */}
+      {/* ─── Hero ─── */}
       <section className="pt-28 pb-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -45,11 +45,11 @@ export default function LandingPage() {
               </h1>
               <p className="mt-6 text-lg text-gray-500 leading-relaxed max-w-lg">
                 A powerful coach dashboard, a beautiful client app, and an AI assistant that works while you sleep.
-                Programs, nutrition, check-ins, messaging, and payments â all in one place.
+                Programs, nutrition, check-ins, messaging, and payments — all in one place.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/register" className="inline-flex items-center justify-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-8 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#0F7B8C]/20">
-                  Start free trial <span aria-hidden="true">â</span>
+                  Start free trial <span aria-hidden="true">→</span>
                 </Link>
                 <a href="#platform" className="inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-700 font-semibold px-8 py-4 rounded-2xl text-base transition-colors hover:border-gray-300 hover:bg-gray-50">
                   See the platform
@@ -62,9 +62,9 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right â Phone Mockups */}
+            {/* Right — Phone Mockups */}
             <div className="relative h-[580px] hidden md:block">
-              {/* Left phone â Nutrition */}
+              {/* Left phone — Nutrition */}
               <div className="absolute left-4 top-12 w-[180px] z-10 transform -rotate-3">
                 <div className="bg-gray-900 rounded-[28px] p-[5px] shadow-2xl">
                   <div className="rounded-[24px] overflow-hidden">
@@ -73,7 +73,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Center phone â Home / Dashboard */}
+              {/* Center phone — Home / Dashboard */}
               <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[210px] z-20">
                 <div className="bg-gray-900 rounded-[30px] p-[5px] shadow-2xl shadow-black/30">
                   <div className="rounded-[26px] overflow-hidden">
@@ -82,7 +82,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Right phone â Workout */}
+              {/* Right phone — Workout */}
               <div className="absolute right-4 top-12 w-[180px] z-10 transform rotate-3">
                 <div className="bg-gray-900 rounded-[28px] p-[5px] shadow-2xl">
                   <div className="rounded-[24px] overflow-hidden">
@@ -95,19 +95,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ Professions bar âââ */}
+      {/* ─── Professions bar ─── */}
       <section className="py-12 bg-gray-50 border-y border-gray-100">
         <div className="max-w-5xl mx-auto px-6">
           <p className="text-center text-xs font-semibold text-gray-400 tracking-widest uppercase mb-4">Built for every health &amp; fitness profession</p>
           <div className="flex flex-wrap justify-center gap-3">
-            {['ðï¸ Personal Trainers','ð¥ Nutritionists','ð Dietitians','ð Exercise Physiologists','ðª Strength Coaches','ð± Online Coaches','ð¦´ Physiotherapists'].map((p, i) => (
+            {['🏋️ Personal Trainers','🥗 Nutritionists','🍎 Dietitians','🏃 Exercise Physiologists','💪 Strength Coaches','📱 Online Coaches','🦴 Physiotherapists'].map((p, i) => (
               <span key={i} className="px-4 py-2 bg-white rounded-full text-sm text-gray-600 border border-gray-100 shadow-sm">{p}</span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* âââ Platform Overview â Three Views âââ */}
+      {/* ─── Platform Overview — Three Views ─── */}
       <section id="platform" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
@@ -123,32 +123,32 @@ export default function LandingPage() {
           {/* View selector pills */}
           <div className="flex justify-center gap-3 mt-8 mb-16">
             <a href="#coach-web" className="px-5 py-2.5 bg-[#0F7B8C]/10 text-[#0F7B8C] font-semibold text-sm rounded-full border border-[#0F7B8C]/20 hover:bg-[#0F7B8C]/15 transition-colors">
-              ð¥ï¸ Coach Dashboard
+              🖥️ Coach Dashboard
             </a>
             <a href="#coach-app" className="px-5 py-2.5 bg-gray-100 text-gray-600 font-semibold text-sm rounded-full border border-gray-200 hover:bg-gray-150 transition-colors">
-              ð± Coach App
+              📱 Coach App
             </a>
             <a href="#client-app" className="px-5 py-2.5 bg-gray-100 text-gray-600 font-semibold text-sm rounded-full border border-gray-200 hover:bg-gray-150 transition-colors">
-              ðª Client App
+              💪 Client App
             </a>
           </div>
         </div>
       </section>
 
-      {/* âââ View 1: Coach Web Dashboard âââ */}
+      {/* ─── View 1: Coach Web Dashboard ─── */}
       <section id="coach-web" className="pb-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-5 gap-12 items-start">
             {/* Left text */}
             <div className="md:col-span-2">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0F7B8C]/10 rounded-full text-xs font-semibold text-[#0F7B8C] mb-4">
-                ð¥ï¸ Coach Web Dashboard
+                🖥️ Coach Web Dashboard
               </div>
               <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
                 Your coaching HQ, in the browser
               </h3>
               <p className="mt-4 text-gray-500 leading-relaxed">
-                Build programs, create AI-powered meal plans, review check-ins, message clients, and manage payments â all from one powerful dashboard.
+                Build programs, create AI-powered meal plans, review check-ins, message clients, and manage payments — all from one powerful dashboard.
               </p>
               <ul className="mt-6 space-y-3">
                 {[
@@ -169,7 +169,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            {/* Right â Browser mockup */}
+            {/* Right — Browser mockup */}
             <div className="md:col-span-3">
               <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-2xl shadow-gray-200/50">
                 {/* Browser chrome */}
@@ -251,11 +251,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ View 2: Coach Mobile App âââ */}
+      {/* ─── View 2: Coach Mobile App ─── */}
       <section id="coach-app" className="py-24 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-5 gap-12 items-center">
-            {/* Left â Phone mockup */}
+            {/* Left — Phone mockup */}
             <div className="md:col-span-3 flex justify-center">
               <div className="relative">
                 {/* Coach dashboard phone */}
@@ -272,13 +272,13 @@ export default function LandingPage() {
             {/* Right text */}
             <div className="md:col-span-2">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0F7B8C]/10 rounded-full text-xs font-semibold text-[#0F7B8C] mb-4">
-                ð± Coach Mobile App
+                📱 Coach Mobile App
               </div>
               <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
                 Coach from anywhere
               </h3>
               <p className="mt-4 text-gray-500 leading-relaxed">
-                Review check-ins on the train, reply to clients between sessions, and keep an eye on your business â all from your phone.
+                Review check-ins on the train, reply to clients between sessions, and keep an eye on your business — all from your phone.
               </p>
               <ul className="mt-6 space-y-3">
                 {[
@@ -302,18 +302,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ View 3: Client App Experience âââ */}
+      {/* ─── View 3: Client App Experience ─── */}
       <section id="client-app" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0F7B8C]/10 rounded-full text-xs font-semibold text-[#0F7B8C] mb-4">
-              ðª Client App
+              💪 Client App
             </div>
             <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
               Your clients will love using Propel
             </h3>
             <p className="mt-4 text-gray-500 max-w-2xl mx-auto">
-              A beautiful, intuitive mobile experience that keeps your athletes engaged, accountable, and progressing â from sign-up to first workout in 60 seconds.
+              A beautiful, intuitive mobile experience that keeps your athletes engaged, accountable, and progressing — from sign-up to first workout in 60 seconds.
             </p>
           </div>
 
@@ -339,10 +339,10 @@ export default function LandingPage() {
           {/* Client feature highlights */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 max-w-4xl mx-auto">
             {[
-              { icon: 'ðï¸', title: 'Guided Workouts', desc: 'Follow programs with sets, reps, RPE, and tempo guidance' },
-              { icon: 'ð', title: 'Smart Nutrition', desc: 'Log meals by photo, barcode, or search â AI estimates macros' },
-              { icon: 'ð', title: 'Progress Tracking', desc: 'Weight, measurements, photos, and personal bests over time' },
-              { icon: 'ð¤', title: 'AI Coach Chat', desc: 'Get instant answers about your training, nutrition, and recovery' },
+              { icon: '🏋️', title: 'Guided Workouts', desc: 'Follow programs with sets, reps, RPE, and tempo guidance' },
+              { icon: '🍎', title: 'Smart Nutrition', desc: 'Log meals by photo, barcode, or search — AI estimates macros' },
+              { icon: '📊', title: 'Progress Tracking', desc: 'Weight, measurements, photos, and personal bests over time' },
+              { icon: '🤖', title: 'AI Coach Chat', desc: 'Get instant answers about your training, nutrition, and recovery' },
             ].map((f, i) => (
               <div key={i} className="text-center p-4">
                 <span className="text-2xl mb-2 block">{f.icon}</span>
@@ -354,7 +354,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ Features Grid âââ */}
+      {/* ─── Features Grid ─── */}
       <section id="features" className="py-24 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -367,21 +367,21 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              {title:'Training Programs',desc:'Build and assign workout programs with sets, reps, tempo, and coach notes. Clients log sessions live in the app.',icon:'ðï¸'},
-              {title:'Nutrition & Meal Plans',desc:'Create AI-generated meal plans, set macro targets, and let clients log food with a barcode scanner or photo.',icon:'ð'},
-              {title:'Client Messaging',desc:'Chat directly with clients in real time. Send voice notes, use canned templates, and let AI handle after-hours.',icon:'ð¬'},
-              {title:'Check-ins & Forms',desc:'Weekly progress check-ins with custom questions. Stay on top of how every client is really doing.',icon:'ð'},
-              {title:'Habit Tracking',desc:'Set daily habits and let clients track them in the app. Build consistency one day at a time.',icon:'â'},
-              {title:'Progress & Metrics',desc:'Weight, measurements, progress photos, and personal bests â every metric in one place.',icon:'ð'},
-              {title:'AI Coach Assistant',desc:'Your AI coach responds to clients 24/7 in your tone and style. It can also generate meal plans and workout programs.',icon:'ð¤'},
-              {title:'White Label & Branding',desc:'Make Propel your own. Custom colours, logo, and branding so clients see your brand â not ours.',icon:'ð¨'},
-              {title:'Video Exercise Library',desc:'Upload exercise demo videos and attach them to workouts. Clients see exactly how to perform each movement.',icon:'ð¬'},
-              {title:'Group Chats',desc:'Create group coaching channels for challenges, accountability groups, or team communication.',icon:'ð¥'},
-              {title:'Wearable Integration',desc:'Connect Apple Watch, Fitbit, and Garmin. Pull in steps, heart rate, sleep, and activity data automatically.',icon:'â'},
-              {title:'AI Form Check',desc:'Clients upload exercise videos and get instant AI-powered form analysis with technique feedback.',icon:'ð¹'},
-              {title:'Packages & Subscriptions',desc:'Create coaching packages with different tiers. Clients subscribe and get auto-billed through Stripe.',icon:'ð¦'},
-              {title:'Marketplace',desc:'List your programs and templates on the Propel marketplace. Earn passive income from your expertise.',icon:'ð'},
-              {title:'Payments & Invoicing',desc:'Send invoices, manage subscriptions, and track revenue â all powered by Stripe.',icon:'ð³'},
+              {title:'Training Programs',desc:'Build and assign workout programs with sets, reps, tempo, and coach notes. Clients log sessions live in the app.',icon:'🏋️'},
+              {title:'Nutrition & Meal Plans',desc:'Create AI-generated meal plans, set macro targets, and let clients log food with a barcode scanner or photo.',icon:'🍎'},
+              {title:'Client Messaging',desc:'Chat directly with clients in real time. Send voice notes, use canned templates, and let AI handle after-hours.',icon:'💬'},
+              {title:'Check-ins & Forms',desc:'Weekly progress check-ins with custom questions. Stay on top of how every client is really doing.',icon:'📋'},
+              {title:'Habit Tracking',desc:'Set daily habits and let clients track them in the app. Build consistency one day at a time.',icon:'✅'},
+              {title:'Progress & Metrics',desc:'Weight, measurements, progress photos, and personal bests — every metric in one place.',icon:'📊'},
+              {title:'AI Coach Assistant',desc:'Your AI coach responds to clients 24/7 in your tone and style. It can also generate meal plans and workout programs.',icon:'🤖'},
+              {title:'White Label & Branding',desc:'Make Propel your own. Custom colours, logo, and branding so clients see your brand — not ours.',icon:'🎨'},
+              {title:'Video Exercise Library',desc:'Upload exercise demo videos and attach them to workouts. Clients see exactly how to perform each movement.',icon:'🎬'},
+              {title:'Group Chats',desc:'Create group coaching channels for challenges, accountability groups, or team communication.',icon:'👥'},
+              {title:'Wearable Integration',desc:'Connect Apple Watch, Fitbit, and Garmin. Pull in steps, heart rate, sleep, and activity data automatically.',icon:'⌚'},
+              {title:'AI Form Check',desc:'Clients upload exercise videos and get instant AI-powered form analysis with technique feedback.',icon:'📹'},
+              {title:'Packages & Subscriptions',desc:'Create coaching packages with different tiers. Clients subscribe and get auto-billed through Stripe.',icon:'📦'},
+              {title:'Marketplace',desc:'List your programs and templates on the Propel marketplace. Earn passive income from your expertise.',icon:'🛒'},
+              {title:'Payments & Invoicing',desc:'Send invoices, manage subscriptions, and track revenue — all powered by Stripe.',icon:'💳'},
             ].map((f, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#0F7B8C]/20 hover:bg-[#0F7B8C]/[0.02] transition-colors">
                 <span className="text-2xl mb-3 block">{f.icon}</span>
@@ -393,7 +393,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ AI Section âââ */}
+      {/* ─── AI Section ─── */}
       <section className="py-24 px-6 bg-gradient-to-br from-[#0F7B8C] to-[#0a5a68] text-white">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -401,7 +401,7 @@ export default function LandingPage() {
               <p className="text-sm font-semibold text-white/60 tracking-wide mb-3 uppercase">AI-powered coaching</p>
               <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Your AI coach works while you sleep</h2>
               <p className="mt-4 text-white/70 leading-relaxed">
-                Clients don&apos;t stop needing support at 5pm. Your AI coaching assistant responds to messages around the clock â in your tone, with your expertise.
+                Clients don&apos;t stop needing support at 5pm. Your AI coaching assistant responds to messages around the clock — in your tone, with your expertise.
               </p>
               <ul className="mt-6 space-y-3">
                 {[
@@ -426,12 +426,12 @@ export default function LandingPage() {
                 <div className="space-y-4">
                   <div className="flex justify-end">
                     <div className="bg-white/20 rounded-2xl rounded-br-md px-4 py-2.5 max-w-[80%]">
-                      <p className="text-sm">Hey, I missed my session today. Feeling really guilty ð</p>
+                      <p className="text-sm">Hey, I missed my session today. Feeling really guilty 😔</p>
                     </div>
                   </div>
                   <div className="flex justify-start">
                     <div className="bg-white rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[80%]">
-                      <p className="text-sm text-gray-700">Don&apos;t be too hard on yourself â one missed session doesn&apos;t undo your progress. How are you feeling? Want to make it up tomorrow?</p>
+                      <p className="text-sm text-gray-700">Don&apos;t be too hard on yourself — one missed session doesn&apos;t undo your progress. How are you feeling? Want to make it up tomorrow?</p>
                       <p className="text-[10px] text-[#0F7B8C] font-semibold mt-1">AI Coach</p>
                     </div>
                   </div>
@@ -442,7 +442,7 @@ export default function LandingPage() {
                   </div>
                   <div className="flex justify-start">
                     <div className="bg-white rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[80%]">
-                      <p className="text-sm text-gray-700">That&apos;s the spirit. Tomorrow is upper body â get a good sleep and stay hydrated tonight. You&apos;ve got this ðª</p>
+                      <p className="text-sm text-gray-700">That&apos;s the spirit. Tomorrow is upper body — get a good sleep and stay hydrated tonight. You&apos;ve got this 💪</p>
                       <p className="text-[10px] text-[#0F7B8C] font-semibold mt-1">AI Coach</p>
                     </div>
                   </div>
@@ -453,7 +453,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ How it works âââ */}
+      {/* ─── How it works ─── */}
       <section className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
@@ -478,19 +478,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ Testimonials âââ */}
+      {/* ─── Testimonials ─── */}
       <section className="py-24 px-6 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight text-center mb-16">Coaches love Propel</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {quote:'Propel replaced three separate tools I was using. My clients love the app and I finally feel on top of everything.',name:'Sarah Mitchell',role:'Online PT, Sydney'},
-              {quote:'As a dietitian I only needed the nutrition and check-in features â being able to turn everything else off keeps it clean.',name:'James Khoury',role:'Accredited Dietitian'},
-              {quote:'The AI coach handles all the after-hours messages. I used to spend an hour every night replying â now I don\'t.',name:'Mia Torres',role:'Exercise Physiologist'},
+              {quote:'As a dietitian I only needed the nutrition and check-in features — being able to turn everything else off keeps it clean.',name:'James Khoury',role:'Accredited Dietitian'},
+              {quote:'The AI coach handles all the after-hours messages. I used to spend an hour every night replying — now I don\'t.',name:'Mia Torres',role:'Exercise Physiologist'},
             ].map((t, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
                 <div className="flex gap-0.5 mb-3">
-                  {[1,2,3,4,5].map(s => <span key={s} className="text-amber-400 text-sm">â</span>)}
+                  {[1,2,3,4,5].map(s => <span key={s} className="text-amber-400 text-sm">★</span>)}
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed mb-4">&ldquo;{t.quote}&rdquo;</p>
                 <div>
@@ -503,12 +503,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ Pricing âââ */}
+      {/* ─── Pricing ─── */}
       <section id="pricing" className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Simple, transparent pricing</h2>
-            <p className="mt-4 text-gray-500">14-day free trial on all plans. No credit card required.</p>
+            <p classMame="mt-4 text-gray-500">14-day free trial on all plans. No credit card required.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
@@ -545,7 +545,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ FAQ âââ */}
+      {/* ─── FAQ ─── */}
       <section id="faq" className="py-24 px-6 bg-gray-50">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight text-center mb-16">Frequently asked questions</h2>
@@ -553,10 +553,10 @@ export default function LandingPage() {
             {[
               {q:'What is Propel?',a:'Propel is an all-in-one coaching platform. You get a web dashboard to manage your business, a mobile app for coaching on the go, and your clients get a beautiful app to follow programs, track nutrition, log workouts, and chat with you (or your AI coach).'},
               {q:'Who is Propel for?',a:'Personal trainers, nutritionists, dietitians, exercise physiologists, strength coaches, physiotherapists, and online fitness coaches. If you coach clients, Propel is built for you.'},
-              {q:'How does the AI coach work?',a:'Your AI assistant learns your communication style and has access to each client\'s program, logs, and check-in data. It can answer questions, provide motivation, and adjust recommendations â 24/7. You can toggle it on or off per client and it hands off to you seamlessly when needed.'},
+              {q:'How does the AI coach work?',a:'Your AI assistant learns your communication style and has access to each client\'s program, logs, and check-in data. It can answer questions, provide motivation, and adjust recommendations — 24/7. You can toggle it on or off per client and it hands off to you seamlessly when needed.'},
               {q:'Can I customise what my clients see?',a:'Yes. You choose which features are enabled for each client. A dietitian can turn off workouts. A PT can turn off meal plans. You can also white-label the experience with your own brand colours and logo.'},
-              {q:'Is there a free trial?',a:'Yes â 14 days free on all plans, no credit card required. You can start coaching immediately.'},
-              {q:'How do payments work?',a:'Propel integrates with Stripe. You can create coaching packages, set up recurring subscriptions, send invoices, and track revenue â all within the platform.'},
+              {q:'Is there a free trial?',a:'Yes — 14 days free on all plans, no credit card required. You can start coaching immediately.'},
+              {q:'How do payments work?',a:'Propel integrates with Stripe. You can create coaching packages, set up recurring subscriptions, send invoices, and track revenue — all within the platform.'},
             ].map((faq, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100">
                 <h3 className="text-base font-bold text-gray-900 mb-2">{faq.q}</h3>
@@ -567,7 +567,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* âââ Final CTA âââ */}
+      {/* ─── Final CTA ─── */}
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Ready to propel your practice?</h2>
@@ -576,21 +576,21 @@ export default function LandingPage() {
           </p>
           <div className="mt-8">
             <Link href="/register" className="inline-flex items-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#0F7B8C]/20">
-              Start your free trial <span aria-hidden="true">â</span>
+              Start your free trial <span aria-hidden="true">→</span>
             </Link>
           </div>
-          <p className="mt-4 text-xs text-gray-400">14-day free trial Â· No credit card required Â· Cancel anytime</p>
+          <p className="mt-4 text-xs text-gray-400">14-day free trial · No credit card required · Cancel anytime</p>
         </div>
       </section>
 
-      {/* âââ Footer âââ */}
+      {/* ─── Footer ─── */}
       <footer className="border-t border-gray-100 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded bg-[#0F7B8C] flex items-center justify-center text-white text-[10px] font-bold">P</div>
             <span className="text-sm font-bold text-gray-900">Propel</span>
           </div>
-          <p className="text-xs text-gray-400">Â© 2026 Propel. Built for coaches, by coaches.</p>
+          <p className="text-xs text-gray-400">© 2026 Propel. Built for coaches, by coaches.</p>
           <div className="flex items-center gap-4 text-xs text-gray-400">
             <a href="#" className="hover:text-gray-600 transition-colors">Privacy</a>
             <a href="#" className="hover:text-gray-600 transition-colors">Terms</a>
