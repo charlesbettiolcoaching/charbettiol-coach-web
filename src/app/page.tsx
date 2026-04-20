@@ -69,38 +69,26 @@ export default function Home() {
     { icon: '🎯', title: 'Habit Tracking', desc: 'Track daily habits. Motivate with streaks.' },
     { icon: '𓓊', title: 'Progress & Metrics', desc: 'Charts. Stats. Dashboards. Real-time insights.' },
     { icon: '🤖', title: 'AI Coach Assistant', desc: 'Responds to clients 24/7 in your voice.' },
-    { icon: '🎨', title: 'White Label & Branding', desc: 'Custom app branding. Your logo. Your colours.' },
+    { icon: '🎨', title: 'Branded Client Experience', desc: 'Your logo and colours appear throughout the app your clients use.' },
     { icon: '🎥', title: 'Video Exercise Library', desc: '1000+ exercise videos. Demo proper form.' },
     { icon: '👥', title: 'Group Chats', desc: 'Build community. Group chat channels.' },
     { icon: '⌚', title: 'Wearable Integration', desc: 'Apple Watch, Fitbit, Oura. Sync automatically.' },
-    { icon: '✅', title: 'Form Check with AI', desc: 'Clients film workouts. AI verifies form.' },
+    { icon: '✅', title: 'Form Check with AI', desc: 'Clients upload lift videos and get AI feedback on common form cues.' },
     { icon: '📦', title: 'Packages & Subscriptions', desc: '1-off sessions or ongoing subscriptions.' },
     { icon: '🛒', title: 'Marketplace', desc: 'Sell programs, templates, and content.' },
     { icon: '💳', title: 'Payments & Invoicing', desc: 'Automated payments. Custom invoices.' }
   ];
 
-  const professions = ['Personal Trainers', 'Nutritionists', 'Dietitians', 'Exercise Physiologists', 'Strength Coaches', 'Online Coaches', 'Physiotherapists'];
+  // Persona list scoped to unregulated coaching titles only. AHPRA-protected
+  // titles (Dietitian, Physiotherapist, Exercise Physiologist) removed because
+  // marketing the platform as serving them creates regulatory exposure when
+  // we don't verify their AHPRA/ESSA registration during sign-up.
+  const professions = ['Personal Trainers', 'Strength Coaches', 'Online Coaches', 'Nutrition Coaches'];
 
-  const testimonials = [
-    {
-      name: 'Sarah Mitchell',
-      role: 'Personal Trainer, Sydney',
-      text: 'Propel let me go from 20 to 120 clients in 6 months. The AI coach handles 80% of client questions at night.',
-      rating: 5
-    },
-    {
-      name: 'Marcus Chen',
-      role: 'Strength Coach, Melbourne',
-      text: 'My clients love the branded app. Feels like their own fitness platform. Retention jumped 45%.',
-      rating: 5
-    },
-    {
-      name: 'Emma Rodriguez',
-      role: 'Dietitian, Brisbane',
-      text: 'The meal planning tools save me hours. White-label feature lets my clients think it&apos;s all my brand.',
-      rating: 5
-    }
-  ];
+  // Testimonials intentionally empty pre-launch — we add them only after
+  // collecting real, signed releases from named users. Showing fabricated
+  // social proof for an unlaunched product is an ACL s18 risk.
+  const testimonials: Array<{ name: string; role: string; text: string; rating: number }> = [];
 
   return (
     <>
@@ -153,18 +141,18 @@ export default function Home() {
               Watch demo
             </Link>
           </div>
-          <div className="flex justify-around text-center py-8 border-t border-teal-700/30">
+          <div className="flex justify-around text-center py-8 border-t border-teal-700/30 flex-wrap gap-6">
             <div className="animate-float" style={{ animationDelay: '0s' }}>
-              <div className="text-2xl font-bold text-teal-400">10,000+</div>
-              <div className="text-sm text-gray-400">Workouts logged</div>
+              <div className="text-base font-semibold text-teal-400">Built in Australia</div>
+              <div className="text-xs text-gray-400 mt-1">By a former personal trainer</div>
             </div>
             <div className="animate-float" style={{ animationDelay: '0.5s' }}>
-              <div className="text-2xl font-bold text-teal-400">2,000+</div>
-              <div className="text-sm text-gray-400">Active coaches</div>
+              <div className="text-base font-semibold text-teal-400">Powered by Anthropic Claude</div>
+              <div className="text-xs text-gray-400 mt-1">AI-generated training and nutrition plans</div>
             </div>
             <div className="animate-float" style={{ animationDelay: '1s' }}>
-              <div className="text-2xl font-bold text-teal-400">98%</div>
-              <div className="text-sm text-gray-400">Client retention</div>
+              <div className="text-base font-semibold text-teal-400">Your data stays yours</div>
+              <div className="text-xs text-gray-400 mt-1">Stored in Singapore, never sold</div>
             </div>
           </div>
         </div>
@@ -464,30 +452,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <AnimatedSection>
-            <h2 className="text-4xl font-bold text-center mb-16 text-gray-900">Coaches Love Propel</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, i) => (
-                <AnimatedSection key={i} className="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg transition">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, j) => (
-                      <span key={j} className="text-yellow-400 text-lg">★</span>
-                    ))}
-                  </div>
-                  <p className="text-gray-700 mb-6">&quot;{testimonial.text}&quot;</p>
-                  <div className="border-t border-gray-200 pt-4">
-                    <p className="font-bold text-gray-900">{testimonial.name}</p>
-                    <p className="text-sm text-gray-600">{testimonial.role}</p>
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
+      {/* Testimonials — intentionally hidden until we collect real, signed
+          testimonials from named users post-launch (3 Aug 2026). Showing
+          fabricated social proof for an unlaunched product is an ACL s18
+          risk. When testimonials exist, render them by populating the
+          `testimonials` array near the top of this file. */}
+      {testimonials.length > 0 && (
+        <section className="py-20 px-6 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <AnimatedSection>
+              <h2 className="text-4xl font-bold text-center mb-16 text-gray-900">What coaches are saying</h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {testimonials.map((testimonial, i) => (
+                  <AnimatedSection key={i} className="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:shadow-lg transition">
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(testimonial.rating)].map((_, j) => (
+                        <span key={j} className="text-yellow-400 text-lg">★</span>
+                      ))}
+                    </div>
+                    <p className="text-gray-700 mb-6">&quot;{testimonial.text}&quot;</p>
+                    <div className="border-t border-gray-200 pt-4">
+                      <p className="font-bold text-gray-900">{testimonial.name}</p>
+                      <p className="text-sm text-gray-600">{testimonial.role}</p>
+                    </div>
+                  </AnimatedSection>
+                ))}
+              </div>
+            </AnimatedSection>
+          </div>
+        </section>
+      )}
 
       {/* Pricing */}
       <section id="pricing" className="py-20 px-6 bg-gray-50">
@@ -508,7 +502,7 @@ export default function Home() {
                 <ul className="space-y-3 text-sm text-gray-700">
                   <li>✓ Web dashboard</li>
                   <li>✓ Coach mobile app</li>
-                  <li>✓ Branded client app</li>
+                  <li>✓ Branded client experience (your logo and colours)</li>
                   <li>✓ Up to 10 clients</li>
                   <li>✓ AI coach assistant</li>
                   <li>✗ Team members</li>
@@ -537,9 +531,9 @@ export default function Home() {
                 </ul>
               </AnimatedSection>
 
-              {/* Clinic */}
+              {/* Scale */}
               <AnimatedSection className="bg-white border-2 border-gray-200 p-8 rounded-xl">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Clinic</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Scale</h3>
                 <p className="text-gray-600 text-sm mb-6">For teams and clinics</p>
                 <div className="text-4xl font-bold text-gray-900 mb-1">$119</div>
                 <p className="text-sm text-gray-600 mb-6">/month, up to 5 practitioners</p>
@@ -549,10 +543,9 @@ export default function Home() {
                 <ul className="space-y-3 text-sm text-gray-700">
                   <li>✓ Everything in Pro</li>
                   <li>✓ Up to 5 team members</li>
-                  <li>✓ Custom branding</li>
-                  <li>✓ White label client app</li>
-                  <li>✓ Priority support</li>
-                  <li>✓ Dedicated account manager</li>
+                  <li>✓ Custom branding (logo and colours)</li>
+                  <li>✓ Team dashboard &amp; permissions</li>
+                  <li>✓ Dedicated onboarding call</li>
                 </ul>
               </AnimatedSection>
             </div>

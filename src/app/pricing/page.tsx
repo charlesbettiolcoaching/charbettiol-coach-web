@@ -7,22 +7,25 @@ export const metadata = {
   description: 'Simple, transparent pricing for Propel coaching platform.',
 }
 
+// Pricing aligned with the implemented Stripe products (setup-stripe-products.sh)
+// and the mobile app's PLAN_INFO. Single source of truth — change here and in
+// the Stripe dashboard together.
 const PRICING_PLANS = [
   {
     name: 'Starter',
     slug: 'starter',
-    price: '0',
+    price: '29',
     period: '/month',
-    description: 'Perfect for coaches just getting started',
+    description: 'For new coaches with a small client base',
     highlight: false,
     features: [
-      'Up to 5 active clients',
+      'Up to 10 active clients',
       'Training program builder',
       'Weekly check-ins with progress photos',
       'Nutrition & macro tracking',
       'Habit tracking with streaks',
       'Client messaging',
-      'Basic progress metrics',
+      'Branded mobile experience (your logo and colours)',
       'iOS & Android apps',
       'Email support',
     ],
@@ -30,38 +33,36 @@ const PRICING_PLANS = [
   {
     name: 'Pro',
     slug: 'pro',
-    price: '29',
+    price: '59',
     period: '/month',
     description: 'For established coaches scaling their business',
     highlight: true,
     features: [
-      'Up to 30 active clients',
+      'Unlimited active clients',
       'Everything in Starter',
-      'AI Coach Assistant (24/7)',
-      'Video feedback via Loom',
+      'AI Coach Assistant',
+      'Video feedback',
       'Body composition tracking',
-      'Custom branding (logo & colours)',
       'Advanced analytics & reports',
       'Stripe payments built-in',
-      'Priority support',
+      'Email support',
     ],
   },
   {
-    name: 'Team',
-    slug: 'team',
-    price: '79',
+    name: 'Scale',
+    slug: 'scale',
+    price: '119',
     period: '/month',
     description: 'For multi-practitioner clinics and teams',
     highlight: false,
     features: [
-      'Unlimited active clients',
-      'Up to 5 coaches / practitioners',
       'Everything in Pro',
+      'Up to 5 coaches / practitioners',
       'Team dashboard & permissions',
       'Shared exercise & template library',
       'Revenue analytics',
       'Dedicated onboarding call',
-      'Phone support',
+      'Email support',
     ],
   },
 ]
@@ -69,7 +70,7 @@ const PRICING_PLANS = [
 const FAQ = [
   {
     question: 'Do I need a credit card for the trial?',
-    answer: 'Yes, a credit card is required to start your 14-day free trial. You will not be charged until the trial ends. Cancel anytime before the trial is up and you will not be billed.',
+    answer: 'Coach plans are billed via Stripe — a credit card is required to start your 14-day free trial. You will not be charged until the trial ends. AI Client subscriptions on iPhone are billed via Apple in-app purchase and use the payment method on your Apple ID — no manual card entry needed. Cancel anytime before the trial is up and you will not be billed.',
   },
   {
     question: 'What happens after the trial ends?',

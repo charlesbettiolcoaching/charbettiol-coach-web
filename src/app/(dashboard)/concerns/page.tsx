@@ -132,11 +132,14 @@ export default function ConcernsPage() {
     try {
       setSaving(id);
       const notes = resolutionNotes[id] ?? null;
+      // Capture WHO reviewed — needed for accountability in the audit trail.
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
         .from('ai_coach_concerns')
         .update({
           status,
           reviewed_at: new Date().toISOString(),
+          reviewed_by: user?.id ?? null,
           resolution_notes: notes,
         })
         .eq('id', id);
