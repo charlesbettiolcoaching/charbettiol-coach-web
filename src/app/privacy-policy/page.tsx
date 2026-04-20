@@ -222,7 +222,12 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">13. Contact</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">13. About the operator</h2>
+            <p>Propel Coaches is operated by <strong>Charles Bettiol</strong>, a former Personal Trainer based in Australia. Propel is a software platform — Charles is not a registered health practitioner under the Health Practitioner Regulation National Law. Propel does not provide registered-practitioner services (such as those of an Accredited Practising Dietitian, Physiotherapist, or Exercise Physiologist). When you need clinical care, please see a registered practitioner.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">14. Contact</h2>
             <p>If you have questions about this Privacy Policy, want to access or correct your data, or have a complaint:</p>
             <ul className="list-disc pl-6 space-y-1 mt-2">
               <li>Email: <a href="mailto:support@propelcoaches.com" className="text-[#0F7B8C] underline">support@propelcoaches.com</a></li>
