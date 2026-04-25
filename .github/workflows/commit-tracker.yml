@@ -1,0 +1,36 @@
+name: commit-tracker
+
+# Logs every push to Mission Control via Supabase.commit_events.
+# Runs on all branches so feature work is visible, not just main.
+#
+# Required repo secrets:
+#   SUPABASE_URL                 — e.g. https://<project>.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY    — service_role key
+
+on:
+  push:
+    branches: ['**']
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout (with history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Post commits to Mission Control
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          REPO_NAME: web-dashboard
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+          GITHUB_EVENT_AFTER: ${{ github.event.after }}
+        run: node scripts/track-commits.mjs
