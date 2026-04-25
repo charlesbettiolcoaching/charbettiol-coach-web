@@ -15,8 +15,9 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Mission Control gate: logged-in + email on allow-list.
-  // The HTML itself lives in /public/mission-control.html; this guards access.
-  if (pathname === '/mission-control.html' || pathname.startsWith('/mission-control/')) {
+  // Served by route handler at /mission-control (HTML asset lives in src/data
+  // so Vercel's CDN doesn't bypass middleware as it would for /public files).
+  if (pathname === '/mission-control' || pathname.startsWith('/mission-control/')) {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
