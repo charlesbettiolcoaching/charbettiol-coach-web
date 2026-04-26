@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Check } from 'lucide-react'
 
 export interface PricingPlan {
@@ -12,6 +13,33 @@ export interface PricingPlan {
   description: string
   highlight: boolean
   features: string[]
+}
+
+export function PricingBanner() {
+  const searchParams = useSearchParams()
+  const [dismissed, setDismissed] = useState(false)
+  const source = searchParams.get('source')
+
+  if (dismissed || !source) return null
+
+  const copy = source === 'ios-billing'
+    ? 'Pick an AI plan to keep going after your trial.'
+    : 'Choose a plan to start.'
+
+  return (
+    <div className="px-6 pt-24">
+      <div className="mx-auto flex max-w-4xl items-start justify-between gap-4 rounded-2xl border border-[#0F7B8C]/20 bg-[#0F7B8C]/5 p-4 text-left">
+        <p className="text-sm font-medium text-gray-800">{copy}</p>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          className="text-sm font-bold text-[#0F7B8C] hover:text-[#0d6b7a]"
+        >
+          Dismiss
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export default function PricingClient({ plans }: { plans: PricingPlan[] }) {
@@ -69,7 +97,7 @@ export default function PricingClient({ plans }: { plans: PricingPlan[] }) {
                 {/* Price */}
                 <div className="flex items-end gap-1 mb-6">
                   <span className="text-5xl font-black text-gray-900">
-                    {plan.price === '0' ? 'Free' : `$${plan.price} AUD`}
+                    {plan.price === '0' ? 'Free' : `A$${plan.price}`}
                   </span>
                   {plan.price !== '0' && (
                     <span className="text-sm text-gray-500 mb-2">{plan.period}</span>

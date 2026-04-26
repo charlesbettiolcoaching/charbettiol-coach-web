@@ -1,5 +1,16 @@
-// Lightweight Stripe REST API helper — no npm package needed
+import Stripe from 'stripe'
+
+// Lightweight Stripe REST API helper — used by dashboard summary routes.
 const STRIPE_BASE = 'https://api.stripe.com/v1'
+
+let stripeClient: Stripe | null = null
+
+export function getStripeClient() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error('Missing STRIPE_SECRET_KEY')
+  if (!stripeClient) stripeClient = new Stripe(key)
+  return stripeClient
+}
 
 function stripeHeaders() {
   const key = process.env.STRIPE_SECRET_KEY
@@ -24,4 +35,17 @@ export async function stripePost(path: string, body: Record<string, string>) {
     body: new URLSearchParams(body).toString(),
   })
   return res.json()
+}
+
+export async function createBillingPortalSession({
+  customerId,
+  returnUrl,
+}: {
+  customerId: string
+  returnUrl: string
+}) {
+  return getStripeClient().billingPortal.sessions.create({
+    customer: customerId,
+    return_url: returnUrl,
+  })
 }

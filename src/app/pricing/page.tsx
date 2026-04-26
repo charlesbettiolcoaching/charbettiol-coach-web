@@ -1,71 +1,31 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { Check, Zap } from 'lucide-react'
-import PricingClient from './pricing-client'
+import PricingClient, { PricingBanner } from './pricing-client'
+import { COACH_TIERS, COACH_TIER_FEATURE_COPY, type CoachTier } from '@/lib/pricing'
 
 export const metadata = {
   title: 'Pricing',
   description: 'Simple, transparent pricing for Propel coaching platform.',
 }
 
-// Pricing aligned with the implemented Stripe products (setup-stripe-products.sh)
-// and the mobile app's PLAN_INFO. Single source of truth — change here and in
-// the Stripe dashboard together.
-const PRICING_PLANS = [
-  {
-    name: 'Starter',
-    slug: 'starter',
-    price: '29',
-    period: '/month',
-    description: 'For new coaches with a small client base',
-    highlight: false,
-    features: [
-      'Up to 10 active clients',
-      'Training program builder',
-      'Weekly check-ins with progress photos',
-      'Nutrition & macro tracking',
-      'Habit tracking with streaks',
-      'Client messaging',
-      'Branded mobile experience (your logo and colours)',
-      'iOS & Android apps',
-      'Email support',
-    ],
-  },
-  {
-    name: 'Pro',
-    slug: 'pro',
-    price: '59',
-    period: '/month',
-    description: 'For established coaches scaling their business',
-    highlight: true,
-    features: [
-      'Unlimited active clients',
-      'Everything in Starter',
-      'AI Coach Assistant',
-      'Video feedback',
-      'Body composition tracking',
-      'Advanced analytics & reports',
-      'Stripe payments built-in',
-      'Email support',
-    ],
-  },
-  {
-    name: 'Scale',
-    slug: 'scale',
-    price: '119',
-    period: '/month',
-    description: 'For multi-practitioner clinics and teams',
-    highlight: false,
-    features: [
-      'Everything in Pro',
-      'Up to 5 coaches / practitioners',
-      'Team dashboard & permissions',
-      'Shared exercise & template library',
-      'Revenue analytics',
-      'Dedicated onboarding call',
-      'Email support',
-    ],
-  },
+// Derived from canonical COACH_TIERS (web-dashboard/src/lib/pricing.ts).
+// Free tier is handled via signup, not shown as a column here.
+const PAID_TIERS: { tier: CoachTier; slug: string; description: string; highlight: boolean }[] = [
+  { tier: 'coach_starter', slug: 'starter', description: 'For new coaches with a small client base', highlight: false },
+  { tier: 'coach_pro',     slug: 'pro',     description: 'For established coaches scaling their business', highlight: true },
+  { tier: 'coach_scale',   slug: 'scale',   description: 'For multi-practitioner clinics and teams', highlight: false },
 ]
+
+const PRICING_PLANS = PAID_TIERS.map(({ tier, slug, description, highlight }) => ({
+  name: COACH_TIERS[tier].name,
+  slug,
+  price: String(COACH_TIERS[tier].monthlyCents / 100),
+  period: '/month',
+  description,
+  highlight,
+  features: COACH_TIER_FEATURE_COPY[tier],
+}))
 
 const FAQ = [
   {
@@ -110,6 +70,10 @@ export default function PricingPage() {
           </div>
         </div>
       </header>
+
+      <Suspense fallback={null}>
+        <PricingBanner />
+      </Suspense>
 
       {/* ── Hero ────────────────────────────── */}
       <section className="pt-32 pb-20 px-6">

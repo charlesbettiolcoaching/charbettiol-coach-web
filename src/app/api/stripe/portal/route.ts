@@ -1,15 +1,8 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
-
-// Lazy initialization — only evaluated at request time, not during build.
-function getStripeClient() {
-  const key = process.env.STRIPE_SECRET_KEY
-  if (!key) throw new Error('Missing STRIPE_SECRET_KEY')
-  return new Stripe(key)
-}
+import { createBillingPortalSession } from '@/lib/stripe';
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -19,7 +12,6 @@ function getSupabaseAdmin() {
 }
 
 export async function POST(request: NextRequest) {
-  const stripe = getStripeClient()
   const supabaseAdmin = getSupabaseAdmin()
   try {
     // Always use the authenticated user — never trust userId/customerId from body
@@ -42,9 +34,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await stripe.billingPortal.sessions.create({
-      customer: profile.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`,
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://propelcoaches.com';
+    const session = await createBillingPortalSession({
+      customerId: profile.stripe_customer_id,
+      returnUrl: `${siteUrl}/billing`,
     });
 
     return NextResponse.json({ url: session.url }, { status: 200 });
