@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import {
   AlertTriangle,
   ChevronDown,
@@ -66,7 +66,10 @@ const STATUS_CONFIG: Record<ConcernStatus, { label: string; icon: React.Componen
 };
 
 export default function ConcernsPage() {
-  const supabase = createClientComponentClient();
+  // Memoised so the supabase reference is stable across renders — without this,
+  // every render creates a new client and `fetchConcerns`'s useCallback dep
+  // changes, causing the useEffect to re-fire indefinitely.
+  const supabase = useMemo(() => createClient(), []);
 
   const [concerns, setConcerns] = useState<Concern[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +102,7 @@ export default function ConcernsPage() {
       }
 
       // Fetch client profiles in one query
-      const clientIds = [...new Set(concerns.map((c: any) => c.client_id))];
+      const clientIds = Array.from(new Set(concerns.map((c: any) => c.client_id)));
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name, email')
