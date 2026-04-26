@@ -2,117 +2,48 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import {
+  AI_TIERS,
+  AI_TIER_FEATURE_COPY,
+  COACH_TIERS,
+  COACH_TIER_FEATURE_COPY,
+  formatPrice,
+  type AITier,
+  type CoachTier,
+} from '@/lib/pricing';
 
 type UserType = 'coach' | 'ai_coach' | null;
 
-const coachPlans = [
-  {
-    id: 'coach_starter',
-    name: 'Starter',
-    price: '49.99',
-    per: 'month',
-    trial: '14-day free trial',
-    description: 'Perfect for coaches getting started',
-    features: [
-      'Up to 10 active clients',
-      'Training program builder',
-      'Nutrition & macro tracking',
-      'Habit tracking',
-      'Client messaging',
-      'Check-in forms',
-    ],
-    highlighted: false,
-  },
-  {
-    id: 'coach_pro',
-    name: 'Pro',
-    price: '99.99',
-    per: 'month',
-    trial: '14-day free trial',
-    description: 'For coaches scaling their business',
-    features: [
-      'Up to 50 active clients',
-      'All Starter features',
-      'AI Coach Assistant',
-      'Custom branding & logo',
-      'Stripe payments',
-      'Marketplace access',
-      'Priority support',
-    ],
-    highlighted: true,
-  },
-  {
-    id: 'coach_scale',
-    name: 'Scale',
-    price: '199.99',
-    per: 'month',
-    trial: '14-day free trial',
-    description: 'For clinics & large teams',
-    features: [
-      'Unlimited clients',
-      'All Pro features',
-      'Up to 5 coach accounts',
-      'Team dashboard',
-      'Revenue analytics',
-      'White label app',
-      'Phone support',
-    ],
-    highlighted: false,
-  },
-];
+const coachPlanIds = ['coach_starter', 'coach_pro', 'coach_scale'] as const satisfies readonly CoachTier[];
+const aiPlanIds = ['ai_starter', 'ai_pro', 'ai_elite'] as const satisfies readonly AITier[];
 
-const aiPlans = [
-  {
-    id: 'ai_starter',
-    name: 'Starter',
-    price: '9.99',
-    per: 'week',
-    trial: '7-day free trial',
-    description: 'Start your AI coaching journey',
-    features: [
-      'AI coach available 24/7',
-      'Personalised workout plans',
-      'Nutrition & macro tracking',
-      'Progress insights',
-      'Habit coaching',
-    ],
-    highlighted: false,
-  },
-  {
-    id: 'ai_pro',
-    name: 'Pro',
-    price: '19.99',
-    per: 'week',
-    trial: '7-day free trial',
-    description: 'Accelerate your results',
-    features: [
-      'Everything in Starter',
-      'AI meal plan generator',
-      'Form check analysis',
-      'Weekly AI check-ins',
-      'Unlimited AI messages',
-      'Priority AI responses',
-    ],
-    highlighted: true,
-  },
-  {
-    id: 'ai_elite',
-    name: 'Elite',
-    price: '29.99',
-    per: 'week',
-    trial: '7-day free trial',
-    description: 'Maximum AI coaching support',
-    features: [
-      'Everything in Pro',
-      'Dedicated AI model',
-      'Advanced body composition tracking',
-      'Supplement recommendations',
-      'Live coaching integrations',
-      'Weekly AI strategy review',
-    ],
-    highlighted: false,
-  },
-];
+const coachPlans = coachPlanIds.map((id) => {
+  const tier = COACH_TIERS[id];
+  return {
+    id,
+    name: tier.name,
+    price: formatPrice(tier.monthlyCents),
+    per: 'month',
+    trial: `${tier.trialDays}-day free trial`,
+    description: tier.tagline,
+    features: COACH_TIER_FEATURE_COPY[id],
+    highlighted: tier.popular,
+  };
+});
+
+const aiPlans = aiPlanIds.map((id) => {
+  const tier = AI_TIERS[id];
+  return {
+    id,
+    name: tier.name,
+    price: formatPrice(tier.monthlyCents),
+    per: 'month',
+    trial: `${tier.trialDays}-day free trial`,
+    description: tier.tagline,
+    features: AI_TIER_FEATURE_COPY[id],
+    highlighted: tier.popular,
+  };
+});
 
 const professions = [
   'Personal Trainer',
@@ -295,7 +226,7 @@ export default function RegisterPage() {
                   <p className="text-sm text-cb-secondary leading-relaxed">
                     I run a coaching business and want to manage clients, programs, and nutrition.
                   </p>
-                  <div className="mt-4 text-xs font-semibold text-brand">From A$49.99/month →</div>
+                  <div className="mt-4 text-xs font-semibold text-brand">From {formatPrice(COACH_TIERS.coach_starter.monthlyCents)}/month →</div>
                 </button>
 
                 {/* AI Coach option */}
@@ -312,7 +243,7 @@ export default function RegisterPage() {
                   <p className="text-sm text-cb-secondary leading-relaxed">
                     I want personalised AI-powered coaching for my own fitness and nutrition goals.
                   </p>
-                  <div className="mt-4 text-xs font-semibold text-brand">From A$9.99/week →</div>
+                  <div className="mt-4 text-xs font-semibold text-brand">From {formatPrice(AI_TIERS.ai_starter.monthlyCents)}/month →</div>
                 </button>
               </div>
 
@@ -453,8 +384,8 @@ export default function RegisterPage() {
                 </h1>
                 <p className="text-sm text-cb-secondary">
                   {userType === 'coach'
-                    ? '14-day free trial on every plan. No credit card required.'
-                    : '7-day free trial on every plan. No credit card required.'}
+                    ? '14-day free trial on paid coach plans. Stripe collects your card now; you will not be charged until the trial ends.'
+                    : '7-day free trial on AI plans. Stripe collects your card now; you will not be charged until the trial ends.'}
                 </p>
               </div>
 
@@ -494,7 +425,7 @@ export default function RegisterPage() {
 
                       <div className="mb-6">
                         <div className="flex items-baseline gap-1">
-                          <span className="font-display text-4xl font-extrabold text-cb-text">A${plan.price}</span>
+                          <span className="font-display text-4xl font-extrabold text-cb-text">{plan.price}</span>
                           <span className="text-sm text-cb-muted">/{plan.per}</span>
                         </div>
                         <p className="text-xs text-brand font-medium mt-1">{plan.trial}</p>

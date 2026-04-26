@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/lib/supabase/server';
+import { AI_TIERS, COACH_TIERS } from '@/lib/pricing';
 
 // Lazy Supabase client — only created at request time, not at module import time.
 // This prevents build failures when env vars aren't available during static analysis.
@@ -18,12 +19,12 @@ function getSupabaseAdmin() {
 
 // Plan pricing map (in AUD cents)
 const planPricing: Record<string, number> = {
-  ai_starter:    999,   // A$9.99/week
-  ai_pro:        1999,  // A$19.99/week
-  ai_elite:      2999,  // A$29.99/week
-  coach_starter: 4999,  // A$49.99/month
-  coach_pro:     9999,  // A$99.99/month
-  coach_scale:   19999, // A$199.99/month
+  ai_starter: AI_TIERS.ai_starter.monthlyCents,
+  ai_pro: AI_TIERS.ai_pro.monthlyCents,
+  ai_elite: AI_TIERS.ai_elite.monthlyCents,
+  coach_starter: COACH_TIERS.coach_starter.monthlyCents,
+  coach_pro: COACH_TIERS.coach_pro.monthlyCents,
+  coach_scale: COACH_TIERS.coach_scale.monthlyCents,
 };
 
 interface CoachData {

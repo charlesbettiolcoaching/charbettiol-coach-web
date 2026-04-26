@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Zap, Check, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { COACH_TIERS, COACH_TIER_FEATURE_COPY, formatPrice, type CoachTier } from '@/lib/pricing'
 
 const PROFESSIONS = [
   { id: 'personal_trainer', label: 'Personal Trainer' },
@@ -20,53 +21,22 @@ const CLIENT_RANGES = [
   { id: '30+', label: '30+ clients' },
 ]
 
-const PLAN_DETAILS = {
-  starter: {
-    name: 'Starter',
-    price: '$0',
+// Slug → canonical CoachTier. Slugs are the URL-facing names linked from /pricing.
+const SLUG_TO_TIER: Record<string, CoachTier> = {
+  starter: 'coach_starter',
+  pro:     'coach_pro',
+  scale:   'coach_scale',
+}
+
+function planDetailsForSlug(slug: string) {
+  const tier = SLUG_TO_TIER[slug] ?? 'coach_pro'
+  const def = COACH_TIERS[tier]
+  return {
+    name: def.name,
+    price: formatPrice(def.monthlyCents),
     period: '/month',
-    features: [
-      'Up to 5 active clients',
-      'Training program builder',
-      'Weekly check-ins with progress photos',
-      'Nutrition & macro tracking',
-      'Habit tracking with streaks',
-      'Client messaging',
-      'Basic progress metrics',
-      'iOS & Android apps',
-    ],
-  },
-  pro: {
-    name: 'Pro',
-    price: '$29 AUD',
-    period: '/month',
-    features: [
-      'Up to 30 active clients',
-      'Everything in Starter',
-      'AI Coach Assistant (24/7)',
-      'Video feedback via Loom',
-      'Body composition tracking',
-      'Custom branding (logo & colours)',
-      'Advanced analytics & reports',
-      'Stripe payments built-in',
-      'Priority support',
-    ],
-  },
-  team: {
-    name: 'Team',
-    price: '$79 AUD',
-    period: '/month',
-    features: [
-      'Unlimited active clients',
-      'Up to 5 coaches / practitioners',
-      'Everything in Pro',
-      'Team dashboard & permissions',
-      'Shared exercise & template library',
-      'Revenue analytics',
-      'Dedicated onboarding call',
-      'Phone support',
-    ],
-  },
+    features: COACH_TIER_FEATURE_COPY[tier],
+  }
 }
 
 function TrialSetupContent() {
@@ -85,7 +55,7 @@ function TrialSetupContent() {
   const [signupError, setSignupError] = useState('')
   const [emailConfirmationSent, setEmailConfirmationSent] = useState(false)
 
-  const plan = PLAN_DETAILS[planParam as keyof typeof PLAN_DETAILS] || PLAN_DETAILS.pro
+  const plan = planDetailsForSlug(planParam)
 
   const handleStep1Continue = () => {
     if (profession && clientCount) {
@@ -276,11 +246,11 @@ function TrialSetupContent() {
           {currentStep === 2 && (
             <div className="bg-white rounded-2xl border border-gray-100 p-8">
               <h2 className="text-3xl font-black text-gray-900 mb-2">Your selected plan</h2>
-              <p className="text-gray-500 mb-8">14-day free trial, cancel anytime.</p>
+              <p className="text-gray-500 mb-8">14-day coach trial, cancel anytime.</p>
 
               <div className="bg-gradient-to-br from-[#0F7B8C] to-[#0a5a68] text-white rounded-2xl p-8 mb-8">
                 <h3 className="text-2xl font-black mb-2">{plan.name} Plan</h3>
-                <p className="text-white/80 mb-4">Your 14-day free trial includes full access to all features.</p>
+                <p className="text-white/80 mb-4">Your 14-day trial includes this plan's features. Stripe collects your card before the paid subscription continues.</p>
                 <div className="flex items-end gap-1">
                   <span className="text-4xl font-black">{plan.price}</span>
                   <span className="text-white/70">{plan.period}</span>
@@ -402,7 +372,7 @@ function TrialSetupContent() {
               </div>
 
               <p className="text-xs text-gray-500 text-center mt-4">
-                14-day free trial · Cancel anytime · No lock-in contracts
+                14-day coach trial · Cancel anytime · No lock-in contracts
               </p>
             </div>
           )}

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
+import { COACH_TIERS, formatPrice } from '@/lib/pricing';
 
 function useInView(options = {}) {
   const ref = useRef(null);
@@ -53,7 +54,7 @@ export default function Home() {
     },
     {
       question: 'Is there a free trial?',
-      answer: 'Yes. Start your free 14-day trial right now. No credit card required. You\'ll get access to everything across all three plans.'
+      answer: 'Yes. Paid coach plans include a 14-day free trial. Stripe collects your card at signup, and you will not be charged until the trial ends.'
     },
     {
       question: 'How do payments work?',
@@ -435,7 +436,7 @@ export default function Home() {
               <AnimatedSection className="text-center">
                 <div className="w-16 h-16 bg-teal-600 text-white rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-6">1</div>
                 <h3 className="text-xl font-bold mb-3 text-gray-900">Sign Up</h3>
-                <p className="text-gray-700">Create your account in 2 minutes. No credit card required. Start your free 14-day trial.</p>
+                <p className="text-gray-700">Create your account in 2 minutes. Stripe collects your card at signup. Start your free 14-day trial.</p>
               </AnimatedSection>
               <AnimatedSection className="text-center">
                 <div className="w-16 h-16 bg-teal-600 text-white rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-6">2</div>
@@ -492,10 +493,10 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               {/* Starter */}
               <AnimatedSection className="bg-white border-2 border-gray-200 p-8 rounded-xl">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Starter</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{COACH_TIERS.coach_starter.name}</h3>
                 <p className="text-gray-600 text-sm mb-6">For new coaches</p>
-                <div className="text-4xl font-bold text-gray-900 mb-1">$29</div>
-                <p className="text-sm text-gray-600 mb-6">/month, up to 10 clients</p>
+                <div className="text-4xl font-bold text-gray-900 mb-1">{formatPrice(COACH_TIERS.coach_starter.monthlyCents)}</div>
+                <p className="text-sm text-gray-600 mb-6">/month, up to {COACH_TIERS.coach_starter.maxClients} clients</p>
                 <Link href="/register" className="block w-full bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition mb-8 font-semibold text-center">
                   Start free trial
                 </Link>
@@ -503,7 +504,7 @@ export default function Home() {
                   <li>✓ Web dashboard</li>
                   <li>✓ Coach mobile app</li>
                   <li>✓ Branded client experience (your logo and colours)</li>
-                  <li>✓ Up to 10 clients</li>
+                  <li>✓ Up to {COACH_TIERS.coach_starter.maxClients} clients</li>
                   <li>✓ AI coach assistant</li>
                   <li>✗ Team members</li>
                 </ul>
@@ -514,9 +515,9 @@ export default function Home() {
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-teal-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
                   Most Popular
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Pro</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{COACH_TIERS.coach_pro.name}</h3>
                 <p className="text-gray-600 text-sm mb-6">For scaling coaches</p>
-                <div className="text-4xl font-bold text-gray-900 mb-1">$59</div>
+                <div className="text-4xl font-bold text-gray-900 mb-1">{formatPrice(COACH_TIERS.coach_pro.monthlyCents)}</div>
                 <p className="text-sm text-gray-600 mb-6">/month, unlimited clients</p>
                 <Link href="/register" className="block w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition mb-8 font-semibold text-center">
                   Start free trial
@@ -533,10 +534,10 @@ export default function Home() {
 
               {/* Scale */}
               <AnimatedSection className="bg-white border-2 border-gray-200 p-8 rounded-xl">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Scale</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{COACH_TIERS.coach_scale.name}</h3>
                 <p className="text-gray-600 text-sm mb-6">For teams and clinics</p>
-                <div className="text-4xl font-bold text-gray-900 mb-1">$119</div>
-                <p className="text-sm text-gray-600 mb-6">/month, up to 5 practitioners</p>
+                <div className="text-4xl font-bold text-gray-900 mb-1">{formatPrice(COACH_TIERS.coach_scale.monthlyCents)}</div>
+                <p className="text-sm text-gray-600 mb-6">/month, up to {COACH_TIERS.coach_scale.teamSeats} practitioners</p>
                 <Link href="/register" className="block w-full bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition mb-8 font-semibold text-center">
                   Start free trial
                 </Link>
@@ -590,7 +591,7 @@ export default function Home() {
           <AnimatedSection>
             <h2 className="text-4xl font-bold text-white mb-6">Ready to Propel Your Practice?</h2>
             <p className="text-teal-100 text-lg mb-8 max-w-2xl mx-auto">
-              Start your free 14-day trial right now. No credit card. No promises. Just a better way to coach.
+              Start your free 14-day trial right now. Stripe collects your card at signup, and you will not be charged until the trial ends.
             </p>
             <Link href="/register" className="bg-white text-teal-700 px-10 py-4 rounded-lg hover:bg-gray-100 transition font-bold text-lg inline-block">
               Get started free

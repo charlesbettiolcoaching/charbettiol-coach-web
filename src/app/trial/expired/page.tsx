@@ -1,55 +1,30 @@
 import Link from 'next/link'
-import { Check, Zap } from 'lucide-react'
+import { Check } from 'lucide-react'
+import {
+  COACH_TIERS,
+  COACH_TIER_FEATURE_COPY,
+  formatPrice,
+  type CoachTier,
+} from '@/lib/pricing'
 
 export const metadata = {
   title: 'Trial Expired',
   description: 'Your Propel trial has ended. Choose a plan to continue.',
 }
 
-const PRICING_PLANS = [
-  {
-    name: 'Starter',
-    slug: 'starter',
-    price: '0',
+const coachPlanIds = ['coach_starter', 'coach_pro', 'coach_scale'] as const satisfies readonly CoachTier[]
+
+const PRICING_PLANS = coachPlanIds.map((id) => {
+  const tier = COACH_TIERS[id]
+  return {
+    name: tier.name,
+    slug: id.replace('coach_', ''),
+    price: formatPrice(tier.monthlyCents),
     period: '/month',
-    highlight: false,
-    features: [
-      'Up to 10 clients',
-      'Training programs',
-      'Weekly check-ins',
-      'Nutrition tracking',
-      'Habit tracking',
-    ],
-  },
-  {
-    name: 'Pro',
-    slug: 'pro',
-    price: '29',
-    period: '/month',
-    highlight: true,
-    features: [
-      'Unlimited clients',
-      'All Starter features',
-      'AI Coach Assistant',
-      'Loom video feedback',
-      'Body fat % tracking',
-    ],
-  },
-  {
-    name: 'Team',
-    slug: 'team',
-    price: '79',
-    period: '/month',
-    highlight: false,
-    features: [
-      'Unlimited clients',
-      'Up to 5 coaches',
-      'All Pro features',
-      'Team dashboard',
-      'Dedicated onboarding',
-    ],
-  },
-]
+    highlight: tier.popular,
+    features: COACH_TIER_FEATURE_COPY[id],
+  }
+})
 
 export default function TrialExpiredPage() {
   return (
@@ -101,22 +76,23 @@ export default function TrialExpiredPage() {
 
                   <div className="flex items-end gap-1 mb-8">
                     <span className={`text-5xl font-black ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>
-                      ${plan.price} AUD
+                      {plan.price}
                     </span>
                     <span className={`text-sm mb-2 ${plan.highlight ? 'text-white/70' : 'text-gray-500'}`}>
                       {plan.period}
                     </span>
                   </div>
 
-                  <button
+                  <Link
+                    href="/register"
                     className={`w-full font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-8 ${
                       plan.highlight
                         ? 'bg-white text-[#0F7B8C] hover:bg-gray-50'
                         : 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a]'
-                    }`}
+                    } block text-center`}
                   >
                     Choose {plan.name}
-                  </button>
+                  </Link>
 
                   <ul className="space-y-4">
                     {plan.features.map(feature => (

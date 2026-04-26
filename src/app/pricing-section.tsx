@@ -2,65 +2,47 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import {
+  AI_TIERS,
+  AI_TIER_FEATURE_COPY,
+  COACH_TIERS,
+  COACH_TIER_FEATURE_COPY,
+  formatPrice,
+  type AITier,
+  type CoachTier,
+} from '@/lib/pricing';
 
-const coachPlans = [
-  {
-    name: 'Starter',
-    desc: 'Perfect for coaches getting started',
-    price: '49.99',
-    clientLimit: '10 active clients',
-    features: ['Up to 10 active clients', 'Training program builder', 'Nutrition & macro tracking', 'Habit tracking', 'Client messaging', 'Check-in forms'],
-    popular: false,
-  },
-  {
-    name: 'Pro',
-    desc: 'For coaches scaling their business',
-    price: '99.99',
-    clientLimit: '50 active clients',
-    features: ['Up to 50 active clients', 'Everything in Starter', 'AI Coach Assistant', 'Custom branding', 'Stripe payments', 'Marketplace access', 'Priority support'],
-    popular: true,
-  },
-  {
-    name: 'Scale',
-    desc: 'For clinics & large teams',
-    price: '199.99',
-    clientLimit: 'Unlimited clients',
-    features: ['Unlimited active clients', 'Up to 5 coach accounts', 'Everything in Pro', 'Team dashboard', 'Revenue analytics', 'White label app', 'Phone support'],
-    popular: false,
-  },
-];
+const coachPlanIds = ['coach_starter', 'coach_pro', 'coach_scale'] as const satisfies readonly CoachTier[];
+const aiPlanIds = ['ai_starter', 'ai_pro', 'ai_elite'] as const satisfies readonly AITier[];
 
-const aiPlans = [
-  {
-    name: 'Starter',
-    desc: 'Start your AI coaching journey',
-    price: '9.99',
-    clientLimit: '7-day free trial',
-    features: ['AI coach available 24/7', 'Personalised workout plans', 'Nutrition & macro tracking', 'Progress insights', 'Habit coaching'],
-    popular: false,
-  },
-  {
-    name: 'Pro',
-    desc: 'Accelerate your results',
-    price: '19.99',
-    clientLimit: '7-day free trial',
-    features: ['Everything in Starter', 'AI meal plan generator', 'Form check analysis', 'Weekly AI check-ins', 'Unlimited AI messages', 'Priority AI responses'],
-    popular: true,
-  },
-  {
-    name: 'Elite',
-    desc: 'Maximum AI coaching support',
-    price: '29.99',
-    clientLimit: '7-day free trial',
-    features: ['Everything in Pro', 'Dedicated AI model', 'Advanced body composition tracking', 'Supplement recommendations', 'Weekly AI strategy review'],
-    popular: false,
-  },
-];
+const coachPlans = coachPlanIds.map((id) => {
+  const tier = COACH_TIERS[id];
+  return {
+    name: tier.name,
+    desc: tier.tagline,
+    price: formatPrice(tier.monthlyCents),
+    clientLimit: tier.maxClients === null ? 'Unlimited clients' : `${tier.maxClients} active clients`,
+    features: COACH_TIER_FEATURE_COPY[id],
+    popular: tier.popular,
+  };
+});
+
+const aiPlans = aiPlanIds.map((id) => {
+  const tier = AI_TIERS[id];
+  return {
+    name: tier.name,
+    desc: tier.tagline,
+    price: formatPrice(tier.monthlyCents),
+    clientLimit: `${tier.trialDays}-day free trial`,
+    features: AI_TIER_FEATURE_COPY[id],
+    popular: tier.popular,
+  };
+});
 
 export function PricingSection() {
   const [tab, setTab] = useState<'coach' | 'ai'>('coach');
   const plans = tab === 'coach' ? coachPlans : aiPlans;
-  const per = tab === 'coach' ? 'month' : 'week';
+  const per = 'month';
   const trial = tab === 'coach' ? '14-day free trial' : '7-day free trial';
 
   return (
@@ -68,7 +50,7 @@ export function PricingSection() {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">Simple, transparent pricing</h2>
-          <p className="mt-4 text-gray-500">{trial}. No credit card required during trial. Cancel anytime.</p>
+          <p className="mt-4 text-gray-500">{trial}. Stripe collects your card at signup. Cancel anytime.</p>
         </div>
 
         {/* Tabs */}
@@ -111,8 +93,8 @@ export function PricingSection() {
                 <p className="text-sm text-gray-500 mt-1 mb-1">{plan.desc}</p>
                 <p className="text-xs font-semibold text-brand mb-4">{plan.clientLimit}</p>
                 <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-gray-900">A${plan.price}</span>
-                  <span className="text-gray-400 text-sm"> AUD/{per}</span>
+                  <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
+                  <span className="text-gray-400 text-sm">/{per}</span>
                 </div>
                 <Link
                   href="/register"

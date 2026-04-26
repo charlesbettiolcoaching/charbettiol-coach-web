@@ -26,7 +26,7 @@ export default function RefundPolicyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Free Trial</h2>
-            <p>All Propel subscription plans include a 7-day free trial. You will not be charged during the trial period. If you do not cancel before the trial ends, your subscription will automatically convert to a paid subscription at the plan price you selected and your payment method will be charged.</p>
+            <p>Propel AI subscriptions include a 7-day free trial. Paid Propel Coaches subscriptions include a 14-day free trial. You will not be charged during the trial period. If you do not cancel before the trial ends, your subscription will automatically convert to a paid subscription at the plan price you selected and your payment method will be charged.</p>
           </section>
 
           <section>

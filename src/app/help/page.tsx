@@ -16,7 +16,7 @@ const faqItems: FAQItem[] = [
     id: 'signup',
     category: 'Getting Started',
     question: 'How do I sign up?',
-    answer: 'Visit propelcoaches.com and click "Get Started". You\'ll create an account with your email and password. We offer a 14-day free trial so you can explore all features before committing to a plan.'
+    answer: 'Visit propelcoaches.com and click "Get Started". You\'ll create an account with your email and password, then choose a plan. Paid coach plans include a 14-day free trial, and Stripe collects your card before the trial starts.'
   },
   {
     id: 'invite-clients',
@@ -58,7 +58,7 @@ const faqItems: FAQItem[] = [
     id: 'white-label',
     category: 'Features',
     question: 'Can I white-label the app?',
-    answer: 'Yes! Pro and Enterprise plans include white-labeling options. You can customize the branding, colors, and logo to match your coaching business. Contact our sales team for details.'
+    answer: 'Yes. Pro and Scale plans include custom branding options. You can customize the branding, colors, and logo to match your coaching business.'
   },
   {
     id: 'group-chats',
@@ -70,7 +70,7 @@ const faqItems: FAQItem[] = [
     id: 'client-limit',
     category: 'Clients',
     question: 'How many clients can I have?',
-    answer: 'Client limits vary by plan. Starter: 10 clients, Pro: 50 clients, Enterprise: Unlimited. You can upgrade anytime if you need more capacity.'
+    answer: 'Client limits vary by plan. Free supports 3 active clients, Starter supports 20 active clients, and Pro and Scale support unlimited clients. Scale also includes up to 5 coach seats.'
   },
   {
     id: 'client-download',
