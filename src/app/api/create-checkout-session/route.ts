@@ -80,6 +80,28 @@ export async function POST(req: NextRequest) {
     const stripe = getStripeClient()
     const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
+    // Tier-aware success URL: AI users have no coach dashboard, so we send
+    // them to /billing/success which renders a confirmation and (on iOS)
+    // surfaces a propel:// deep link back to the app. Coach users keep the
+    // existing /dashboard landing.
+    const isAiPlan = planSlug.startsWith('ai_')
+    const successUrl = isAiPlan
+      ? `${siteUrl}/billing/success?plan=${planSlug}`
+      : `${siteUrl}/dashboard?subscription=success`
+
+    // Metadata is consumed by the Supabase stripe-webhook function. Both
+    // legacy keys (userId, planId) and current keys (coachId, plan) are
+    // included so the webhook works whether it's reading the old or new
+    // names — the stripe-webhook patch in mobile-app/supabase/ aligns the
+    // reads, but we double-write here as a belt-and-braces hedge.
+    const sharedMetadata = {
+      userId: coachId,
+      coachId,
+      planId: planSlug,
+      plan: planSlug,
+      billing: billingPeriod,
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
@@ -87,11 +109,11 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
         trial_period_days: trialDays,
-        metadata: { coachId, plan: planSlug, billing: billingPeriod },
+        metadata: sharedMetadata,
       },
-      success_url: `${siteUrl}/dashboard?subscription=success`,
+      success_url: successUrl,
       cancel_url:  `${siteUrl}/pricing?cancelled=true`,
-      metadata: { coachId, plan: planSlug, billing: billingPeriod },
+      metadata: sharedMetadata,
     })
 
     return NextResponse.json({ sessionId: session.id, url: session.url })
