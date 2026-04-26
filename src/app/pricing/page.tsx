@@ -2,7 +2,15 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { Check, Zap } from 'lucide-react'
 import PricingClient, { PricingBanner } from './pricing-client'
-import { COACH_TIERS, COACH_TIER_FEATURE_COPY, type CoachTier } from '@/lib/pricing'
+import {
+  AI_TIERS,
+  AI_TIER_FEATURE_COPY,
+  COACH_TIERS,
+  COACH_TIER_FEATURE_COPY,
+  formatPrice,
+  type AITier,
+  type CoachTier,
+} from '@/lib/pricing'
 
 export const metadata = {
   title: 'Pricing',
@@ -17,14 +25,32 @@ const PAID_TIERS: { tier: CoachTier; slug: string; description: string; highligh
   { tier: 'coach_scale',   slug: 'scale',   description: 'For multi-practitioner clinics and teams', highlight: false },
 ]
 
-const PRICING_PLANS = PAID_TIERS.map(({ tier, slug, description, highlight }) => ({
+const COACH_PRICING_PLANS = PAID_TIERS.map(({ tier, slug, description, highlight }) => ({
   name: COACH_TIERS[tier].name,
   slug,
-  price: String(COACH_TIERS[tier].monthlyCents / 100),
+  checkoutPlan: slug,
+  monthlyPrice: formatPrice(COACH_TIERS[tier].monthlyCents),
+  annualPrice: formatPrice(COACH_TIERS[tier].annualCents),
   period: '/month',
   description,
   highlight,
+  trial: `${COACH_TIERS[tier].trialDays}-day free trial`,
   features: COACH_TIER_FEATURE_COPY[tier],
+}))
+
+const AI_TIER_IDS: AITier[] = ['ai_starter', 'ai_pro', 'ai_elite']
+
+const AI_PRICING_PLANS = AI_TIER_IDS.map((tier) => ({
+  name: AI_TIERS[tier].name,
+  slug: tier,
+  checkoutPlan: tier,
+  monthlyPrice: formatPrice(AI_TIERS[tier].monthlyCents),
+  annualPrice: formatPrice(AI_TIERS[tier].annualCents),
+  period: '/month',
+  description: AI_TIERS[tier].tagline,
+  highlight: AI_TIERS[tier].popular,
+  trial: `${AI_TIERS[tier].trialDays}-day free trial`,
+  features: AI_TIER_FEATURE_COPY[tier],
 }))
 
 const FAQ = [
@@ -86,10 +112,12 @@ export default function PricingPage() {
       {/* ── Pricing Cards ─────────────────────── */}
       <section className="py-12 px-6">
         <div className="max-w-6xl mx-auto">
-          <PricingClient plans={PRICING_PLANS} />
+          <Suspense fallback={null}>
+            <PricingClient coachPlans={COACH_PRICING_PLANS} aiPlans={AI_PRICING_PLANS} />
+          </Suspense>
 
           <p className="text-center text-sm text-gray-500 mt-12">
-            All plans include 14-day free trial, iOS & Android apps, and cancel anytime with no lock-in contracts.
+            Coach plans include a 14-day free trial. AI plans include a 7-day free trial. Cancel anytime.
           </p>
         </div>
       </section>
