@@ -114,7 +114,7 @@ export default function AuthConfirmPage() {
             <div style={{
               width: 48,
               height: 48,
-              border: '3px solid #2D8C7F',
+              border: '3px solid #119D93',
               borderTopColor: 'transparent',
               borderRadius: '50%',
               margin: '0 auto 24px',

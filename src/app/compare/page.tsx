@@ -31,7 +31,7 @@ export default function ComparePage() {
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Sign in</Link>
-            <Link href="/register" className="bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">Get started</Link>
+            <Link href="/register" className="bg-[#119D93] hover:bg-[#0D7F78] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">Get started</Link>
           </div>
         </div>
       </header>
@@ -49,13 +49,13 @@ export default function ComparePage() {
         <div className="max-w-2xl mx-auto space-y-6">
           {comparisons.map(comparison => (
             <Link key={comparison.name} href={comparison.href}>
-              <div className="group bg-white border border-gray-100 rounded-2xl p-8 hover:border-[#0F7B8C] hover:shadow-lg transition-all">
+              <div className="group bg-white border border-gray-100 rounded-2xl p-8 hover:border-[#119D93] hover:shadow-lg transition-all">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-2xl font-bold text-gray-900">Propel vs {comparison.name}</h2>
-                  <ArrowRight size={24} className="text-gray-300 group-hover:text-[#0F7B8C] transition-colors" />
+                  <ArrowRight size={24} className="text-gray-300 group-hover:text-[#119D93] transition-colors" />
                 </div>
                 <p className="text-gray-500 mb-6">{comparison.description}</p>
-                <div className="text-sm font-semibold text-[#0F7B8C]">View full comparison →</div>
+                <div className="text-sm font-semibold text-[#119D93]">View full comparison →</div>
               </div>
             </Link>
           ))}
@@ -67,7 +67,7 @@ export default function ComparePage() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl font-black text-gray-900 mb-4">Ready to upgrade your coaching?</h2>
           <p className="text-lg text-gray-500 mb-10">Start your 14-day free trial of Propel today.</p>
-          <Link href="/register" className="inline-flex items-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#0F7B8C]/20">
+          <Link href="/register" className="inline-flex items-center gap-2 bg-[#119D93] hover:bg-[#0D7F78] text-white font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#119D93]/20">
             Start for free →
           </Link>
         </div>

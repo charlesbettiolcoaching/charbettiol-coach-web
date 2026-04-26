@@ -59,7 +59,7 @@ export default function TrialExpiredPage() {
                 key={plan.slug}
                 className={`rounded-2xl border transition-all ${
                   plan.highlight
-                    ? 'bg-[#0F7B8C] text-white border-[#0F7B8C] shadow-2xl shadow-[#0F7B8C]/25 md:scale-105'
+                    ? 'bg-[#119D93] text-white border-[#119D93] shadow-2xl shadow-[#119D93]/25 md:scale-105'
                     : 'bg-white border-gray-100 shadow-sm hover:shadow-md'
                 }`}
               >
@@ -87,8 +87,8 @@ export default function TrialExpiredPage() {
                     href="/register"
                     className={`w-full font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-8 ${
                       plan.highlight
-                        ? 'bg-white text-[#0F7B8C] hover:bg-gray-50'
-                        : 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a]'
+                        ? 'bg-white text-[#119D93] hover:bg-gray-50'
+                        : 'bg-[#119D93] text-white hover:bg-[#0D7F78]'
                     } block text-center`}
                   >
                     Choose {plan.name}
@@ -105,7 +105,7 @@ export default function TrialExpiredPage() {
                         <Check
                           size={18}
                           className={`flex-shrink-0 mt-0.5 ${
-                            plan.highlight ? 'text-white' : 'text-[#0F7B8C]'
+                            plan.highlight ? 'text-white' : 'text-[#119D93]'
                           }`}
                         />
                         {feature}
@@ -123,7 +123,7 @@ export default function TrialExpiredPage() {
       <section className="py-12 px-6 bg-gray-50">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-gray-600 mb-4">Questions about which plan is right for you?</p>
-          <button className="text-[#0F7B8C] hover:underline font-medium">
+          <button className="text-[#119D93] hover:underline font-medium">
             Talk to us
           </button>
         </div>

@@ -19,9 +19,9 @@
 }
 
 :root {
-  --brand: #0F7B8C;
-  --brand-light: #1A95A8;
-  --brand-bg: #E8F6F8;
+  --brand: #119D93;
+  --brand-light: #55DFAF;
+  --brand-bg: #E4F8F3;
   --background: #F5F7FA;
   --surface: #FFFFFF;
   --surface-light: #F0F4F7;
@@ -42,9 +42,9 @@
 }
 
 html.dark {
-  --brand: #3BBDD4;
-  --brand-light: #52C9E0;
-  --brand-bg: rgba(59,189,212,0.10);
+  --brand: #55DFAF;
+  --brand-light: #7AEAC5;
+  --brand-bg: rgba(85,223,175,0.12);
   --background: #0F1117;
   --surface: #1A1D27;
   --surface-light: #222535;
@@ -108,7 +108,7 @@ input:focus, textarea:focus, select:focus {
 
 .field:focus {
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(15, 123, 140, 0.12);
+  box-shadow: 0 0 0 3px rgba(17, 157, 147, 0.12);
   outline: none;
 }
 
@@ -152,7 +152,7 @@ tr:hover td {
 
 /* Landing page — hero gradient */
 .hero-gradient {
-  background: radial-gradient(ellipse 80% 60% at 60% -10%, rgba(15, 123, 140, 0.08) 0%, transparent 70%),
+  background: radial-gradient(ellipse 80% 60% at 60% -10%, rgba(17, 157, 147, 0.08) 0%, transparent 70%),
               linear-gradient(to bottom, #ffffff 0%, #F5F7FA 100%);
 }
 
@@ -161,8 +161,8 @@ tr:hover td {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(15, 123, 140, 0.07);
-  border: 1px solid rgba(15, 123, 140, 0.18);
+  background: rgba(17, 157, 147, 0.07);
+  border: 1px solid rgba(17, 157, 147, 0.18);
   border-radius: 9999px;
   padding: 0.375rem 0.875rem;
   font-size: 0.75rem;
@@ -183,13 +183,13 @@ tr:hover td {
   border-radius: 14px;
   font-size: 0.9375rem;
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-  box-shadow: 0 4px 16px rgba(15, 123, 140, 0.28);
+  box-shadow: 0 4px 16px rgba(17, 157, 147, 0.28);
   cursor: pointer;
 }
 
 .btn-primary:hover {
-  background: #0d6b7a;
-  box-shadow: 0 6px 24px rgba(15, 123, 140, 0.38);
+  background: #0D7F78;
+  box-shadow: 0 6px 24px rgba(17, 157, 147, 0.38);
   transform: translateY(-1px);
 }
 
@@ -219,7 +219,7 @@ tr:hover td {
 .step-dot.active {
   background: var(--brand);
   color: #fff;
-  box-shadow: 0 0 0 4px rgba(15, 123, 140, 0.15);
+  box-shadow: 0 0 0 4px rgba(17, 157, 147, 0.15);
 }
 
 .step-dot.done {

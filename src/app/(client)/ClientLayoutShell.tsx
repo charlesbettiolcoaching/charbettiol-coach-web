@@ -58,7 +58,7 @@ export default function ClientLayoutShell({ children, brandName, logoUrl, accent
     window.location.href = '/login'
   }
 
-  const primary = accentColor ?? '#0F7B8C'
+  const primary = accentColor ?? '#119D93'
   const secondary = secondaryColor ?? '#1A95A8'
 
   // Build CSS custom property overrides from coach branding

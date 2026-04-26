@@ -92,7 +92,7 @@ export default function PricingPage() {
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Sign in</Link>
-            <Link href="/pricing" className="bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">Get started free</Link>
+            <Link href="/pricing" className="bg-[#119D93] hover:bg-[#0D7F78] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">Get started free</Link>
           </div>
         </div>
       </header>
@@ -150,7 +150,7 @@ export default function PricingPage() {
           </p>
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#0F7B8C]/20"
+            className="inline-flex items-center gap-2 bg-[#119D93] hover:bg-[#0D7F78] text-white font-bold px-10 py-4 rounded-2xl text-base transition-colors shadow-lg shadow-[#119D93]/20"
           >
             Start free trial
           </Link>

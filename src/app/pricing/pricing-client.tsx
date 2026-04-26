@@ -31,12 +31,12 @@ export function PricingBanner() {
 
   return (
     <div className="px-6 pt-24">
-      <div className="mx-auto flex max-w-4xl items-start justify-between gap-4 rounded-2xl border border-[#0F7B8C]/20 bg-[#0F7B8C]/5 p-4 text-left">
+      <div className="mx-auto flex max-w-4xl items-start justify-between gap-4 rounded-2xl border border-[#119D93]/20 bg-[#119D93]/5 p-4 text-left">
         <p className="text-sm font-medium text-gray-800">{copy}</p>
         <button
           type="button"
           onClick={() => setDismissed(true)}
-          className="text-sm font-bold text-[#0F7B8C] hover:text-[#0d6b7a]"
+          className="text-sm font-bold text-[#119D93] hover:text-[#0D7F78]"
         >
           Dismiss
         </button>
@@ -102,7 +102,7 @@ export default function PricingClient({
                 }}
                 className={`rounded-xl px-4 py-2.5 text-sm font-bold transition-colors sm:px-5 ${
                   active
-                    ? 'bg-white text-[#0F7B8C] shadow-sm'
+                    ? 'bg-white text-[#119D93] shadow-sm'
                     : 'text-gray-500 hover:text-gray-800'
                 }`}
               >
@@ -119,7 +119,7 @@ export default function PricingClient({
             {/* Most Popular badge — sits on the top border */}
             {plan.highlight && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                <span className="whitespace-nowrap bg-[#0F7B8C] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
+                <span className="whitespace-nowrap bg-[#119D93] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
                   Most Popular
                 </span>
               </div>
@@ -128,7 +128,7 @@ export default function PricingClient({
             <div
               className={`rounded-2xl border-2 transition-all h-full ${
                 plan.highlight
-                  ? 'border-[#0F7B8C] shadow-xl shadow-[#0F7B8C]/15'
+                  ? 'border-[#119D93] shadow-xl shadow-[#119D93]/15'
                   : 'border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300'
               }`}
             >
@@ -145,7 +145,7 @@ export default function PricingClient({
                   <span className="text-sm text-gray-500 mb-2">{plan.period}</span>
                 </div>
                 <p className="text-sm font-semibold text-gray-600 mb-1">{plan.annualPrice}/year</p>
-                <p className="text-xs font-bold text-[#0F7B8C] mb-6">{plan.trial}</p>
+                <p className="text-xs font-bold text-[#119D93] mb-6">{plan.trial}</p>
 
                 {/* CTA */}
                 {segment === 'coach' && plan.slug === 'starter' ? (
@@ -153,7 +153,7 @@ export default function PricingClient({
                     href="/trial/setup?plan=starter"
                     className={`block w-full text-center font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-8 ${
                       plan.highlight
-                        ? 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a]'
+                        ? 'bg-[#119D93] text-white hover:bg-[#0D7F78]'
                         : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                     }`}
                   >
@@ -165,7 +165,7 @@ export default function PricingClient({
                     disabled={loading === plan.slug}
                     className={`block w-full text-center font-bold py-3 px-6 rounded-xl text-sm transition-colors mb-8 disabled:opacity-70 disabled:cursor-not-allowed ${
                       plan.highlight
-                        ? 'bg-[#0F7B8C] text-white hover:bg-[#0d6b7a]'
+                        ? 'bg-[#119D93] text-white hover:bg-[#0D7F78]'
                         : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                     }`}
                   >
@@ -179,7 +179,7 @@ export default function PricingClient({
                     <li key={feature} className="flex items-start gap-3 text-sm text-gray-700">
                       <Check
                         size={17}
-                        className="flex-shrink-0 mt-0.5 text-[#0F7B8C]"
+                        className="flex-shrink-0 mt-0.5 text-[#119D93]"
                       />
                       {feature}
                     </li>

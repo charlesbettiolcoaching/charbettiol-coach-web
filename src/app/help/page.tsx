@@ -135,7 +135,7 @@ export default function HelpPage() {
             <a href="https://propelcoaches.com" className="flex items-center gap-2">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold"
-                style={{ backgroundColor: '#0F7B8C' }}
+                style={{ backgroundColor: '#119D93' }}
               >
                 P
               </div>
@@ -172,7 +172,7 @@ export default function HelpPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50"
-              style={{ '--tw-ring-color': '#0F7B8C' } as React.CSSProperties}
+              style={{ '--tw-ring-color': '#119D93' } as React.CSSProperties}
             />
           </div>
         </div>
@@ -196,7 +196,7 @@ export default function HelpPage() {
               <div key={group.category} className="mb-12">
                 <h2
                   className="text-xl font-bold mb-6 pb-3 border-b-2"
-                  style={{ borderColor: '#0F7B8C', color: '#0F7B8C' }}
+                  style={{ borderColor: '#119D93', color: '#119D93' }}
                 >
                   {group.category}
                 </h2>
@@ -240,7 +240,7 @@ export default function HelpPage() {
       {/* Contact Section */}
       <section className="bg-white border-t border-gray-200 py-12 sm:py-16">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <MessageCircle className="w-12 h-12 mx-auto mb-4" style={{ color: '#0F7B8C' }} />
+          <MessageCircle className="w-12 h-12 mx-auto mb-4" style={{ color: '#119D93' }} />
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
             Still need help?
           </h2>
@@ -250,7 +250,7 @@ export default function HelpPage() {
           <Link
             href="/help/contact"
             className="inline-block px-6 py-3 rounded-lg font-medium text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: '#0F7B8C' }}
+            style={{ backgroundColor: '#119D93' }}
           >
             Contact Support
           </Link>

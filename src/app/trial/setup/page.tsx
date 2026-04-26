@@ -113,8 +113,8 @@ function TrialSetupContent() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-6" style={{ fontFamily: 'var(--font-inter, system-ui, sans-serif)' }}>
         <div className="max-w-md w-full text-center">
-          <div className="w-16 h-16 rounded-full bg-[#0F7B8C]/10 flex items-center justify-center mx-auto mb-6">
-            <Check size={32} className="text-[#0F7B8C]" />
+          <div className="w-16 h-16 rounded-full bg-[#119D93]/10 flex items-center justify-center mx-auto mb-6">
+            <Check size={32} className="text-[#119D93]" />
           </div>
           <h2 className="text-3xl font-black text-gray-900 mb-3">Check your email</h2>
           <p className="text-gray-500 mb-2">
@@ -127,7 +127,7 @@ function TrialSetupContent() {
             Didn&apos;t receive it? Check your spam folder or{' '}
             <button
               onClick={() => setEmailConfirmationSent(false)}
-              className="text-[#0F7B8C] hover:underline font-medium"
+              className="text-[#119D93] hover:underline font-medium"
             >
               try again
             </button>
@@ -149,7 +149,7 @@ function TrialSetupContent() {
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Sign in</Link>
-            <Link href="/pricing" className="bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">Back to pricing</Link>
+            <Link href="/pricing" className="bg-[#119D93] hover:bg-[#0D7F78] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors">Back to pricing</Link>
           </div>
         </div>
       </header>
@@ -165,7 +165,7 @@ function TrialSetupContent() {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
                       currentStep === step
-                        ? 'bg-[#0F7B8C] text-white'
+                        ? 'bg-[#119D93] text-white'
                         : currentStep > step
                         ? 'bg-emerald-100 text-emerald-600'
                         : 'bg-gray-100 text-gray-400'
@@ -198,14 +198,14 @@ function TrialSetupContent() {
                 <label className="block font-bold text-gray-900 mb-4">What best describes you?</label>
                 <div className="space-y-3">
                   {PROFESSIONS.map(prof => (
-                    <label key={prof.id} className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-[#0F7B8C] hover:bg-[#0F7B8C]/5 transition-all">
+                    <label key={prof.id} className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-[#119D93] hover:bg-[#119D93]/5 transition-all">
                       <input
                         type="radio"
                         name="profession"
                         value={prof.id}
                         checked={profession === prof.id}
                         onChange={e => setProfession(e.target.value)}
-                        className="w-5 h-5 text-[#0F7B8C]"
+                        className="w-5 h-5 text-[#119D93]"
                       />
                       <span className="font-medium text-gray-900">{prof.label}</span>
                     </label>
@@ -217,14 +217,14 @@ function TrialSetupContent() {
                 <label className="block font-bold text-gray-900 mb-4">How many clients do you currently have?</label>
                 <div className="grid grid-cols-2 gap-3">
                   {CLIENT_RANGES.map(range => (
-                    <label key={range.id} className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-[#0F7B8C] hover:bg-[#0F7B8C]/5 transition-all">
+                    <label key={range.id} className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-[#119D93] hover:bg-[#119D93]/5 transition-all">
                       <input
                         type="radio"
                         name="clientCount"
                         value={range.id}
                         checked={clientCount === range.id}
                         onChange={e => setClientCount(e.target.value)}
-                        className="w-5 h-5 text-[#0F7B8C]"
+                        className="w-5 h-5 text-[#119D93]"
                       />
                       <span className="font-medium text-gray-900">{range.label}</span>
                     </label>
@@ -235,7 +235,7 @@ function TrialSetupContent() {
               <button
                 onClick={handleStep1Continue}
                 disabled={!profession || !clientCount}
-                className="w-full bg-[#0F7B8C] hover:bg-[#0d6b7a] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-[#119D93] hover:bg-[#0D7F78] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 Continue <ArrowRight size={18} />
               </button>
@@ -248,7 +248,7 @@ function TrialSetupContent() {
               <h2 className="text-3xl font-black text-gray-900 mb-2">Your selected plan</h2>
               <p className="text-gray-500 mb-8">14-day coach trial, cancel anytime.</p>
 
-              <div className="bg-gradient-to-br from-[#0F7B8C] to-[#0a5a68] text-white rounded-2xl p-8 mb-8">
+              <div className="bg-gradient-to-br from-[#119D93] to-[#0C615B] text-white rounded-2xl p-8 mb-8">
                 <h3 className="text-2xl font-black mb-2">{plan.name} Plan</h3>
                 <p className="text-white/80 mb-4">Your 14-day trial includes this plan's features. Stripe collects your card before the paid subscription continues.</p>
                 <div className="flex items-end gap-1">
@@ -278,7 +278,7 @@ function TrialSetupContent() {
                 </button>
                 <button
                   onClick={() => setCurrentStep(3)}
-                  className="flex-1 bg-[#0F7B8C] hover:bg-[#0d6b7a] text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 bg-[#119D93] hover:bg-[#0D7F78] text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                 >
                   Next <ArrowRight size={18} />
                 </button>
@@ -300,7 +300,7 @@ function TrialSetupContent() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Your name"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F7B8C]"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#119D93]"
                   />
                 </div>
                 <div>
@@ -310,7 +310,7 @@ function TrialSetupContent() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F7B8C]"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#119D93]"
                   />
                 </div>
                 <div>
@@ -320,7 +320,7 @@ function TrialSetupContent() {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F7B8C]"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#119D93]"
                   />
                 </div>
               </div>
@@ -330,15 +330,15 @@ function TrialSetupContent() {
                   type="checkbox"
                   checked={termsAccepted}
                   onChange={e => setTermsAccepted(e.target.checked)}
-                  className="w-5 h-5 text-[#0F7B8C] mt-0.5"
+                  className="w-5 h-5 text-[#119D93] mt-0.5"
                 />
                 <span className="text-sm text-gray-600">
                   By signing up you agree to our{' '}
-                  <a href="/terms" className="text-[#0F7B8C] hover:underline font-medium">
+                  <a href="/terms" className="text-[#119D93] hover:underline font-medium">
                     Terms
                   </a>{' '}
                   and{' '}
-                  <a href="/privacy-policy" className="text-[#0F7B8C] hover:underline font-medium">
+                  <a href="/privacy-policy" className="text-[#119D93] hover:underline font-medium">
                     Privacy Policy
                   </a>
                 </span>
@@ -360,7 +360,7 @@ function TrialSetupContent() {
                 <button
                   onClick={handleStep3Submit}
                   disabled={!name || !email || !password || !termsAccepted || isLoading}
-                  className="flex-1 bg-[#0F7B8C] hover:bg-[#0d6b7a] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 bg-[#119D93] hover:bg-[#0D7F78] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <>
