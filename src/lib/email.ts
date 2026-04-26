@@ -171,7 +171,7 @@ export async function sendTrialExpiring3DayEmail(to: string, coachName: string):
       </ul>
     </div>
     <a href="${process.env.NEXT_PUBLIC_APP_URL}/pricing" style="display:inline-block;background:#ea580c;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:8px;font-weight:600;font-size:16px;">Upgrade Before It Expires →</a>
-    <p style="margin:24px 0 0;color:#9ca3af;font-size:14px;">Starter plan is just $29/mo. Cancel anytime.</p>
+    <p style="margin:24px 0 0;color:#9ca3af;font-size:14px;">Starter plan is just A$44.99/mo. Cancel anytime.</p>
   `, 'Trial expires in 3 days — upgrade to keep your data')
 
   return sendEmail({ to, subject: `⚠️ Your Propel trial expires in 3 days`, html, recipientName: coachName, emailType: 'trial_3day', sequence: 'Trial Expiry' })

@@ -317,10 +317,10 @@ export default function MarketplacePage() {
 
           {/* Price */}
           <div>
-            <label className="block text-xs font-semibold text-cb-muted uppercase tracking-wide mb-1.5">Price (USD)</label>
+            <label className="block text-xs font-semibold text-cb-muted uppercase tracking-wide mb-1.5">Price (AUD)</label>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-surface-light border border-cb-border rounded-xl px-3 py-2.5">
-                <span className="text-cb-muted text-sm">$</span>
+                <span className="text-cb-muted text-sm">A$</span>
                 <input
                   type="number"
                   value={form.price_cents / 100}

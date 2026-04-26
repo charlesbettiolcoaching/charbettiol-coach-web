@@ -17,7 +17,7 @@ const COMPETITOR_DATA = {
       { feature: 'Body Metrics Dashboard', propel: true, competitor: 'basic' },
       { feature: 'Push Notifications', propel: true, competitor: true },
       { feature: 'Free Trial', propel: '14 days', competitor: '30 days' },
-      { feature: 'Starting Price', propel: 'Free tier + $29/mo', competitor: '$99/mo' },
+      { feature: 'Starting Price', propel: 'Free tier + A$44.99/mo', competitor: '$99/mo' },
     ],
     quotes: [
       {
@@ -51,7 +51,7 @@ const COMPETITOR_DATA = {
       { feature: 'Body Metrics Dashboard', propel: true, competitor: 'basic' },
       { feature: 'Push Notifications', propel: true, competitor: true },
       { feature: 'Free Trial', propel: '14 days', competitor: '14 days' },
-      { feature: 'Starting Price', propel: 'Free tier + $29/mo', competitor: '$79/mo' },
+      { feature: 'Starting Price', propel: 'Free tier + A$44.99/mo', competitor: '$79/mo' },
     ],
     quotes: [
       {

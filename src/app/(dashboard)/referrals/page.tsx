@@ -58,7 +58,7 @@ export default function ReferralsPage() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Referral Program</h1>
-        <p className="text-gray-500 mt-1">Earn $20 credit for every coach you refer who upgrades to a paid plan.</p>
+        <p className="text-gray-500 mt-1">Earn A$20 credit for every coach you refer who upgrades to a paid plan.</p>
       </div>
 
       {/* Stats */}
@@ -67,7 +67,7 @@ export default function ReferralsPage() {
           { label: 'Total Referred', value: loading ? '—' : referrals.length, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
           { label: 'Signed Up', value: loading ? '—' : signedUp, icon: Clock, color: 'text-brand', bg: 'bg-brand/5' },
           { label: 'Converted', value: loading ? '—' : converted, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
-          { label: 'Credits Earned', value: loading ? '—' : `$${totalCredits}`, icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50' },
+          { label: 'Credits Earned', value: loading ? '—' : `A$${totalCredits}`, icon: DollarSign, color: 'text-amber-600', bg: 'bg-amber-50' },
         ].map(stat => (
           <div key={stat.label} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
             <div className={`w-10 h-10 ${stat.bg} rounded-lg flex items-center justify-center mb-3`}>
@@ -110,7 +110,7 @@ export default function ReferralsPage() {
           {[
             { step: '1', title: 'Share your link', desc: 'Send your referral link to another fitness coach' },
             { step: '2', title: 'They sign up', desc: 'They get a 14-day trial + 20% off their first month' },
-            { step: '3', title: 'You get paid', desc: 'Once they upgrade, you get $20 credit on your next bill' },
+            { step: '3', title: 'You get paid', desc: 'Once they upgrade, you get A$20 credit on your next bill' },
           ].map(s => (
             <div key={s.step} className="flex-1 flex gap-3">
               <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">{s.step}</div>
