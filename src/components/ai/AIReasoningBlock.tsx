@@ -1,0 +1,136 @@
+'use client'
+
+/**
+ * AIReasoningBlock — expandable "why?" explanation for any AI output.
+ *
+ * Every AI recommendation on Propel can be inspected. Clicking the header
+ * expands the block to reveal:
+ *   • signals — short bullet list of inputs the AI weighted most heavily
+ *   • reasoning — a plain-English sentence or two
+ *   • alternatives — what else the AI considered and rejected
+ *
+ * This component is the visible surface of Propel's "AI in a glass box"
+ * philosophy — coaches don't need to trust, they can verify.
+ */
+
+import { useState } from 'react'
+import clsx from 'clsx'
+import { Sparkles, ChevronDown } from 'lucide-react'
+import AIConfidenceBadge from './AIConfidenceBadge'
+
+export interface AIReasoningData {
+  /** Plain-English reasoning (1–3 sentences). */
+  reasoning: string
+  /** Bulleted signals that most influenced the decision. */
+  signals?: string[]
+  /** Alternatives the AI considered. */
+  alternatives?: { label: string; why_rejected: string }[]
+  /** Confidence 0–1 or 0–100. */
+  confidence?: number
+  /** Model used (e.g. "claude-sonnet-4.6"). */
+  model?: string
+}
+
+interface Props {
+  data: AIReasoningData
+  /** Visual density. `compact` suits inline use inside rows. */
+  compact?: boolean
+  /** If true, open by default. */
+  defaultOpen?: boolean
+  className?: string
+}
+
+export default function AIReasoningBlock({
+  data,
+  compact = false,
+  defaultOpen = false,
+  className,
+}: Props) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <div
+      className={clsx(
+        'rounded-xl border bg-gradient-to-br from-brand/5 via-transparent to-brand/[0.02] border-brand/15 overflow-hidden transition-all',
+        className,
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={clsx(
+          'w-full flex items-center gap-2 text-left press hover:bg-brand/5 transition-colors',
+          compact ? 'px-3 py-2' : 'px-4 py-3',
+        )}
+        aria-expanded={open}
+      >
+        <Sparkles size={12} className={clsx('text-brand flex-shrink-0', !open && 'animate-sparkle')} />
+        <span className={clsx('font-semibold text-cb-text flex-1', compact ? 'text-xs' : 'text-sm')}>
+          Why the AI suggested this
+        </span>
+        {data.confidence != null && (
+          <AIConfidenceBadge value={data.confidence} compact />
+        )}
+        <ChevronDown
+          size={compact ? 12 : 14}
+          className={clsx('text-cb-muted flex-shrink-0 transition-transform duration-300', open && 'rotate-180')}
+        />
+      </button>
+
+      {open && (
+        <div
+          className={clsx(
+            'border-t border-brand/10 bg-surface/60 animate-expand-down',
+            compact ? 'px-3 py-3 space-y-2.5' : 'px-4 py-3.5 space-y-3',
+          )}
+        >
+          {/* Reasoning */}
+          <div>
+            <p className="text-[10px] font-semibold text-cb-muted uppercase tracking-wider mb-1">Reasoning</p>
+            <p className={clsx('text-cb-text leading-relaxed', compact ? 'text-xs' : 'text-sm')}>
+              {data.reasoning}
+            </p>
+          </div>
+
+          {/* Signals */}
+          {data.signals && data.signals.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-cb-muted uppercase tracking-wider mb-1.5">Signals weighted</p>
+              <ul className={clsx('space-y-1 stagger-children', compact ? 'text-xs' : 'text-sm')}>
+                {data.signals.map((s, i) => (
+                  <li key={i} className="flex items-start gap-2 text-cb-secondary animate-fade-in-up">
+                    <span className="w-1 h-1 rounded-full bg-brand mt-1.5 flex-shrink-0" />
+                    <span>{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Alternatives */}
+          {data.alternatives && data.alternatives.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-cb-muted uppercase tracking-wider mb-1.5">Alternatives considered</p>
+              <div className="space-y-1.5 stagger-children">
+                {data.alternatives.map((a, i) => (
+                  <div key={i} className="flex flex-col gap-0.5 rounded-lg border border-cb-border/60 bg-surface px-2.5 py-1.5 animate-fade-in-up">
+                    <span className={clsx('font-medium text-cb-text', compact ? 'text-[11px]' : 'text-xs')}>{a.label}</span>
+                    <span className={clsx('text-cb-muted leading-snug', compact ? 'text-[10px]' : 'text-[11px]')}>
+                      Not chosen: {a.why_rejected}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {data.model && (
+            <p className="text-[10px] text-cb-muted/70 pt-1 border-t border-cb-border/50">
+              Generated by {data.model}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
