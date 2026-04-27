@@ -40,7 +40,7 @@ async function logEmailSend(payload: EmailPayload, success: boolean) {
   }
 }
 
-async function sendEmail(payload: EmailPayload): Promise<boolean> {
+export async function sendEmail(payload: EmailPayload): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
     await logEmailSend(payload, true) // log as sent (dev no-op)
