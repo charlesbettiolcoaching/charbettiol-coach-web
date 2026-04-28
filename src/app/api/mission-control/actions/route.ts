@@ -5,15 +5,11 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
+import { isMissionControlAllowedEmail } from '@/lib/mission-control/auth.mjs'
 import {
   extractTaskIdFromReviewKey,
   validateMissionControlAction,
 } from '@/lib/mission-control/actions.mjs'
-
-const ALLOWED_EMAILS = new Set<string>([
-  'charlesbettiolbusiness@gmail.com',
-  'charlesbettiolcoaching@gmail.com',
-])
 
 export async function POST(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -87,6 +83,6 @@ async function getAllowedUser(url: string, anonKey: string): Promise<{ ok: true;
   )
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { ok: false, response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
-  if (!ALLOWED_EMAILS.has(user.email ?? '')) return { ok: false, response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  if (!isMissionControlAllowedEmail(user.email)) return { ok: false, response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
   return { ok: true, user: { id: user.id, email: user.email } }
 }

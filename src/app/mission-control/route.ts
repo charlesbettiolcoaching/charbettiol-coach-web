@@ -9,11 +9,7 @@ import { join } from 'node:path';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
-
-const ALLOWED_EMAILS = new Set<string>([
-  'charlesbettiolbusiness@gmail.com',
-  'charlesbettiolcoaching@gmail.com',
-]);
+import { isMissionControlAllowedEmail } from '@/lib/mission-control/auth.mjs';
 
 const HTML = readFileSync(
   join(process.cwd(), 'src/data/mission-control.html'),
@@ -39,7 +35,7 @@ export async function GET(req: Request) {
     const url = new URL('/login?redirect=/mission-control', req.url);
     return NextResponse.redirect(url);
   }
-  if (!ALLOWED_EMAILS.has(user.email ?? '')) {
+  if (!isMissionControlAllowedEmail(user.email)) {
     return new NextResponse('Not authorised', { status: 403 });
   }
 

@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { isMissionControlAllowedEmail } from '@/lib/mission-control/auth.mjs'
 import { buildReviewActivityItems } from '@/lib/mission-control/actions.mjs'
 import {
   buildAuditActivityItems,
@@ -14,11 +15,6 @@ import {
   normalizeLiveTask,
 } from '@/lib/mission-control/normalizers.mjs'
 import type { LiveTask, MissionControlLivePayload } from '@/lib/mission-control/types'
-
-const ALLOWED_EMAILS = new Set<string>([
-  'charlesbettiolbusiness@gmail.com',
-  'charlesbettiolcoaching@gmail.com',
-])
 
 export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -79,7 +75,7 @@ async function getAllowedUser(url: string, anonKey: string): Promise<{ ok: true;
   )
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { ok: false, response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
-  if (!ALLOWED_EMAILS.has(user.email ?? '')) return { ok: false, response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  if (!isMissionControlAllowedEmail(user.email)) return { ok: false, response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
   return { ok: true, user: { id: user.id, email: user.email } }
 }
 
