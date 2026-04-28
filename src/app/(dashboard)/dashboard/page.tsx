@@ -242,12 +242,15 @@ export default function DashboardPage() {
       setLoading(false)
 
       // Load open concerns count (non-blocking)
-      supabase
-        .from('ai_coach_concerns')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'open')
-        .then(({ count }) => setOpenConcerns(count ?? 0))
-        .catch(() => {})
+      void (async () => {
+        try {
+          const { count } = await supabase
+            .from('ai_coach_concerns')
+            .select('id', { count: 'exact', head: true })
+            .eq('status', 'open')
+          setOpenConcerns(count ?? 0)
+        } catch {}
+      })()
 
       // Load intelligence summary in the background (non-blocking)
       fetch('/api/intelligence')

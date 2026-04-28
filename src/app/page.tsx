@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
+import type { CSSProperties, ReactNode, RefObject } from 'react';
 import { COACH_TIERS, formatPrice } from '@/lib/pricing';
 
-function useInView(options = {}) {
-  const ref = useRef(null);
+function useInView(options: IntersectionObserverInit = {}): [RefObject<HTMLDivElement>, boolean] {
+  const ref = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -20,11 +21,12 @@ function useInView(options = {}) {
   return [ref, isInView];
 }
 
-function AnimatedSection({ children, className = '' }) {
+function AnimatedSection({ children, className = '', style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
   const [ref, isInView] = useInView();
   return (
     <div
       ref={ref}
+      style={style}
       className={`transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${className}`}
     >
       {children}
