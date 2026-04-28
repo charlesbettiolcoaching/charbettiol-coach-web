@@ -1,6 +1,7 @@
 node_modules/
 .vercel
 .env*.local
+.env.local.backup-*
 .claude/
 .next/
 tsconfig.tsbuildinfo
