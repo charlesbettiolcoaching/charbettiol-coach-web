@@ -20,14 +20,15 @@ const ALLOWED_EMAILS = new Set<string>([
 ])
 
 export async function GET() {
-  const auth = await getAllowedUser()
-  if (auth.ok === false) return auth.response
-
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) {
+  if (!url || !anonKey || !key) {
     return NextResponse.json({ error: 'Mission Control live source unavailable' }, { status: 503 })
   }
+
+  const auth = await getAllowedUser(url, anonKey)
+  if (auth.ok === false) return auth.response
 
   const [tasks, audits, commits] = await Promise.all([
     fetchSupabase(url, key, 'tasks?select=*,client:profiles!tasks_client_id_fkey(id,name,email)&order=created_at.desc&limit=100'),
@@ -53,11 +54,11 @@ export async function GET() {
   return NextResponse.json(payload, { headers: { 'Cache-Control': 'no-store' } })
 }
 
-async function getAllowedUser(): Promise<{ ok: true } | { ok: false; response: NextResponse }> {
+async function getAllowedUser(url: string, anonKey: string): Promise<{ ok: true } | { ok: false; response: NextResponse }> {
   const cookieStore = cookies()
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() { return cookieStore.getAll() },
