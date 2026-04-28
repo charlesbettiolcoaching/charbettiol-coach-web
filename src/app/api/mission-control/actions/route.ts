@@ -5,14 +5,15 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
+import {
+  extractTaskIdFromReviewKey,
+  validateMissionControlAction,
+} from '@/lib/mission-control/actions.mjs'
 
 const ALLOWED_EMAILS = new Set<string>([
   'charlesbettiolbusiness@gmail.com',
   'charlesbettiolcoaching@gmail.com',
 ])
-
-const VALID_SOURCES = new Set(['supabase_task', 'audit_report', 'commit_event', 'local_overlay'])
-const VALID_OUTCOMES = new Set(['approved', 'vetoed'])
 
 export async function POST(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -32,27 +33,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const reviewKey = typeof body.reviewKey === 'string' ? body.reviewKey.trim() : ''
-  const source = typeof body.source === 'string' ? body.source.trim() : ''
-  const outcome = typeof body.outcome === 'string' ? body.outcome.trim() : ''
-  const note = typeof body.note === 'string' && body.note.trim() ? body.note.trim().slice(0, 1000) : null
-
-  if (!reviewKey || reviewKey.length > 180) {
-    return NextResponse.json({ error: 'Invalid review key' }, { status: 400 })
-  }
-  if (!VALID_SOURCES.has(source)) {
-    return NextResponse.json({ error: 'Invalid source' }, { status: 400 })
-  }
-  if (!VALID_OUTCOMES.has(outcome)) {
-    return NextResponse.json({ error: 'Invalid outcome' }, { status: 400 })
-  }
+  const action = validateMissionControlAction(body)
+  if (action.ok === false) return NextResponse.json({ error: action.error }, { status: action.status })
+  const { reviewKey, source, outcome, note } = action.value
 
   const admin = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
 
   if (source === 'supabase_task' && outcome === 'approved') {
-    const taskId = reviewKey.startsWith('supabase_task:') ? reviewKey.slice('supabase_task:'.length) : ''
+    const taskId = extractTaskIdFromReviewKey(reviewKey)
     if (!taskId) return NextResponse.json({ error: 'Invalid task review key' }, { status: 400 })
 
     const { data: updatedTask, error: taskError } = await admin

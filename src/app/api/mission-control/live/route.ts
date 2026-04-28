@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { buildReviewActivityItems } from '@/lib/mission-control/actions.mjs'
 import {
   buildAuditActivityItems,
   buildAuditDecisionItems,
@@ -35,11 +36,12 @@ export async function GET() {
     fetchSupabase(url, key, `tasks?select=*,client:profiles!tasks_client_id_fkey(id,name,email)&coach_id=eq.${coachId}&order=created_at.desc&limit=100`),
     fetchSupabase(url, key, 'audit_reports?select=*&order=created_at.desc&limit=30'),
     fetchSupabase(url, key, 'commit_events?select=*&order=created_at.desc&limit=50'),
-    fetchSupabase(url, key, `mission_control_reviews?select=review_key,outcome,created_at&coach_id=eq.${coachId}`),
+    fetchSupabase(url, key, `mission_control_reviews?select=id,review_key,source,outcome,note,created_at&coach_id=eq.${coachId}&order=created_at.desc&limit=50`),
   ])
 
   const liveTasks = tasks.map(normalizeLiveTask) as LiveTask[]
   const reviewedKeys = new Set(reviews.map(review => String(review.review_key || '')).filter(Boolean))
+  const reviewed = buildReviewActivityItems(reviews)
   const decisions = [
     ...buildTaskDecisionItems(liveTasks),
     ...buildAuditDecisionItems(audits),
@@ -52,10 +54,12 @@ export async function GET() {
     tasks: liveTasks,
     decisions,
     activity: [
+      ...reviewed,
       ...buildAuditActivityItems(audits),
       ...buildCommitActivityItems(commits),
     ].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)).slice(0, 80),
     stale: buildTaskStaleItems(liveTasks),
+    reviewed,
   }
 
   return NextResponse.json(payload, { headers: { 'Cache-Control': 'no-store' } })

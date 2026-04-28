@@ -4133,7 +4133,7 @@
             <span class="queue-badge" id="queue-badge">0</span>
             <h2>Awaiting Your Decision</h2>
           </div>
-          <span style="font-size:11px;color:var(--text-muted);">Items Bill has flagged for your approval, veto, or input</span>
+          <span style="font-size:11px;color:var(--text-muted);" id="live-sync-summary">Items Bill has flagged for your approval, veto, or input</span>
         </div>
         <div class="queue-list" id="queue-list"></div>
       </div>
@@ -5460,7 +5460,7 @@
     const STORAGE_KEY = 'mission-control-v8';
     const LIVE_REVIEW_KEY = 'mission-control-live-reviewed-v1';
     const LIVE_POLL_MS = 90 * 1000;
-    let livePayload = { generated_at: null, tasks: [], decisions: [], activity: [], stale: [] };
+    let livePayload = { generated_at: null, tasks: [], decisions: [], activity: [], stale: [], reviewed: [], last_loaded_at: null, last_error: null };
 
     /* ───────────────────────────────────────────────
        SEED DATA
@@ -6111,6 +6111,17 @@
         pending === 1 ? '1 item awaiting you' :
         `${pending} items awaiting you`;
 
+      const sync = document.getElementById('live-sync-summary');
+      if (sync) {
+        const reviewedCount = (livePayload.reviewed || []).length;
+        sync.textContent = livePayload.last_error
+          ? `Live sync degraded · ${livePayload.last_error}`
+          : livePayload.last_loaded_at
+            ? `Live sync ${timeAgo(livePayload.last_loaded_at)} · ${liveOpenTasks} open tasks · ${reviewedCount} reviewed`
+            : 'Live sync pending · local overlay active';
+        sync.style.color = livePayload.last_error ? 'var(--high)' : 'var(--text-muted)';
+      }
+
       // Current phase
       const now = new Date();
       const phases = d.phases || [];
@@ -6308,8 +6319,10 @@
     async function resolveDecision(item, outcome, agent, el) {
       el?.querySelectorAll('button').forEach(btn => btn.disabled = true);
       if (item.source === 'live') {
-        const ok = await submitLiveDecision(item, outcome);
-        if (!ok) {
+        const result = await submitLiveDecision(item, outcome);
+        if (!result.ok) {
+          const ctx = el?.querySelector('.ctx');
+          if (ctx) ctx.textContent = result.error || 'Action failed. Try again from the live task page.';
           el?.querySelectorAll('button').forEach(btn => btn.disabled = false);
           return;
         }
@@ -6339,14 +6352,22 @@
             outcome,
           }),
         });
-        if (!res.ok) throw new Error(`action ${res.status}`);
-        return true;
+        if (!res.ok) {
+          let message = `action ${res.status}`;
+          try {
+            const data = await res.json();
+            if (data?.error) message = data.error;
+          } catch {}
+          throw new Error(message);
+        }
+        return { ok: true };
       } catch (err) {
-        console.debug('[mission-live] action failed:', err?.message || err);
+        const message = err?.message || 'Action failed';
+        console.debug('[mission-live] action failed:', message);
         logActivity(`⚠ ACTION FAILED: ${item.title}`);
         saveState();
         renderActivity();
-        return false;
+        return { ok: false, error: message };
       }
     }
 
@@ -9556,13 +9577,18 @@
           decisions: Array.isArray(data.decisions) ? data.decisions : [],
           activity: Array.isArray(data.activity) ? data.activity : [],
           stale: Array.isArray(data.stale) ? data.stale : [],
+          reviewed: Array.isArray(data.reviewed) ? data.reviewed : [],
+          last_loaded_at: Date.now(),
+          last_error: null,
         };
         renderDashboard();
         renderQueue();
         renderTasks();
         renderActivity();
       } catch (err) {
-        if (!silent) console.debug('[mission-live] feed fetch failed:', err?.message || err);
+        livePayload.last_error = err?.message || 'feed unavailable';
+        renderDashboard();
+        if (!silent) console.debug('[mission-live] feed fetch failed:', livePayload.last_error);
       }
     }
 

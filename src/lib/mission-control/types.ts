@@ -25,7 +25,7 @@ export type DecisionItem = {
 
 export type ActivityItem = {
   id: string
-  source: 'audit_report' | 'commit_event' | 'supabase_task'
+  source: 'audit_report' | 'commit_event' | 'supabase_task' | 'mission_control_review'
   title: string
   summary: string
   created_at: string
@@ -47,4 +47,5 @@ export type MissionControlLivePayload = {
   decisions: DecisionItem[]
   activity: ActivityItem[]
   stale: StaleItem[]
+  reviewed: ActivityItem[]
 }

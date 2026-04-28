@@ -6,7 +6,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "test:mission-control": "node src/lib/mission-control/normalizers.test.mjs"
+    "test:mission-control": "node src/lib/mission-control/normalizers.test.mjs && node src/lib/mission-control/actions.test.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
