@@ -6408,9 +6408,27 @@
       const list = document.getElementById('priority-list');
       list.innerHTML = '';
       const filtered = state.priorities.filter(p => !p.businessId || p.businessId === state.currentBusinessId);
-      if (filtered.length === 0) {
+      const livePriorityItems = (livePayload.stale || [])
+        .slice(0, 5)
+        .map(item => ({
+          id: item.id,
+          text: `${item.title} — ${item.reason}`,
+          sourceUrl: item.source_url || '/tasks',
+        }));
+      if (filtered.length === 0 && livePriorityItems.length === 0) {
         list.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:1rem 0;text-align:center;">No priorities yet — add one below.</div>`;
       }
+      livePriorityItems.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'priority-item';
+        el.innerHTML = `
+          <div class="priority-check" style="color:var(--med);border-color:rgba(255,203,61,0.4);">!</div>
+          <input class="priority-text" value="${esc(item.text)}" readonly />
+          <button class="priority-delete" data-action="open">Open</button>
+        `;
+        el.querySelector('[data-action="open"]').addEventListener('click', () => window.open(item.sourceUrl, '_blank', 'noopener'));
+        list.appendChild(el);
+      });
       filtered.forEach(p => {
         const el = document.createElement('div');
         el.className = 'priority-item' + (p.done ? ' done' : '');
@@ -6434,7 +6452,7 @@
         });
         list.appendChild(el);
       });
-      document.getElementById('priorities-count').textContent = `${filtered.filter(p => !p.done).length} open`;
+      document.getElementById('priorities-count').textContent = `${filtered.filter(p => !p.done).length + livePriorityItems.length} open`;
     }
     document.getElementById('add-priority').addEventListener('click', () => {
       const text = prompt('New priority:');
