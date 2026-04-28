@@ -5458,6 +5458,9 @@
     const OWNER = 'Charles';
     const COLOR_PRESETS = ['#2ECFC2', '#9b7dff', '#ffcb3d', '#ff9766', '#ff6b6b', '#6bcf7f', '#4aa3ff', '#f06292'];
     const STORAGE_KEY = 'mission-control-v8';
+    const LIVE_REVIEW_KEY = 'mission-control-live-reviewed-v1';
+    const LIVE_POLL_MS = 90 * 1000;
+    let livePayload = { generated_at: null, tasks: [], decisions: [], activity: [], stale: [] };
 
     /* ───────────────────────────────────────────────
        SEED DATA
@@ -5857,6 +5860,38 @@
       } catch { return structuredClone(defaultState); }
     }
     function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function loadReviewedLiveKeys() {
+      try { return new Set(JSON.parse(localStorage.getItem(LIVE_REVIEW_KEY) || '[]')); }
+      catch { return new Set(); }
+    }
+    function saveReviewedLiveKeys(keys) {
+      localStorage.setItem(LIVE_REVIEW_KEY, JSON.stringify([...keys]));
+    }
+    function markLiveReviewed(reviewKey) {
+      if (!reviewKey) return;
+      const keys = loadReviewedLiveKeys();
+      keys.add(reviewKey);
+      saveReviewedLiveKeys(keys);
+      renderQueue();
+      renderDashboard();
+    }
+    function unreviewedLiveDecisions() {
+      const reviewed = loadReviewedLiveKeys();
+      return (livePayload.decisions || []).filter(item => !reviewed.has(item.review_key));
+    }
+    function liveTasksByColumn(status) {
+      return (livePayload.tasks || []).filter(task => liveTaskColumn(task) === status);
+    }
+    function liveTaskColumn(task) {
+      if (task.status === 'done') return 'done';
+      if (task.priority === 'high' || (livePayload.stale || []).some(s => s.id === `stale-task-${task.id}`)) return 'progress';
+      return 'backlog';
+    }
+    function liveAgentForSource(source) {
+      if (source === 'audit_report') return 'ag-argus';
+      if (source === 'commit_event') return 'ag-dex';
+      return 'ag-bill';
+    }
 
     /* ───────────────────────────────────────────────
        HELPERS
@@ -6054,8 +6089,12 @@
 
       // Open priorities
       const openP = state.priorities.filter(p => !p.done && (!p.businessId || p.businessId === b.id)).length;
-      document.getElementById('metric-priorities').textContent = openP;
-      document.getElementById('metric-priorities-trend').textContent = openP === 0 ? 'All clear.' : `${openP} to ship`;
+      const liveOpenTasks = (livePayload.tasks || []).filter(t => t.status === 'open').length;
+      const liveStale = (livePayload.stale || []).length;
+      document.getElementById('metric-priorities').textContent = openP + liveOpenTasks;
+      document.getElementById('metric-priorities-trend').textContent =
+        liveOpenTasks > 0 ? `${liveOpenTasks} live tasks · ${liveStale} stale` :
+        openP === 0 ? 'All clear.' : `${openP} to ship`;
 
       // Days to launch
       const days = b.launchDate ? daysUntil(b.launchDate) : null;
@@ -6063,7 +6102,9 @@
       document.getElementById('metric-countdown-trend').textContent = b.launchDate ? fmtFull(b.launchDate) : 'No launch date set';
 
       // Pending decisions (queue)
-      const pending = (state.approvalQueue || []).filter(q => !q.businessId || q.businessId === b.id).length;
+      const queueItems = (state.approvalQueue || []).filter(q => !q.businessId || q.businessId === b.id);
+      const pendingInbox = (d.inbox || []).filter(i => i.status === 'pending');
+      const pending = queueItems.length + pendingInbox.length + unreviewedLiveDecisions().length;
       document.getElementById('metric-pending').textContent = pending;
       document.getElementById('metric-pending-trend').textContent =
         pending === 0 ? 'Nothing blocking the team.' :
@@ -6194,14 +6235,47 @@
       const list = document.getElementById('queue-list');
       const badge = document.getElementById('queue-badge');
       list.innerHTML = '';
-      const filtered = (state.approvalQueue || []).filter(q => !q.businessId || q.businessId === state.currentBusinessId);
-      badge.textContent = filtered.length;
-      if (!filtered.length) {
+      const d = currentData();
+      const queueItems = (state.approvalQueue || [])
+        .filter(q => !q.businessId || q.businessId === state.currentBusinessId)
+        .map(q => ({
+          source: 'queue',
+          id: q.id,
+          title: q.title,
+          context: q.context,
+          agentId: q.agentId,
+          createdAt: q.createdAt,
+        }));
+      const inboxPending = (d.inbox || [])
+        .filter(i => i.status === 'pending')
+        .map(i => ({
+          source: 'inbox',
+          id: i.id,
+          title: i.title,
+          context: ((i.content || '').split('\n').find(s => s.trim()) || '').slice(0, 220),
+          agentId: i.agentId,
+          createdAt: i.createdAt,
+        }));
+      const liveDecisionItems = unreviewedLiveDecisions().map(item => ({
+        source: 'live',
+        id: item.id,
+        title: item.title,
+        context: item.context,
+        agentId: liveAgentForSource(item.source),
+        createdAt: Date.parse(item.created_at) || Date.now(),
+        reviewKey: item.review_key,
+        sourceUrl: item.source_url,
+      }));
+      const seen = new Set(queueItems.map(q => q.id));
+      const merged = [...liveDecisionItems, ...queueItems, ...inboxPending.filter(x => !seen.has(x.id))]
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      badge.textContent = merged.length;
+      if (!merged.length) {
         list.innerHTML = '<div class="queue-empty">Inbox zero. Nothing needs your call right now.</div>';
         return;
       }
-      filtered.forEach(q => {
-        const agent = q.agentId ? currentData().agents.find(a => a.id === q.agentId) : null;
+      merged.forEach(q => {
+        const agent = q.agentId ? d.agents.find(a => a.id === q.agentId) : null;
         const c = agent ? colorCss(agent.color) : null;
         const el = document.createElement('div');
         el.className = 'queue-item';
@@ -6214,25 +6288,36 @@
             <div class="meta">
               ${agent ? `<span>From ${esc(agent.name)}</span>` : ''}
               <span>${timeAgo(q.createdAt)}</span>
+              ${q.source === 'live' ? '<span style="color:var(--text-muted);">· live</span>' : ''}
+              ${q.source === 'inbox' ? '<span style="color:var(--text-muted);">· inbox</span>' : ''}
             </div>
           </div>
           <div class="queue-actions">
+            ${q.sourceUrl ? '<button class="queue-btn" data-action="open">Open</button>' : ''}
             <button class="queue-btn approve" data-action="approve">Approve</button>
             <button class="queue-btn veto" data-action="veto">Veto</button>
           </div>
         `;
-        el.querySelector('[data-action="approve"]').addEventListener('click', () => resolveQueue(q.id, 'approved', agent));
-        el.querySelector('[data-action="veto"]').addEventListener('click', () => resolveQueue(q.id, 'vetoed', agent));
+        el.querySelector('[data-action="open"]')?.addEventListener('click', () => window.open(q.sourceUrl, '_blank', 'noopener'));
+        el.querySelector('[data-action="approve"]').addEventListener('click', () => resolveDecision(q, 'approved', agent));
+        el.querySelector('[data-action="veto"]').addEventListener('click', () => resolveDecision(q, 'vetoed', agent));
         list.appendChild(el);
       });
     }
-    function resolveQueue(qid, outcome, agent) {
-      const item = state.approvalQueue.find(x => x.id === qid);
-      if (!item) return;
-      state.approvalQueue = state.approvalQueue.filter(x => x.id !== qid);
+    function resolveDecision(item, outcome, agent) {
+      if (item.source === 'live') {
+        markLiveReviewed(item.reviewKey);
+      } else if (item.source === 'inbox') {
+        const inboxItem = (currentData().inbox || []).find(x => x.id === item.id);
+        if (inboxItem) inboxItem.status = outcome === 'approved' ? 'approved' : 'filed';
+      } else {
+        state.approvalQueue = (state.approvalQueue || []).filter(x => x.id !== item.id);
+      }
       logActivity(`${outcome === 'approved' ? '✔' : '✕'} ${outcome.toUpperCase()}: ${item.title}${agent ? ` (${agent.name})` : ''}`);
       saveState();
       renderQueue();
+      renderDashboard();
+      if (typeof renderInbox === 'function') renderInbox();
     }
 
     /* ───────────────────────────────────────────────
@@ -6313,7 +6398,19 @@
     function renderActivity() {
       const feed = document.getElementById('activity-feed');
       feed.innerHTML = '';
-      const filtered = state.activity.filter(a => !a.businessId || a.businessId === state.currentBusinessId).slice(0, 25);
+      const localItems = state.activity
+        .filter(a => !a.businessId || a.businessId === state.currentBusinessId)
+        .map(a => ({ id: a.id, text: a.text, at: a.at, live: false }));
+      const liveItems = (livePayload.activity || [])
+        .map(a => ({
+          id: a.id,
+          text: `${a.title}${a.summary ? ` — ${a.summary}` : ''}`,
+          at: Date.parse(a.created_at) || Date.now(),
+          live: true,
+        }));
+      const filtered = [...liveItems, ...localItems]
+        .sort((a, b) => (b.at || 0) - (a.at || 0))
+        .slice(0, 25);
       if (!filtered.length) {
         feed.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:1rem 0;text-align:center;">No activity yet.</div>`;
         return;
@@ -6325,7 +6422,7 @@
           <div class="activity-dot"></div>
           <div class="activity-body">
             <div class="activity-text">${esc(a.text)}</div>
-            <div class="activity-time">${timeAgo(a.at)}</div>
+            <div class="activity-time">${timeAgo(a.at)}${a.live ? ' · live' : ''}</div>
           </div>
         `;
         feed.appendChild(el);
@@ -9088,7 +9185,27 @@
         const list = document.getElementById('list-' + status);
         list.innerHTML = '';
         const filtered = d.tasks.filter(t => t.status === status);
-        document.getElementById('count-' + status).textContent = filtered.length;
+        const liveFiltered = liveTasksByColumn(status);
+        document.getElementById('count-' + status).textContent = filtered.length + liveFiltered.length;
+        liveFiltered.forEach(t => {
+          const card = document.createElement('div');
+          card.className = 'task-card';
+          card.style.setProperty('--agent-color', '#2ECFC2');
+          card.style.setProperty('--agent-color-soft', 'rgba(46,207,194,0.12)');
+          card.innerHTML = `
+            <div class="task-title">${esc(t.title)}</div>
+            ${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ''}
+            <div class="task-meta">
+              <span class="priority-badge ${t.priority}">${esc(t.priority)}</span>
+              <div class="right">
+                <span class="task-agent-chip">Live · ${esc((t.origin || 'task').replace('_', ' '))}</span>
+                <span class="task-date">${fmtDate(Date.parse(t.created_at) || Date.now())}</span>
+              </div>
+            </div>
+          `;
+          card.addEventListener('click', () => window.open(t.source_url || '/tasks', '_blank', 'noopener'));
+          list.appendChild(card);
+        });
         filtered.forEach(t => {
           const agent = t.agentId ? d.agents.find(a => a.id === t.agentId) : null;
           const ac = agent ? colorCss(agent.color) : null;
@@ -9398,6 +9515,27 @@
     const ARGUS_POLL_MS = 5 * 60 * 1000;
     const COMMITS_POLL_MS = 2 * 60 * 1000;
 
+    async function loadMissionLive({ silent = true } = {}) {
+      try {
+        const res = await fetch(`${MC_API_BASE}/api/mission-control/live`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`live ${res.status}`);
+        const data = await res.json();
+        livePayload = {
+          generated_at: data.generated_at || new Date().toISOString(),
+          tasks: Array.isArray(data.tasks) ? data.tasks : [],
+          decisions: Array.isArray(data.decisions) ? data.decisions : [],
+          activity: Array.isArray(data.activity) ? data.activity : [],
+          stale: Array.isArray(data.stale) ? data.stale : [],
+        };
+        renderDashboard();
+        renderQueue();
+        renderTasks();
+        renderActivity();
+      } catch (err) {
+        if (!silent) console.debug('[mission-live] feed fetch failed:', err?.message || err);
+      }
+    }
+
     function argusReportToInboxItem(r) {
       const title = `${r.status === 'clean' ? '✅' : r.status === 'warnings' ? '⚠️' : '🚨'} Daily audit · ${r.repo} — ${r.summary}`;
       const findings = Array.isArray(r.findings) ? r.findings : [];
@@ -9538,8 +9676,10 @@
        BOOT
        ─────────────────────────────────────────────── */
     renderAll();
+    loadMissionLive({ silent: true });
     loadArgusFeed({ silent: true });
     loadCommitFeed({ silent: true });
+    setInterval(() => loadMissionLive({ silent: false }), LIVE_POLL_MS);
     setInterval(() => loadArgusFeed({ silent: false }), ARGUS_POLL_MS);
     setInterval(() => loadCommitFeed({ silent: false }), COMMITS_POLL_MS);
   </script>
