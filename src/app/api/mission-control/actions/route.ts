@@ -1,0 +1,102 @@
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
+import { cookies } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
+
+const ALLOWED_EMAILS = new Set<string>([
+  'charlesbettiolbusiness@gmail.com',
+  'charlesbettiolcoaching@gmail.com',
+])
+
+const VALID_SOURCES = new Set(['supabase_task', 'audit_report', 'commit_event', 'local_overlay'])
+const VALID_OUTCOMES = new Set(['approved', 'vetoed'])
+
+export async function POST(request: NextRequest) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !anonKey || !serviceKey) {
+    return NextResponse.json({ error: 'Mission Control actions unavailable' }, { status: 503 })
+  }
+
+  const auth = await getAllowedUser(url, anonKey)
+  if (auth.ok === false) return auth.response
+
+  let body: Record<string, unknown>
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  const reviewKey = typeof body.reviewKey === 'string' ? body.reviewKey.trim() : ''
+  const source = typeof body.source === 'string' ? body.source.trim() : ''
+  const outcome = typeof body.outcome === 'string' ? body.outcome.trim() : ''
+  const note = typeof body.note === 'string' && body.note.trim() ? body.note.trim().slice(0, 1000) : null
+
+  if (!reviewKey || reviewKey.length > 180) {
+    return NextResponse.json({ error: 'Invalid review key' }, { status: 400 })
+  }
+  if (!VALID_SOURCES.has(source)) {
+    return NextResponse.json({ error: 'Invalid source' }, { status: 400 })
+  }
+  if (!VALID_OUTCOMES.has(outcome)) {
+    return NextResponse.json({ error: 'Invalid outcome' }, { status: 400 })
+  }
+
+  const admin = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+
+  if (source === 'supabase_task' && outcome === 'approved') {
+    const taskId = reviewKey.startsWith('supabase_task:') ? reviewKey.slice('supabase_task:'.length) : ''
+    if (!taskId) return NextResponse.json({ error: 'Invalid task review key' }, { status: 400 })
+
+    const { data: updatedTask, error: taskError } = await admin
+      .from('tasks')
+      .update({ completed: true })
+      .eq('id', taskId)
+      .eq('coach_id', auth.user.id)
+      .select('id')
+      .maybeSingle()
+
+    if (taskError) return NextResponse.json({ error: taskError.message }, { status: 500 })
+    if (!updatedTask) return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+  }
+
+  const { error } = await admin
+    .from('mission_control_reviews')
+    .upsert({
+      coach_id: auth.user.id,
+      review_key: reviewKey,
+      source,
+      outcome,
+      note,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'coach_id,review_key' })
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json({ ok: true })
+}
+
+async function getAllowedUser(url: string, anonKey: string): Promise<{ ok: true; user: { id: string; email?: string | null } } | { ok: false; response: NextResponse }> {
+  const cookieStore = cookies()
+  const supabase = createServerClient(
+    url,
+    anonKey,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+        setAll() {},
+      },
+    },
+  )
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { ok: false, response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
+  if (!ALLOWED_EMAILS.has(user.email ?? '')) return { ok: false, response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
+  return { ok: true, user: { id: user.id, email: user.email } }
+}

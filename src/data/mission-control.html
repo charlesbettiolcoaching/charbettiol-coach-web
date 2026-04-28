@@ -6258,6 +6258,7 @@
         }));
       const liveDecisionItems = unreviewedLiveDecisions().map(item => ({
         source: 'live',
+        liveSource: item.source,
         id: item.id,
         title: item.title,
         context: item.context,
@@ -6299,13 +6300,19 @@
           </div>
         `;
         el.querySelector('[data-action="open"]')?.addEventListener('click', () => window.open(q.sourceUrl, '_blank', 'noopener'));
-        el.querySelector('[data-action="approve"]').addEventListener('click', () => resolveDecision(q, 'approved', agent));
-        el.querySelector('[data-action="veto"]').addEventListener('click', () => resolveDecision(q, 'vetoed', agent));
+        el.querySelector('[data-action="approve"]').addEventListener('click', () => resolveDecision(q, 'approved', agent, el));
+        el.querySelector('[data-action="veto"]').addEventListener('click', () => resolveDecision(q, 'vetoed', agent, el));
         list.appendChild(el);
       });
     }
-    function resolveDecision(item, outcome, agent) {
+    async function resolveDecision(item, outcome, agent, el) {
+      el?.querySelectorAll('button').forEach(btn => btn.disabled = true);
       if (item.source === 'live') {
+        const ok = await submitLiveDecision(item, outcome);
+        if (!ok) {
+          el?.querySelectorAll('button').forEach(btn => btn.disabled = false);
+          return;
+        }
         markLiveReviewed(item.reviewKey);
       } else if (item.source === 'inbox') {
         const inboxItem = (currentData().inbox || []).find(x => x.id === item.id);
@@ -6318,6 +6325,29 @@
       renderQueue();
       renderDashboard();
       if (typeof renderInbox === 'function') renderInbox();
+      if (item.source === 'live') loadMissionLive({ silent: true });
+    }
+
+    async function submitLiveDecision(item, outcome) {
+      try {
+        const res = await fetch(`${MC_API_BASE}/api/mission-control/actions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reviewKey: item.reviewKey,
+            source: item.liveSource || 'local_overlay',
+            outcome,
+          }),
+        });
+        if (!res.ok) throw new Error(`action ${res.status}`);
+        return true;
+      } catch (err) {
+        console.debug('[mission-live] action failed:', err?.message || err);
+        logActivity(`⚠ ACTION FAILED: ${item.title}`);
+        saveState();
+        renderActivity();
+        return false;
+      }
     }
 
     /* ───────────────────────────────────────────────
