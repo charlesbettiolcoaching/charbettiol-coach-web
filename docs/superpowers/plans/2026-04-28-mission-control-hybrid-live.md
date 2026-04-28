@@ -13,7 +13,7 @@
 ## File Map
 
 - Create `src/lib/mission-control/types.ts`: shared live payload types.
-- Create `src/lib/mission-control/normalizers.js`: pure functions that normalize tasks, audit reports, commit events, and stale/decision rules.
+- Create `src/lib/mission-control/normalizers.mjs`: pure functions that normalize tasks, audit reports, commit events, and stale/decision rules.
 - Create `src/lib/mission-control/normalizers.test.mjs`: lightweight Node test script using `assert`.
 - Create `src/app/api/mission-control/live/route.ts`: authenticated allowlisted route that queries Supabase and returns the normalized payload.
 - Modify `src/data/mission-control.html`: add live payload state, polling, local review keys, merged queue rendering, dashboard metrics, and live task rendering.
@@ -23,7 +23,7 @@
 
 **Files:**
 - Create: `src/lib/mission-control/types.ts`
-- Create: `src/lib/mission-control/normalizers.js`
+- Create: `src/lib/mission-control/normalizers.mjs`
 - Create: `src/lib/mission-control/normalizers.test.mjs`
 - Modify: `package.json`
 
@@ -39,7 +39,7 @@ import {
   buildTaskStaleItems,
   buildAuditDecisionItems,
   buildCommitActivityItems,
-} from './normalizers.js';
+} from './normalizers.mjs';
 
 const now = new Date('2026-04-28T12:00:00.000Z');
 
@@ -142,7 +142,7 @@ Run:
 npm run test:mission-control
 ```
 
-Expected: FAIL with `Cannot find module './normalizers.js'` or missing export errors.
+Expected: FAIL with `Cannot find module './normalizers.mjs'` or missing export errors.
 
 - [ ] **Step 4: Add shared types**
 
@@ -203,7 +203,7 @@ export type MissionControlLivePayload = {
 
 - [ ] **Step 5: Add minimal implementation**
 
-Create `src/lib/mission-control/normalizers.js`. The repo already has `allowJs: true`, so the Next.js route can import this module, while the Node test can execute it directly.
+Create `src/lib/mission-control/normalizers.mjs`. The repo already has `allowJs: true`, so the Next.js route can import this module, while the Node test can execute it directly.
 
 ```js
 const VALID_PRIORITY = new Set(['low', 'medium', 'high'])
@@ -658,6 +658,6 @@ Expected: only planned Mission Control files changed, plus any pre-existing unre
 If verification required small fixes, stage the specific fixed files reported by `git status --short`:
 
 ```bash
-git add src/lib/mission-control/normalizers.js src/app/api/mission-control/live/route.ts src/data/mission-control.html
+git add src/lib/mission-control/normalizers.mjs src/app/api/mission-control/live/route.ts src/data/mission-control.html
 git commit -m "Verify Mission Control live command center"
 ```
